@@ -8,6 +8,7 @@
 // Pin 13 has an LED connected on most Arduino boards.
 // give it a name:
 int ledPin = 13;
+int ledGreenPin = 12;
 int longWait = 500;
 int shortWait = 200;
 long randOn = 0;                  // Initialize a variable for the ON time
@@ -19,6 +20,7 @@ void setup()
 {
   // initialize the digital pin as an output.
   pinMode(ledPin, OUTPUT); 
+  pinMode(ledGreenPin, OUTPUT); 
   randomSeed (analogRead (0));    // randomize    
 }
 
@@ -26,9 +28,13 @@ void random_leds()
 {
   randOn = random (100, 1200);    // generate ON time between 0.1 and 1.2 seconds
   randOff = random (200, 900);    // generate OFF time between 0.2 and 0.9 seconds
+  
   digitalWrite(ledPin, HIGH);   // sets the LED on
+  digitalWrite(ledGreenPin, LOW);
   delay(randOn);                // waits for a random time while ON
+  
   digitalWrite(ledPin, LOW);    // sets the LED off
+  digitalWrite(ledGreenPin, HIGH);
   delay(randOff);               // waits for a random time while OFF
 }
 
