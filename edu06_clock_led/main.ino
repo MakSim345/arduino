@@ -23,11 +23,13 @@ int catodos[] = {12};
 int value[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 
 int currentDigit = -1;
+int firdstDigit = -1;
+int secondDigit = -1;
 long nextChange;
 
 
-const int NUM_DIGITS = 10;
-const int DIGIT_DELAY = 1000; // 2ms por digito
+const int NUM_DIGITS = 100;
+const int DIGIT_DELAY = 500; // 2ms por digito
 
 const byte DIGITS[10][8] = {
 //A  B  C  D  E  F  G  H
@@ -69,17 +71,31 @@ void loop()
   {
     // Roda o digito atual
     currentDigit = (currentDigit + 1) % NUM_DIGITS;
+    firdstDigit = (currentDigit - currentDigit % 10)/10;
+    secondDigit = currentDigit % 10;
+
     //currentDigit = 3;
     Serial.println(currentDigit);
-    //reset(); // Apaga tudo antes de escrever o proximo algarismo
-
-    writeNumber(value[currentDigit]); // Escreve o proximo algarismo
+    Serial.println(firdstDigit);
+    Serial.println(secondDigit);
+    Serial.println("....");
+    
+    reset(); // Apaga tudo antes de escrever o proximo algarismo
+    //pinMode(12, OUTPUT);
+    writeNumber(value[secondDigit], 12); // Escreve o proximo algarismo
+    //pinMode(12, INPUT);
+    //reset();
+    //pinMode(13, OUTPUT);
+    //writeNumber(value[firdstDigit], 13); // Escreve o proximo algarismo
+    
+    //writeNumber(firdstDigit+1);
+    // writeNumber(value[currentDigit]); // Escreve o proximo algarismo
     // writeNumber(2);
     // Ativa apenas no catodo referente ao digito
     //pinMode(catodos[currentDigit], OUTPUT);
-    pinMode(12, OUTPUT);
+    // pinMode(12, OUTPUT);
     //digitalWrite(catodos[currentDigit], LOW);
-    digitalWrite(12, LOW);
+    //digitalWrite(12, LOW);
 
     // Marca o tempo para a proxima troca
     nextChange = time + DIGIT_DELAY;
@@ -100,14 +116,29 @@ void loop_non_use()
     writeNumber(value[currentDigit]); // Escreve o proximo algarismo
 
     // Ativa apenas no catodo referente ao digito
-    pinMode(catodos[currentDigit], OUTPUT);
-    
+    pinMode(catodos[currentDigit], OUTPUT);    
     digitalWrite(catodos[currentDigit], LOW);
 
     // Marca o tempo para a proxima troca
     nextChange = time + DIGIT_DELAY;
   }
 
+}
+
+void writeNumber(int num, int catod) 
+{
+  // reset(); // Apaga tudo antes de escrever o proximo algarismo
+  
+  for (int a = 0; a < 8; a++) 
+    {
+        if (DIGITS[num][a] == 1)
+            digitalWrite(anodos[a], HIGH);
+        else
+            digitalWrite(anodos[a], LOW);
+    }
+
+  pinMode(catod, OUTPUT);    
+  digitalWrite(catod, LOW);
 }
 
 void writeNumber(int num) 
