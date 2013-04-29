@@ -35,7 +35,7 @@ void random_leds()
   char v_str[8] = "       ";  //reserve the string space first
   itoa(randOn, v_str, 6);
   // lcd.printIn(v_str);
-  int bytesSent = Serial.write(v_str); //send the string “hello” and return the length of the string.
+  int bytesSent = Serial.write(v_str); //send the string and return the length of the string.
   Serial.write("--\n"); 
 
   digitalWrite(ledPin, HIGH);   // sets the LED on
@@ -45,8 +45,6 @@ void random_leds()
   digitalWrite(ledPin, LOW);    // sets the LED off
   digitalWrite(ledGreenPin, HIGH);
   delay(randOff);               // waits for a random time while OFF
-
-  
 }
 
 // the loop routine runs over and over again forever:
