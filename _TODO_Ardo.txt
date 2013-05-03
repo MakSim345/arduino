@@ -1,0 +1,8 @@
+MAY-2013
+
+List of tasks for Arduino:
+
+ - interrupts;
+ - watchfog;
+ - servomotors;
+ - помпа;
