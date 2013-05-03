@@ -1,269 +1,228 @@
-#ifdef YS_DO_NOT_INCLUDE_FOLLOW
+#include "seven_digit_led.h"
 
-/*
- 6-13-2011
- Spark Fun Electronics 2011
- Nathan Seidle
- 
- This code is public domain but you buy me a beer if you use this and we meet 
- someday (Beerware license).
- 
- 4 digit 7 segment display:
- http://www.sparkfun.com/products/9483
- Datasheet: 
- http://www.sparkfun.com/datasheets/Components/LED/7-Segment/YSD-439AR6B-35.pdf
+seven_digit_led::seven_digit_led(int pin)
+{
+    current_pin = 0;
+    firdstDigit = -1;
+    secondDigit = -1;
 
- This is an example of how to drive a 7 segment LED display from an ATmega
- without the use of current limiting resistors. This technique is very common 
- but requires some knowledge of electronics - you do run the risk of dumping 
- too much current through the segments and burning out parts of the display. 
- If you use the stock code you should be ok, but be careful editing the 
- brightness values.
- 
- This code should work with all colors (red, blue, yellow, green) but the 
- brightness will vary from one color to the next because the forward voltage 
- drop of each color is different. This code was written and calibrated for the 
- red color.
-
- This code will work with most Arduinos but you may want to re-route some of 
- the pins.
-
- 7 segments
- 4 digits
- 1 colon
- =
- 12 pins required for full control 
- 
- */
-
-int digit1 = 11; //PWM Display pin 1
-int digit2 = 10; //PWM Display pin 2
-int digit3 = 9; //PWM Display pin 6
-int digit4 = 6; //PWM Display pin 8
-
-//Pin mapping from Arduino to the ATmega DIP28 if you need it
-//http://www.arduino.cc/en/Hacking/PinMapping
-int segA = A1; //Display pin 14
-int segB = 3; //Display pin 16
-int segC = 4; //Display pin 13
-int segD = 5; //Display pin 3
-int segE = A0; //Display pin 5
-int segF = 7; //Display pin 11
-int segG = 8; //Display pin 15
-
-void setup() {                
-  pinMode(segA, OUTPUT);
-  pinMode(segB, OUTPUT);
-  pinMode(segC, OUTPUT);
-  pinMode(segD, OUTPUT);
-  pinMode(segE, OUTPUT);
-  pinMode(segF, OUTPUT);
-  pinMode(segG, OUTPUT);
-
-  pinMode(digit1, OUTPUT);
-  pinMode(digit2, OUTPUT);
-  pinMode(digit3, OUTPUT);
-  pinMode(digit4, OUTPUT);
-  
-  pinMode(13, OUTPUT);
+    init_segments();
+    init_digits();
 }
 
-void loop() {
-  
-  //long startTime = millis();
+void seven_digit_led::init_segments() 
+{
+    A = 6; B = 7; C = 8; D = 9;
+    E = 10; F = 11; G = 12;
+    H = 13; // not in use
 
-  displayNumber(millis()/1000);
-
-  //while( (millis() - startTime) < 2000) {
-  //displayNumber(1217);
-  //}
-  //delay(1000);  
-}
-
-//Given a number, we display 10:22
-//After running through the 4 numbers, the display is left turned off
-
-//Display brightness
-//Each digit is on for a certain amount of microseconds
-//Then it is off until we have reached a total of 20ms for the function call
-//Let's assume each digit is on for 1000us
-//Each digit is on for 1ms, there are 4 digits, so the display is off for 16ms.
-//That's a ratio of 1ms to 16ms or 6.25% on time (PWM).
-//Let's define a variable called brightness that varies from:
-//5000 blindingly bright (15.7mA current draw per digit)
-//2000 shockingly bright (11.4mA current draw per digit)
-//1000 pretty bright (5.9mA)
-//500 normal (3mA)
-//200 dim but readable (1.4mA)
-//50 dim but readable (0.56mA)
-//5 dim but readable (0.31mA)
-//1 dim but readable in dark (0.28mA)
-
-void displayNumber(int toDisplay) {
-#define DISPLAY_BRIGHTNESS  500
-
-#define DIGIT_ON  HIGH
-#define DIGIT_OFF  LOW
-
-  long beginTime = millis();
-
-  for(int digit = 4 ; digit > 0 ; digit--) {
-
-    //Turn on a digit for a short amount of time
-    switch(digit) {
-    case 1:
-      digitalWrite(digit1, DIGIT_ON);
-      break;
-    case 2:
-      digitalWrite(digit2, DIGIT_ON);
-      break;
-    case 3:
-      digitalWrite(digit3, DIGIT_ON);
-      break;
-    case 4:
-      digitalWrite(digit4, DIGIT_ON);
-      break;
+    // anodos[8] = { A, B, C, D, E, F, G, H };
+    anodos[0] = A;
+    anodos[1] = B;
+    anodos[2] = C;
+    anodos[3] = D;
+    anodos[4] = E;
+    anodos[5] = F;
+    anodos[6] = G;
+    anodos[7] = H;
+    
+    // set 7 pins for segments to output:
+    for (int a = 0; a < 8; a++)
+    {
+        pinMode(anodos[a], OUTPUT);
     }
-
-    //Turn on the right segments for this digit
-    lightNumber(toDisplay % 10);
-    toDisplay /= 10;
-
-    delayMicroseconds(DISPLAY_BRIGHTNESS); 
-    //Display digit for fraction of a second (1us to 5000us, 500 is pretty good)
-
-    //Turn off all segments
-    lightNumber(10); 
-
-    //Turn off all digits
-    digitalWrite(digit1, DIGIT_OFF);
-    digitalWrite(digit2, DIGIT_OFF);
-    digitalWrite(digit3, DIGIT_OFF);
-    digitalWrite(digit4, DIGIT_OFF);
-  }
-
-  while( (millis() - beginTime) < 10) ; 
-  //Wait for 20ms to pass before we paint the display again
 }
 
-//Given a number, turns on those segments
-//If number == 10, then turn off number
-void lightNumber(int numberToDisplay) {
-
-#define SEGMENT_ON  LOW
-#define SEGMENT_OFF HIGH
-
-  switch (numberToDisplay){
-
-  case 0:
-    digitalWrite(segA, SEGMENT_ON);
-    digitalWrite(segB, SEGMENT_ON);
-    digitalWrite(segC, SEGMENT_ON);
-    digitalWrite(segD, SEGMENT_ON);
-    digitalWrite(segE, SEGMENT_ON);
-    digitalWrite(segF, SEGMENT_ON);
-    digitalWrite(segG, SEGMENT_OFF);
-    break;
-
-  case 1:
-    digitalWrite(segA, SEGMENT_OFF);
-    digitalWrite(segB, SEGMENT_ON);
-    digitalWrite(segC, SEGMENT_ON);
-    digitalWrite(segD, SEGMENT_OFF);
-    digitalWrite(segE, SEGMENT_OFF);
-    digitalWrite(segF, SEGMENT_OFF);
-    digitalWrite(segG, SEGMENT_OFF);
-    break;
-
-  case 2:
-    digitalWrite(segA, SEGMENT_ON);
-    digitalWrite(segB, SEGMENT_ON);
-    digitalWrite(segC, SEGMENT_OFF);
-    digitalWrite(segD, SEGMENT_ON);
-    digitalWrite(segE, SEGMENT_ON);
-    digitalWrite(segF, SEGMENT_OFF);
-    digitalWrite(segG, SEGMENT_ON);
-    break;
-
-  case 3:
-    digitalWrite(segA, SEGMENT_ON);
-    digitalWrite(segB, SEGMENT_ON);
-    digitalWrite(segC, SEGMENT_ON);
-    digitalWrite(segD, SEGMENT_ON);
-    digitalWrite(segE, SEGMENT_OFF);
-    digitalWrite(segF, SEGMENT_OFF);
-    digitalWrite(segG, SEGMENT_ON);
-    break;
-
-  case 4:
-    digitalWrite(segA, SEGMENT_OFF);
-    digitalWrite(segB, SEGMENT_ON);
-    digitalWrite(segC, SEGMENT_ON);
-    digitalWrite(segD, SEGMENT_OFF);
-    digitalWrite(segE, SEGMENT_OFF);
-    digitalWrite(segF, SEGMENT_ON);
-    digitalWrite(segG, SEGMENT_ON);
-    break;
-
-  case 5:
-    digitalWrite(segA, SEGMENT_ON);
-    digitalWrite(segB, SEGMENT_OFF);
-    digitalWrite(segC, SEGMENT_ON);
-    digitalWrite(segD, SEGMENT_ON);
-    digitalWrite(segE, SEGMENT_OFF);
-    digitalWrite(segF, SEGMENT_ON);
-    digitalWrite(segG, SEGMENT_ON);
-    break;
-
-  case 6:
-    digitalWrite(segA, SEGMENT_ON);
-    digitalWrite(segB, SEGMENT_OFF);
-    digitalWrite(segC, SEGMENT_ON);
-    digitalWrite(segD, SEGMENT_ON);
-    digitalWrite(segE, SEGMENT_ON);
-    digitalWrite(segF, SEGMENT_ON);
-    digitalWrite(segG, SEGMENT_ON);
-    break;
-
-  case 7:
-    digitalWrite(segA, SEGMENT_ON);
-    digitalWrite(segB, SEGMENT_ON);
-    digitalWrite(segC, SEGMENT_ON);
-    digitalWrite(segD, SEGMENT_OFF);
-    digitalWrite(segE, SEGMENT_OFF);
-    digitalWrite(segF, SEGMENT_OFF);
-    digitalWrite(segG, SEGMENT_OFF);
-    break;
-
-  case 8:
-    digitalWrite(segA, SEGMENT_ON);
-    digitalWrite(segB, SEGMENT_ON);
-    digitalWrite(segC, SEGMENT_ON);
-    digitalWrite(segD, SEGMENT_ON);
-    digitalWrite(segE, SEGMENT_ON);
-    digitalWrite(segF, SEGMENT_ON);
-    digitalWrite(segG, SEGMENT_ON);
-    break;
-
-  case 9:
-    digitalWrite(segA, SEGMENT_ON);
-    digitalWrite(segB, SEGMENT_ON);
-    digitalWrite(segC, SEGMENT_ON);
-    digitalWrite(segD, SEGMENT_ON);
-    digitalWrite(segE, SEGMENT_OFF);
-    digitalWrite(segF, SEGMENT_ON);
-    digitalWrite(segG, SEGMENT_ON);
-    break;
-
-  case 10:
-    digitalWrite(segA, SEGMENT_OFF);
-    digitalWrite(segB, SEGMENT_OFF);
-    digitalWrite(segC, SEGMENT_OFF);
-    digitalWrite(segD, SEGMENT_OFF);
-    digitalWrite(segE, SEGMENT_OFF);
-    digitalWrite(segF, SEGMENT_OFF);
-    digitalWrite(segG, SEGMENT_OFF);
-    break;
-  }
+void seven_digit_led::init_digits() 
+{
+    // create arrays of binary values for perform a digit:
+    initDig_0();
+    initDig_1();
+    initDig_2();
+    initDig_3();
+    initDig_4();
+    initDig_5();
+    initDig_6();
+    initDig_7();
+    initDig_8();
+    initDig_9();
+    
+    // set 4 pins for digits to output:
+    pinMode(2, OUTPUT);
+    pinMode(3, OUTPUT);
+    pinMode(4, OUTPUT);
+    pinMode(5, OUTPUT);
 }
-#endif
+
+void seven_digit_led::writeNumber(int num) 
+{
+   // if param is 10 or more, deactivate all segments, i. e. erase.
+   if (num > 9)
+    {
+      for (int a = 0; a < 8; a++) 
+       {
+        digitalWrite(anodos[a], LOW);
+       }
+    }
+    
+   // activate segments according to 1 in array related to the digit:
+    for (int a = 0; a < 8; a++) 
+    {
+        if (DIGITS[num][a] == 1)
+            digitalWrite(anodos[a], HIGH);
+        else
+            digitalWrite(anodos[a], LOW);
+    }
+}
+
+void seven_digit_led::show_number(int currentDigit)
+{ 
+    firdstDigit = (currentDigit - currentDigit % 10)/10;
+    secondDigit = currentDigit % 10;
+    for(int digit = 4; digit > 0 ; digit--) 
+    {
+    //Turn on a digit for a short amount of time
+    switch(digit) 
+        {
+        case 1:
+            current_pin = 2;
+            digitalWrite(current_pin, DIGIT_ON);
+            writeNumber(0);
+            //writeNumber(firdstDigit);
+            break;
+        case 2:
+            current_pin = 3;
+            digitalWrite(current_pin, DIGIT_ON);
+            writeNumber(0);
+            //writeNumber(secondDigit);
+            break;
+        case 3:
+            current_pin = 4;
+            digitalWrite(current_pin, DIGIT_ON);
+            writeNumber(firdstDigit);
+            break;
+        case 4:
+            current_pin = 5;
+            digitalWrite(current_pin, DIGIT_ON);
+            writeNumber(secondDigit);
+            break;
+        }
+
+        // wait for fix an image:
+        delayMicroseconds(DISPLAY_BRIGHTNESS);
+        // reset all digits for refresh:
+        writeNumber(ERASE_SEGMENTS);
+        digitalWrite(current_pin, DIGIT_OFF);
+    }
+}
+
+void seven_digit_led::initDig_0()
+{
+    DIGITS[0][0] = 1; // A
+    DIGITS[0][1] = 1; // B
+    DIGITS[0][2] = 1; // C
+    DIGITS[0][3] = 1; // D
+    DIGITS[0][4] = 1; // E
+    DIGITS[0][5] = 1; // F
+    DIGITS[0][6] = 0; // G
+    DIGITS[0][7] = 0; // H
+}
+void seven_digit_led::initDig_1()
+{ 
+    DIGITS[1][0] = 0; // A
+    DIGITS[1][1] = 1; // B
+    DIGITS[1][2] = 1; // C
+    DIGITS[1][3] = 0; // D
+    DIGITS[1][4] = 0; // E
+    DIGITS[1][5] = 0; // F
+    DIGITS[1][6] = 0; // G
+    DIGITS[1][7] = 0; // H
+}
+void seven_digit_led::initDig_2()
+{
+    DIGITS[2][0] = 1; // A
+    DIGITS[2][1] = 1; // B
+    DIGITS[2][2] = 0; // C
+    DIGITS[2][3] = 1; // D
+    DIGITS[2][4] = 1; // E
+    DIGITS[2][5] = 0; // F
+    DIGITS[2][6] = 1; // G
+    DIGITS[2][7] = 0; // H
+}
+void seven_digit_led::initDig_3()
+{
+    DIGITS[3][0] = 1; // A
+    DIGITS[3][1] = 1; // B
+    DIGITS[3][2] = 1; // C
+    DIGITS[3][3] = 1; // D
+    DIGITS[3][4] = 0; // E
+    DIGITS[3][5] = 0; // F
+    DIGITS[3][6] = 1; // G
+    DIGITS[3][7] = 0; // H
+}
+void seven_digit_led::initDig_4()
+{
+    DIGITS[4][0] = 0; // A
+    DIGITS[4][1] = 1; // B
+    DIGITS[4][2] = 1; // C
+    DIGITS[4][3] = 0; // D
+    DIGITS[4][4] = 0; // E
+    DIGITS[4][5] = 1; // F
+    DIGITS[4][6] = 1; // G
+    DIGITS[4][7] = 0; // H
+}
+void seven_digit_led::initDig_5()
+{
+    DIGITS[5][0] = 1; // A
+    DIGITS[5][1] = 0; // B
+    DIGITS[5][2] = 1; // C
+    DIGITS[5][3] = 1; // D
+    DIGITS[5][4] = 0; // E
+    DIGITS[5][5] = 1; // F
+    DIGITS[5][6] = 1; // G
+    DIGITS[5][7] = 0; // H
+}
+void seven_digit_led::initDig_6()
+{
+    DIGITS[6][0] = 1; // A
+    DIGITS[6][1] = 0; // B
+    DIGITS[6][2] = 1; // C
+    DIGITS[6][3] = 1; // D
+    DIGITS[6][4] = 1; // E
+    DIGITS[6][5] = 1; // F
+    DIGITS[6][6] = 1; // G
+    DIGITS[6][7] = 0; // H
+}
+void seven_digit_led::initDig_7()
+{
+    DIGITS[7][0] = 1; // A
+    DIGITS[7][1] = 1; // B
+    DIGITS[7][2] = 1; // C
+    DIGITS[7][3] = 0; // D
+    DIGITS[7][4] = 0; // E
+    DIGITS[7][5] = 0; // F
+    DIGITS[7][6] = 0; // G
+    DIGITS[7][7] = 0; // H
+}
+void seven_digit_led::initDig_8()
+{
+    DIGITS[8][0] = 1; // A
+    DIGITS[8][1] = 1; // B
+    DIGITS[8][2] = 1; // C
+    DIGITS[8][3] = 1; // D
+    DIGITS[8][4] = 2; // E
+    DIGITS[8][5] = 3; // F
+    DIGITS[8][6] = 1; // G
+    DIGITS[8][7] = 0; // H
+}
+void seven_digit_led::initDig_9()
+{
+    DIGITS[9][0] = 1; // A
+    DIGITS[9][1] = 1; // B
+    DIGITS[9][2] = 1; // C
+    DIGITS[9][3] = 1; // D
+    DIGITS[9][4] = 0; // E
+    DIGITS[9][5] = 1; // F
+    DIGITS[9][6] = 1; // G
+    DIGITS[9][7] = 0; // H
+}

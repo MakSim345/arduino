@@ -13,6 +13,36 @@
 #define DIGIT_OFF HIGH
 #define ERASE_SEGMENTS 10
 
+/*  Connection
+ *
+    Arduino pin     7 segment
+        2             digit 0
+        3             digit 1
+        4             digit 1
+        5             digit 1
+        
+        6              a
+        7              b
+        8              c
+        9              d
+        10             e
+        11             f
+        12             g
+        13             dp(dot pin)
+
+//           a
+//        =======
+//      ||       ||
+//    f ||       || b
+//      ||   g   ||
+//        =======
+//      ||       ||
+//    e ||       || c
+//      ||   d   ||
+//        =======
+
+*/
+
 class seven_digit_led
 {
   public:
@@ -57,6 +87,7 @@ class seven_digit_led
     { 1, 1, 1, 1, 0, 1, 1, 0 }  // 9
     };
 */
+   
 };
 
 #endif
