@@ -5,4 +5,9 @@ List of tasks for Arduino:
  - interrupts;
  - watchfog;
  - servomotors;
- - помпа;
+ - a pump device;
+ - запись в EEPROM микропроцессора для того чтобы настройки запоминало;
+ - запрограммировать "голую" ATMega, припаять обвес и запустить без Adruino;
+ - sleeping mode and awake from interrupts. Saving battery;
+ - keyboard - simple 16 keys for safe lock;
+ - ultrasound or infrared device;
