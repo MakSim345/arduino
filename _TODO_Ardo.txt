@@ -1,13 +1,19 @@
 MAY-2013
 
-List of tasks for Arduino:
+List of tasks and educative topics for Arduino:
 
- - interrupts;
- - watchfog;
- - servomotors;
- - a pump device;
- - запись в EEPROM микропроцессора для того чтобы настройки запоминало;
- - запрограммировать "голую" ATMega, припаять обвес и запустить без Adruino;
- - sleeping mode and awake from interrupts. Saving battery;
- - keyboard - simple 16 keys for safe lock;
- - ultrasound or infrared device;
+- interrupts;
+- sleeping mode and awake from interrupts. Saving battery;
+- timer interrupts;
+- watchfog;
+- servomotors;
+- motor drivers - what for?
+- a pump device;
+- a relay: commute 220v from Arduino pins; May be useful for pump;
+- how to store data in Arduino for next restart? EEPROM?
+- buy a simple ATMega8 and ISP programmer and programm it;
+- create some project with simple ATMega8, without Arduino. Use ISP programmer; 
+- keyboard - simple 16 keys for safe lock;
+- keyboard - how to use I2C line? What chip to buy?
+- ultrasound device:
+- infrared device;
