@@ -61,7 +61,8 @@ unsigned long button_down_start = 0; // how long the button was held down
 unsigned long lastDebounceTime = 0;  // the last time the output pin was toggled
 unsigned long debounceDelay = 50;    // the debounce time
 
-void setup() {                
+void setup() 
+{                
   // initialize all the required pins as output.
   pinMode(DIGIT1, OUTPUT);
   pinMode(DIGIT2, OUTPUT);
