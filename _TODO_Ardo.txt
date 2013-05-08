@@ -2,18 +2,31 @@ MAY-2013
 
 List of tasks and educative topics for Arduino:
 
-- interrupts;
+Interrupts.
+- interrupts basics;
 - sleeping mode and awake from interrupts. Saving battery;
 - timer interrupts;
-- watchfog;
+- watchfog interrupts;
+
+Servo and motors.
 - servomotors;
-- motor drivers - what for?
+- motor drivers, motors shields - what for?
+
+Watering
 - a pump device;
 - a relay: commute 220v from Arduino pins; May be useful for pump;
+
+Internal logging.
 - how to store data in Arduino for next restart? EEPROM?
+
+ISP Programming of a MCU.
 - buy a simple ATMega8 and ISP programmer and programm it;
 - create some project with simple ATMega8, without Arduino. Use ISP programmer; 
+
+Keyboard
 - keyboard - simple 16 keys for safe lock;
 - keyboard - how to use I2C line? What chip to buy?
+
+Distance measure.
 - ultrasound device:
 - infrared device;
