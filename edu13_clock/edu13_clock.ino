@@ -1,4 +1,11 @@
-#include <Charlieplex.h>
+#include "Arduino.h"
+#include "Charlieplex.h"
+
+
+/*
+* source:
+* http://gliffer.ru/articles/diy-ili-sdelay-sam--chasi-na-30-svetodiodah/
+*/
 
 unsigned long lastTick = 0, frameTick = 0,  setTick = 0, cur_millis;// 
 int hour=0, minute=0, second=0; //start the time on 00:00:00
