@@ -34,9 +34,9 @@ void loop()
     digitalWrite(LED_PIN, HIGH);   // sets the LED on
   
     for(pos = 0; pos < MAX_DEGREE; pos += 1)  // goes from 0 degrees to 180 degrees 
-    {                                  // in steps of 1 degree 
-        myservo.write(pos);              // tell servo to go to position in variable 'pos' 
-        delay(_delay_servo);                       // waits 15ms for the servo to reach the position 
+    {                                     // in steps of 1 degree 
+        myservo.write(pos);               // tell servo to go to position in variable 'pos' 
+        delay(_delay_servo);              // waits 15ms for the servo to reach the position 
     } 
   
     delay(SET_TARGET_DELAY);
