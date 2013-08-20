@@ -3,9 +3,11 @@
 seven_digit_led::seven_digit_led(int pin)
 {
     current_pin = 0;
-    firdstDigit = -1;
-    secondDigit = -1;
-
+    digitONE  = -1;
+    digitTWO = -1;
+    digitTHREE = -1;
+    digitFOUR = -1;
+    
     init_segments();
     init_digits();
 }
@@ -74,44 +76,53 @@ void seven_digit_led::writeNumber(int num)
             digitalWrite(anodos[a], LOW);
     }
 }
+/*        
+    num(i%10);
+    num(i/10 - 10*(i/100));
+    num(i/100 - 10*(i/1000));
+    num(i/1000);
+*/
 
-void seven_digit_led::show_number(int currentDigit)
+void seven_digit_led::show_number(int num)
 { 
-    firdstDigit = (currentDigit - currentDigit % 10)/10;
-    secondDigit = currentDigit % 10;
+    digitONE  = num % 10;
+    digitTWO = num/10 - 10*(num/100);
+    digitTHREE = num/100 - 10*(num/1000);
+    digitFOUR = num/1000;
+    //   = (currentDigit - currentDigit % 10)/10;
+    
     for(int digit = 4; digit > 0 ; digit--) 
     {
     //Turn on a digit for a short amount of time
+    //REM: digits are ordered backwise!
     switch(digit) 
         {
         case 1:
             current_pin = 2;
             digitalWrite(current_pin, DIGIT_ON);
-            writeNumber(0);
-            //writeNumber(firdstDigit);
+            writeNumber(digitFOUR);
             break;
         case 2:
             current_pin = 3;
             digitalWrite(current_pin, DIGIT_ON);
-            writeNumber(0);
-            //writeNumber(secondDigit);
+            writeNumber(digitTHREE);
             break;
         case 3:
             current_pin = 4;
             digitalWrite(current_pin, DIGIT_ON);
-            writeNumber(firdstDigit);
+            writeNumber(digitTWO);
             break;
         case 4:
             current_pin = 5;
             digitalWrite(current_pin, DIGIT_ON);
-            writeNumber(secondDigit);
+            writeNumber(digitONE);
             break;
         }
 
         // wait for fix an image:
         delayMicroseconds(DISPLAY_BRIGHTNESS);
         // reset all digits for refresh:
-        writeNumber(ERASE_SEGMENTS);
+        // writeNumber(ERASE_SEGMENTS);
         digitalWrite(current_pin, DIGIT_OFF);
     }
 }

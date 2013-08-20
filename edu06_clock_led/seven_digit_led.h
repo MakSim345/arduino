@@ -54,8 +54,10 @@ class seven_digit_led
     void init_segments();
     void init_digits();
     int current_pin;
-    int firdstDigit;
-    int secondDigit;
+    int digitONE;
+    int digitTWO;
+    int digitTHREE;
+    int digitFOUR;
     
     int A, B, C, D, E, F, G;
     int H; // not in use
