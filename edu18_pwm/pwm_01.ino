@@ -3,7 +3,7 @@
  on Arduino MCU, pin #XX
  using analogWrite().
  */
- #define PWM_LED_PIN 9
+ #define PWM_LED_PIN 3
 int brightness = 0;    // LED brightness init
 int fadeAmount = 1;    // step add/decrease brightness
  
@@ -29,5 +29,5 @@ void loop()
         fadeAmount = -fadeAmount ;
     }   
     // make a slight pause:
-    delay(1);                           
+    delay(5);                           
 }

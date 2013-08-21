@@ -1,4 +1,3 @@
-
 #include <Servo.h> 
 
 /* 
@@ -6,21 +5,12 @@
  * //making sense of the Parallax PIR sensor's output
  * //////////////////////////////////////////////////
  * 
- * http://www.instructables.com/id/Arduino-Basics-PIR-Sensor/?ALLSTEPS
- *
  * Switches a LED according to the state of the sensors output pin.
  * Determines the beginning and end of continuous motion sequences.
  *
- * @author: Kristian Gohlke / krigoo (_) gmail (_) com / http://krx.at
- * @date:   3. September 2006 
- *
- * kr1 (cleft) 2006 
  * released under a creative commons "Attribution-NonCommercial-ShareAlike 2.0" license
- * http://creativecommons.org/licenses/by-nc-sa/2.0/de/
- *
  *
  * The Parallax PIR Sensor is an easy to use digital infrared motion sensor module. 
- * (http://www.parallax.com/detail.asp?product_id=555-28027)
  *
  * The sensor's output pin goes to HIGH if motion is present.
  * However, even if motion is present it goes to LOW from time to time, 
@@ -34,7 +24,6 @@
 /////////////////////////////
 //VARS
 //the time we give the sensor to calibrate (10-60 secs according to the datasheet)
-int calibrationTime = 15;   
 
 #define SERVO_PIN 3
 #define MAX_DEGREE 100
@@ -42,6 +31,7 @@ int calibrationTime = 15;
 #define MIN_SECONDS_DELAY 2000
 #define MAX_SECONDS_DELAY 9000
 #define SET_TARGET_DELAY 2000
+#define LED_BLINK_COUNT 20
 
 // Let's create servo object to control a servo 
 // ATTN: a maximum of eight servo objects can be created 
@@ -49,29 +39,33 @@ Servo myservo;
 
 //the time when the sensor outputs a low impulse
 long unsigned int lowIn;         
+int calibrationTime = 5;   
 
 //the amount of milliseconds the sensor has to be low 
 //before we assume all motion has stopped
-long unsigned int pause = 2000;  
+long unsigned int pause = 100;  
 
 boolean lockLow = true;
 boolean takeLowTime;  
 
 int pirPin = 7;    //the digital pin connected to the PIR sensor's output
-int ledPin = 13;
+int ledPin = 12;
 int min_pos = 1;    // variable to store the servo position 
 int pos = 0;
 const int _delay_servo = 10;
-long randOn = 0; 
+boolean set_led_blink = false;
+int led_blink_ctr = LED_BLINK_COUNT;
+int ledState;
+unsigned long currentMillis, previousMillis;
+long interval = 80;           // interval at which to blink (milliseconds)
 
 void my_printf(char *);
-
 
 //SETUP
 void setup()
 {
     myservo.attach(SERVO_PIN);  // attaches the servo on pin 9 to the servo object 
-    pinMode(LED_PIN, OUTPUT); 
+    pinMode(SERVO_PIN, OUTPUT); 
     myservo.write(min_pos);
 
     Serial.begin(9600);
@@ -97,13 +91,42 @@ void setup()
 //LOOP
 void loop()
 {
+    currentMillis = millis();
+    // interval = 80 ms;
+    if(currentMillis - previousMillis > interval) 
+    {
+        // save the last time you blinked the LED
+        previousMillis = currentMillis;
+        if (set_led_blink)
+        {
+            led_blink_ctr = led_blink_ctr - 1;
+            if (led_blink_ctr <= 0)
+            {
+                led_blink_ctr = LED_BLINK_COUNT;
+                set_led_blink = false;
+                // my_printf ("STOP blinking!");
+            }
+
+            // if the LED is off turn it on and vice-versa:
+            if (ledState == LOW)
+                ledState = HIGH;
+            else
+                ledState = LOW;
+
+            // set the LED with the ledState of the variable:
+            digitalWrite(ledPin, ledState);
+        }
+    }
+    
     if(digitalRead(pirPin) == HIGH)
     {
         // my_printf("Sensor = HIGH");
-        digitalWrite(ledPin, HIGH);   //the led visualizes the sensors output pin state
+        // digitalWrite(ledPin, HIGH);   //the led visualizes the sensors output pin state
+        set_led_blink = true;
+
         if(lockLow)
         {  
-            myservo.write(min_pos + 99);               
+            myservo.write(min_pos + 40);               
             delay(_delay_servo);
             //makes sure we wait for a transition to LOW before any further output is made:
             lockLow = false;            
@@ -118,9 +141,8 @@ void loop()
 
      if(digitalRead(pirPin) == LOW)
      {       
-        // my_printf("Sensor = LOW");
-       
-       digitalWrite(ledPin, LOW);  //Led off
+       // digitalWrite(ledPin, LOW);  //Led off
+       // set_led_blink = false;
 
        if(takeLowTime)
        {

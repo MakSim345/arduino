@@ -6,8 +6,8 @@
 
 long nextChange;
 int currentDigit = -1;
-const int DIGIT_DELAY = 5; // 2ms optimal
-const int NUM_DIGITS = 100;
+const int DIGIT_DELAY = 500; // 2ms optimal
+const int NUM_DIGITS = 1000;
 
 seven_digit_led *sdl;
 
@@ -21,13 +21,13 @@ void setup()
 void loop() 
 {
     long time = millis();
-    if (0)//(time >= nextChange) 
+    if (time >= nextChange) 
     {
         currentDigit = (millis()/1000) % NUM_DIGITS;
         sdl->show_number(currentDigit);
         nextChange = time + DIGIT_DELAY;
     }
-    sdl->show_number(1114);
+    //sdl->show_number(1114);
 }
 
 
