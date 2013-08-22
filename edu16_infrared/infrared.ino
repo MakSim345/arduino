@@ -1,9 +1,14 @@
+// JUN-2013
+//тест
+
 int DS_Pin = 11;   //pin 14 DS/SDI on the 75HC595 сдвиговый регистр
 int ST_Pin = 8;    //pin 12 ST_CP/RCLK on the 75HC595 сдвиговый регистр
 int SH_Pin = 12;   //pin 11 SH_CP/SRCLK on the 75HC595 сдвиговый регистр
+
 const int PIR1 = 5;//    Первый ИК-датчик
 const int PIR2 = 6;//    Второй ИК-датчик
 int sensorPin = A0;//    Фототранзистор
+
 //    ***ПАРМЕТРЫ***
 int OverTime =15000; // Время отключения в случае сбоя (мс)
 const int N=14;      //Кол-во ступенек
