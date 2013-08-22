@@ -17,7 +17,7 @@ void setup()
     sdl = new seven_digit_led(4);
     nextChange = 0;
     Serial.begin(9600);
-    setTime(13,31,0,21,8,2013);
+    setTime(10,15,0,22,8,2013);
 }
 
 void loop() 

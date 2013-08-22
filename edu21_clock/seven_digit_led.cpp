@@ -221,8 +221,8 @@ void seven_digit_led::initDig_8()
     DIGITS[8][1] = 1; // B
     DIGITS[8][2] = 1; // C
     DIGITS[8][3] = 1; // D
-    DIGITS[8][4] = 2; // E
-    DIGITS[8][5] = 3; // F
+    DIGITS[8][4] = 1; // E
+    DIGITS[8][5] = 1; // F
     DIGITS[8][6] = 1; // G
     DIGITS[8][7] = 0; // H
 }
