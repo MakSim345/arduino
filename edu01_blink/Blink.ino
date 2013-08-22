@@ -7,8 +7,8 @@
  
 // Pin 13 has an LED connected on most Arduino boards.
 // give it a name:
-int ledPin = 13;
-int ledGreenPin = 12;
+int ledPin = 2;
+int ledGreenPin = 1;
 int longWait = 500;
 int shortWait = 200;
 long randOn = 0;                  // Initialize a variable for the ON time
