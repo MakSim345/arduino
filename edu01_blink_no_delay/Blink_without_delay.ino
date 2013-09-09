@@ -14,7 +14,7 @@ http://www.arduino.cc/en/Tutorial/BlinkWithoutDelay
  */
 
 const unsigned int LED_PIN =  3;
-
+// const unsigned int LED_PIN = A0;
 // Variables will change:
 int ledState = LOW;             // ledState used to set the LED
 long previousMillis = 0;        // will store last time LED was updated
