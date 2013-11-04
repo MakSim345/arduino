@@ -45,7 +45,7 @@ void setup()
 
   /* Make a new time object to set the date and time */
   /*   Tuesday, May 19, 2009 at 21:16:37.            */
-  Time t(2013, 9, 3, 10, 18, 00, 3);
+  Time t(2013, 10, 31, 16, 13, 00, 3);
 
   /* Set the time and date on the chip */
   // rtc.time(t);
@@ -65,9 +65,10 @@ void loop()
         /* Get the current time and date from the chip */
         Time t = rtc.time();
         int _hour_to_print = t.hr; //hour();
-        int _min_to_print = t.min; //minute(); 
-        int _sec_to_print = t.sec; //minute(); 
-        sdl->show_number(_hour_to_print * 100 + _min_to_print);
+        int _min_to_print = t.min; //min(); 
+        int _sec_to_print = t.sec; //sec(); 
+        // sdl->show_number(_hour_to_print * 100 + _min_to_print);
+        sdl->show_number(_min_to_print * 100 + _sec_to_print);
     }
     
     if (time >= oneSecond) 
