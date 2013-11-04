@@ -21,10 +21,10 @@ volatile int state = LOW;
 
 void setup()                     
 {
-  pinMode(LED, OUTPUT);      // set led to output
+  pinMode(LED, OUTPUT);      // set led to OUTPUT
   pinMode(BUTTON, INPUT);       // set button to input  
   
-  attachInterrupt(interruptPin, blink, CHANGE); // link interrupt 0 to function blink().
+  attachInterrupt(interruptPin, blink, FRONT); // link interrupt 0 to function blink().
   // attachInterrupt(interruptPin, stateChange, CHANGE); // link interrupt 0 to function blink().
   Serial.begin(9600);           // init serial
 }
@@ -84,7 +84,7 @@ void stateChange()
 void blink()
 {
     static unsigned long millis_prev;
-    if(millis() - 500 > millis_prev) 
+    if(millis() - 200 > millis_prev) 
     {
         state = !state;   // reverse
         main_flag = 1;
