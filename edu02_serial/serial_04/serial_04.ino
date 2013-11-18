@@ -31,7 +31,7 @@ void random_leds()
   randOn = random (100, 1200);    // generate ON time between 0.1 and 1.2 seconds
   randOff = random (200, 900);    // generate OFF time between 0.2 and 0.9 seconds
   
-  Serial.write("--\n"); // 
+  Serial.write("ok\n"); // 
   char v_str[8] = "       ";  //reserve the string space first
   itoa(randOn, v_str, 6);
   // lcd.printIn(v_str);
