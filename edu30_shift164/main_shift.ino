@@ -47,7 +47,8 @@ int _nin = B11110110;
 */
 
 //REM: active is ZERO.
-// bit number 0 is always zero. Can use it later for 6 LEDs 
+// bit number 0 is always zero. Can use it later for 6 LEDs
+//          abcdefgh 
 int _zer = B00000011;
 int _one = B10011111;//B01100000;
 int _two = B00100101;//B11011010;
@@ -73,8 +74,8 @@ unsigned long lastTime; // keeps track of when the previous second happened
 void setup_time()
 {
   // set the initial time
-  hours = 20;
-  minutes = 54;
+  hours = 21;
+  minutes = 53;
   seconds = 0;
   pm = true;
 
