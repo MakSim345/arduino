@@ -8,16 +8,11 @@
 #define DIGIT_OFF LOW//HIGH
 #define DISPLAY_BRIGHTNESS 3500
 
-#define BUTTON 2
-#define LED 13
-#define TIME_CHATTER 5
-
 const int clockPin = 9; // clock sequence
 const int dataPin = 8; // Serial data line 
 
 void FastForward();
 void Reverce();
-
 
 const byte DIGITS[10][8] = {
     //A  B  C  D  E  F  G  H
@@ -36,7 +31,9 @@ const byte DIGITS[10][8] = {
 
 int val=125;
 int _my_delay = 500;
+
 /*
+//REM: active is ONE:
 int _zer = B11111100;
 int _one = B01100000;
 int _two = B11011010;
@@ -48,8 +45,12 @@ int _sev = B11100000;
 int _eit = B11111110;
 int _nin = B11110110;
 */
+
+//REM: active is ZERO.
+// bit number 0 is always zero. Can use it later for 6 LEDs
+//          abcdefgh 
 int _zer = B00000011;
-int _one = B10011111;// B01100000;
+int _one = B10011111;//B01100000;
 int _two = B00100101;//B11011010;
 int _tre = B00001101;//B11110010;
 int _for = B10011001;//B01100110;
@@ -73,8 +74,8 @@ unsigned long lastTime; // keeps track of when the previous second happened
 void setup_time()
 {
   // set the initial time
-  hours = 3;
-  minutes = 23;
+  hours = 21;
+  minutes = 53;
   seconds = 0;
   pm = true;
 
@@ -93,21 +94,30 @@ void setup()
   nextChange = 0;
   //Serial.begin(9600);           // init serial
   // shiftOut(dataPin, clockPin, LSBFIRST, B10101010);
-  //shiftOut(dataPin, clockPin, LSBFIRST, B00000000);
-  //digitalWrite(2, HIGH);
+  // shiftOut(dataPin, clockPin, LSBFIRST, B01111111);
+  digitalWrite(2, HIGH);
+  //digitalWrite(3, HIGH);
+  //digitalWrite(4, HIGH);
+  //digitalWrite(5, HIGH);
 }
 
 void loop()
 {
+    //shiftOut(dataPin, clockPin, LSBFIRST, B10000000);
+    // shiftOut(dataPin, clockPin, LSBFIRST, B10111111);
+    //delay(100);
+    
     long time = millis();
     // Keep showing the display while waiting for timer to expire  
     while (millis() - lastTime < 1000) 
     {
-      show_number(hours*100 + minutes);
+      // show_number(hours*100 + minutes);
+      show_number(minutes*100 + seconds);
     }
 
     lastTime += 1000;  
     incrementTime();
+    
 /*
     if (time >= nextChange) 
     {
