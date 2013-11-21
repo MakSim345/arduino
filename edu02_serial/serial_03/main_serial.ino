@@ -3,7 +3,7 @@
 /* Use a variable called byteRead to temporarily store
    the data coming from the computer */
 byte byteRead;
-const unsigned int LED_PIN =  3;
+const unsigned int LED_PIN =  13;
 long interval = 1000;           // interval at which to blink (milliseconds)
 
 // Variables will change:

@@ -1,15 +1,14 @@
-/*
-  DateTime.h - Arduino library for date and time functions
-  Copyright (c) Michael Margolis.  All right reserved.
-
-
-  This library is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
-*/
-
 #ifndef DateTime_h
 #define DateTime_h
+/*
+  DateTime.h - Arduino library for date and time functions
+*/
+
+#if defined(ARDUINO) && ARDUINO >= 100
+#include <Arduino.h>
+#else
+#include <WProgram.h>
+#endif
 
 #include <inttypes.h>
 //#include <wiring.h> // next two typedefs replace <wiring.h> here (fixed for rel 0012)
@@ -42,12 +41,15 @@ typedef unsigned long time_t;
 // todo add date math macros
 /*============================================================================*/
 
-typedef enum {
-	  dtSunday, dtMonday, dtTuesday, dtWednesday, dtThursday, dtFriday, dtSaturday
+typedef enum 
+{
+    dtSunday, dtMonday, dtTuesday, dtWednesday, dtThursday, dtFriday, dtSaturday
 } dtDays_t;
 
-typedef enum {dtStatusNotSet, dtStatusSet, dtStatusSync
-}  dtStatus_t ;
+typedef enum 
+{
+    dtStatusNotSet, dtStatusSet, dtStatusSync
+} dtStatus_t ;
 
 class DateTimeClass
 {
@@ -75,7 +77,6 @@ public:
 };
 
 extern DateTimeClass DateTime;  // make an instance for the user
-
 
 #endif /* DateTime_h */
 
