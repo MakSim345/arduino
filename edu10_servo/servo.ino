@@ -4,7 +4,7 @@
 
 #include <Servo.h> 
 
-#define SERVO_PIN 9
+#define SERVO_PIN 12
 #define MAX_DEGREE 90
 #define LED_PIN 13
 #define MIN_SECONDS_DELAY 2000

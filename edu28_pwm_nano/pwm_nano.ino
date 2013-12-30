@@ -4,7 +4,7 @@
  using analogWrite().
  */
  #define PWM_LED_PIN_BLUE 5 // (D5)
- #define PWM_LED_PIN_RED  9 // (D9)
+ #define PWM_LED_PIN_RED  12 // (D9)
  #define PWM_LED_PIN_ONBOARD  13 // (D13)
 
 int brightness_red = 0;    // LED brightness init
