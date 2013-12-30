@@ -246,20 +246,29 @@ time_t sysUnsyncedTime = 0; // the time sysTime unadjusted by sync
 #endif
 
 
-time_t now() {
-  while (millis() - prevMillis >= 1000){      
+time_t now() 
+{
+  
+  while (millis() - prevMillis >= 1000)
+  {      
     sysTime++;
     prevMillis += 1000;	
 #ifdef TIME_DRIFT_INFO
     sysUnsyncedTime++; // this can be compared to the synced time to measure long term drift     
 #endif
   }
-  if (nextSyncTime <= sysTime) {
-    if (getTimePtr != 0) {
+  
+  if (nextSyncTime <= sysTime) 
+  {
+    if (getTimePtr != 0) 
+    {
       time_t t = getTimePtr();
-      if (t != 0) {
+      if (t != 0) 
+      {
         setTime(t);
-      } else {
+      } 
+      else 
+      {
         nextSyncTime = sysTime + syncInterval;
         Status = (Status == timeNotSet) ?  timeNotSet : timeNeedsSync;
       }
@@ -268,7 +277,8 @@ time_t now() {
   return (time_t)sysTime;
 }
 
-void setTime(time_t t) { 
+void setTime(time_t t)
+{ 
 #ifdef TIME_DRIFT_INFO
  if(sysUnsyncedTime == 0) 
    sysUnsyncedTime = t;   // store the time of the first call to set a valid Time   
@@ -280,7 +290,8 @@ void setTime(time_t t) {
   prevMillis = millis();  // restart counting from now (thanks to Korman for this fix)
 } 
 
-void setTime(int hr,int min,int sec,int dy, int mnth, int yr){
+void setTime(int hr,int min,int sec,int dy, int mnth, int yr)
+{
  // year can be given as full four digit year or two digts (2010 or 10 for 2010);  
  //it is converted to years since 1970
   if( yr > 99)
@@ -296,23 +307,28 @@ void setTime(int hr,int min,int sec,int dy, int mnth, int yr){
   setTime(makeTime(tm));
 }
 
-void adjustTime(long adjustment) {
+void adjustTime(long adjustment) 
+{
   sysTime += adjustment;
 }
 
 // indicates if time has been set and recently synchronized
-timeStatus_t timeStatus() {
+timeStatus_t timeStatus() 
+{
   now(); // required to actually update the status
   return Status;
 }
 
-void setSyncProvider( getExternalTime getTimeFunction){
+void setSyncProvider( getExternalTime getTimeFunction)
+{
   getTimePtr = getTimeFunction;  
   nextSyncTime = sysTime;
   now(); // this will sync the clock
 }
 
-void setSyncInterval(time_t interval){ // set the number of seconds between re-sync
+void setSyncInterval(time_t interval)
+{ 
+  // set the number of seconds between re-sync
   syncInterval = (uint32_t)interval;
   nextSyncTime = sysTime + syncInterval;
 }

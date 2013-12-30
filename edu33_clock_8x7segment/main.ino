@@ -7,7 +7,7 @@ A clock without RTC, using 8 seven-segment leds.
 
 long nextChange;
 int currentDigit = -1;
-const int DIGIT_DELAY = 5; // 2ms optimal
+const int DIGIT_DELAY = 10; // 2ms optimal
 const int NUM_DIGITS = 1000;
 char dateString[30];
 segment8x7 *sdl;
@@ -17,7 +17,7 @@ void setup()
     sdl = new segment8x7();
     nextChange = 0;
     Serial.begin(9600);
-    setTime(1, 33, 0, 29, 12, 2013); // HH-MM-SS DD-MM-YYYY
+    setTime(9, 21, 45, 29, 12, 2013); // HH-MM-SS DD-MM-YYYY
 }
 
 void loop() 
@@ -25,7 +25,7 @@ void loop()
     long time = millis();
     if (time >= nextChange) 
     {
-        currentDigit = (millis()/1000) % NUM_DIGITS;
+        //currentDigit = (millis()/1000) % NUM_DIGITS;
         // sdl->show_number(currentDigit);
         nextChange = time + DIGIT_DELAY;
     

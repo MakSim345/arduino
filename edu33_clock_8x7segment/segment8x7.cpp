@@ -71,7 +71,10 @@ void segment8x7::show_hour(int val)
     decimal[0] = val % 10;
   
     this->display8x7segment(0b00000001, cathode[decimal[1]]);
+    delay(MultiplexDelay);
+
     this->display8x7segment(0b00000010, cathode[decimal[0]]);
+    delay(MultiplexDelay);
 }
 
 void segment8x7::show_min(int val)
@@ -81,7 +84,10 @@ void segment8x7::show_min(int val)
     decimal[0] = val % 10;
   
     this->display8x7segment(0b00001000, cathode[decimal[1]]);
+    delay(MultiplexDelay);
+
     this->display8x7segment(0b00010000, cathode[decimal[0]]);
+    delay(MultiplexDelay);
 }
 
 void segment8x7::show_sec(int val)
@@ -91,7 +97,10 @@ void segment8x7::show_sec(int val)
     decimal[0] = val % 10;
   
     this->display8x7segment(0b01000000, cathode[decimal[1]]);
+    delay(MultiplexDelay);
+    
     this->display8x7segment(0b10000000, cathode[decimal[0]]);
+    delay(MultiplexDelay);
 }
 //function to display value on 8x7 segment display according to the justify state
 void segment8x7::displayNumber8x7segment(byte justify, unsigned long value)
@@ -142,14 +151,14 @@ void segment8x7::displayNumber8x7segment(byte justify, unsigned long value)
          {
            display8x7segment(anode[7], cathode[decimal[e-1]]);
            zero = 1;
-           d ++;     
+           d++;     
            delay(MultiplexDelay); 
          }
        }
        else 
        {
          display8x7segment(anode[7-d], cathode[decimal[e-1]]);
-         d ++;
+         d++;
          delay(MultiplexDelay); 
        }     
      }
