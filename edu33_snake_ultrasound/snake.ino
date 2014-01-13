@@ -3,22 +3,24 @@ Here is the Arduino code - a modification of the Ping ultrasonic sensor sample.
 
 Adjusting the variable "numReadings" to a higher value will result in less noisy
  readings, but also a larger lag in reaction time.
- */
+
+The ultrasonic module name: HC-SR04
+*/
 
 #include <Servo.h>
-Servo myservo;                             // create servo object to control a servo
-int val;                                  // range-mapped value for servo control
+Servo myservo;                  // create servo object to control a servo
+int val;                        // range-mapped value for servo control
 
-const int servoPin = 7;                   // The servo pin
+const int servoPin = 7;         // The servo pin
 
 #define trigPin 13
 #define pingPin 12
 
-const int numReadings = 5;       // set higher to smooth more, also causes more latency
+const int numReadings = 5;      // set higher to smooth more, also causes more latency
 int readings[numReadings];      // the readings from the analog input
-int index = 0;                                 // the index of the current reading
-int total = 0;                                   // the running total
-int average = 0;                            // the average
+int index = 0;                  // the index of the current reading
+int total = 0;                  // the running total
+int average = 0;                // the average
 int lastValue = 0;
 
 void setup() 
@@ -28,7 +30,7 @@ void setup()
  
   myservo.attach(servoPin);  // attaches the servo on pin 9 to the servo object
  
-  //clear the smoothing value buffer
+  //clear the smoothing value buffer:
   for (int thisReading = 0; thisReading < numReadings; thisReading++)
   {
     readings[thisReading] = 0;    
@@ -40,7 +42,9 @@ void setup()
 
 long get_distance() 
 {  
-    long duration, distance;
+    long duration;
+    long distance;
+
     digitalWrite(trigPin, LOW);
     delayMicroseconds(2); // 
     digitalWrite(trigPin, HIGH);
@@ -78,15 +82,15 @@ void loop()
 
   // The PING))) is triggered by a HIGH pulse of 2 or more microseconds.
   // Give a short LOW pulse beforehand to ensure a clean HIGH pulse:
-  /*
-  pinMode(pingPin, OUTPUT);
-  digitalWrite(pingPin, LOW);
+  
+  pinMode(trigPin, OUTPUT);
+  digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
-  digitalWrite(pingPin, HIGH);
+  digitalWrite(trigPin, HIGH);
   delayMicroseconds(5);
-  digitalWrite(pingPin, LOW);
+  digitalWrite(trigPin, LOW);
 
-  // The same pin is used to read the signal from the PING))): a HIGH
+  // This pin is used to read the signal from the PING))): a HIGH
   // pulse whose duration is the time (in microseconds) from the sending
   // of the ping to the reception of its echo off of an object.
   pinMode(pingPin, INPUT);
@@ -95,8 +99,8 @@ void loop()
   // convert the time into a distance
   inches = microsecondsToInches(duration);
   cm = microsecondsToCentimeters(duration);
-  */
-  cm = get_distance();
+  
+  // cm = get_distance();
   
   //smoothing code starts here
   // subtract the last reading:
@@ -119,6 +123,9 @@ void loop()
   average = total / numReadings;
   //smoothing code ends here 
  
+  //Serial.print(cm);    
+  //Serial.println(" cm\n");
+
   //remap value range and move the servo
   val = average;
   val = map(val, 10, 40, 0, 179);     // scale value to use it with the Tower Pro half turn analog servo (value between 0 and 180)
@@ -131,7 +138,7 @@ void loop()
       //Serial.println(" cm");
     } 
   else
-  {
+    {
       myservo.write(100);
       //Serial.print(cm);    
       //Serial.println(" cm");
