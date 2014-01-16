@@ -16,6 +16,7 @@ void setup()
 {
     //set pin PWM_LED_PIN to output mode:
     pinMode(PWM_LED_PIN_BLUE, OUTPUT);
+    pinMode(PWM_LED_PIN_ONBOARD, OUTPUT);
     pinMode(PWM_LED_PIN_RED, OUTPUT); 
     Serial.begin(9600);   
     //pinMode(A2, OUTPUT); 
@@ -30,7 +31,7 @@ void loop()
     // this will set LDE brightness.
     analogWrite(PWM_LED_PIN_BLUE, brightness_blue);   
     analogWrite(PWM_LED_PIN_RED,  brightness_red);   
- 
+    analogWrite(PWM_LED_PIN_ONBOARD, brightness_blue);
     // change brightness with predefined step:
     brightness_red = brightness_red + fadeAmount;
     brightness_blue = brightness_blue + fade;
@@ -39,9 +40,9 @@ void loop()
     // itoa(randOn, v_str, 6);
     // lcd.printIn(v_str);
     //int bytesSent = Serial.write(v_str); //send the string “hello” and return the length of the string.
-    //Serial.print("brightness: ");
-    //sprintf(out_buf, "%d : %d", brightness_red, brightness_blue);    
-    //Serial.println(out_buf);    // print the number
+    Serial.print("brightness: ");
+    sprintf(out_buf, "%d : %d", brightness_red, brightness_blue);    
+    Serial.println(out_buf);    // print the number
         
     // when max/min value of brightness had been approach
     // INVERT: change step's sign for going backward:
@@ -51,5 +52,5 @@ void loop()
         fade = -fade;      
     }   
     // make a slight pause:
-    delay(8);
+    delay(15);
 }
