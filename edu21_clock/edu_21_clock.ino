@@ -1,5 +1,5 @@
 /*
- counter for testing LED 7 segments display code.
+ testing LED 7 segments display code.
  */
 
 #include "seven_digit_led.h"
@@ -17,7 +17,7 @@ void setup()
     sdl = new seven_digit_led(4);
     nextChange = 0;
     Serial.begin(9600);
-    setTime(10, 15, 0, 22, 8, 2013); // HH-MM-SS DD-MM-YYYY
+    setTime(12, 17, 0, 21, 11, 2013); // HH-MM-SS DD-MM-YYYY
 }
 
 void loop() 
@@ -42,9 +42,12 @@ void loop()
 */ // digital clock display of the time
     int _hour_to_print = hour();
     int _min_to_print = minute();
+    int _sec_to_print = second();
  
-    sdl->show_number(_hour_to_print * 100 + _min_to_print);
-  /*
+    // sdl->show_number(_hour_to_print * 100 + _min_to_print);
+    sdl->show_number(_min_to_print * 100 + _sec_to_print);
+
+ /* 
   Serial.print(hour());
   Serial.print(":");
 
@@ -61,9 +64,9 @@ void loop()
   Serial.print(" ");
   Serial.print(year()); 
   Serial.println();
-    //Serial.print(dateString);
-    Serial.print("\n");
-    //delay(100);
-    */
-    }
+  //Serial.print(dateString);
+  Serial.print("\n");
+  //delay(100);
+  */
+  }
 }
