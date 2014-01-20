@@ -27,11 +27,12 @@
 
 #define SERVO_PIN 3
 #define MAX_DEGREE 100
-#define LED_PIN 14
+#define LED_PIN 13
 #define MIN_SECONDS_DELAY 2000
 #define MAX_SECONDS_DELAY 9000
 #define SET_TARGET_DELAY 2000
 #define LED_BLINK_COUNT 20
+#define SERIAL_IN_USE
 
 // Let's create servo object to control a servo 
 // ATTN: a maximum of eight servo objects can be created 
@@ -56,9 +57,10 @@ const int _delay_servo = 10;
 boolean set_led_blink = false;
 int led_blink_ctr = LED_BLINK_COUNT;
 int ledState;
-unsigned long currentMillis, previousMillis;
+int ledInfoState;
+unsigned long currentMillis, previousMillis, previousONEsec;
 long interval = 80;           // interval at which to blink (milliseconds)
-
+long interval_one_sec = 500;           // interval at which to blink (milliseconds)
 void my_printf(char *);
 
 //SETUP
@@ -68,23 +70,23 @@ void setup()
     pinMode(SERVO_PIN, OUTPUT); 
     myservo.write(min_pos);
 
-    Serial.begin(9600);
+    //Serial.begin(9600);
     pinMode(pirPin, INPUT);
     pinMode(ledPin, OUTPUT);
     digitalWrite(pirPin, LOW);
 
     //give the sensor some time to calibrate
-    Serial.print("calibrating sensor ");
+    //Serial.print("calibrating sensor ");
     for(int i = 0; i < calibrationTime; i++)
     {
-        Serial.print(".");
+        //Serial.print(".");
         digitalWrite(ledPin, HIGH);
         delay(500);
         digitalWrite(ledPin, LOW);
         delay(500);
     }
-    Serial.println(" done");
-    Serial.println("SENSOR ACTIVE");
+    //Serial.println(" done");
+    //Serial.println("SENSOR ACTIVE");
     delay(50);
 }
 
@@ -92,6 +94,21 @@ void setup()
 void loop()
 {
     currentMillis = millis();
+    if(currentMillis - previousONEsec > interval_one_sec) 
+    {
+        // save the last time you blinked the LED
+        previousONEsec = currentMillis;
+
+        // if the LED is off turn it on and vice-versa:
+        if (ledInfoState == LOW)
+            ledInfoState = HIGH;
+        else
+            ledInfoState = LOW;
+
+        // set the LED with the ledInfoState; of the variable:
+        digitalWrite(LED_PIN, ledInfoState);
+    }
+    
     // interval = 80 ms;
     if(currentMillis - previousMillis > interval) 
     {
@@ -130,10 +147,12 @@ void loop()
             delay(_delay_servo);
             //makes sure we wait for a transition to LOW before any further output is made:
             lockLow = false;            
+            /*
             Serial.println("---");
             Serial.print("motion detected at ");
             Serial.print(millis()/1000);
             Serial.println(" sec"); 
+            */
             delay(50);
         }         
         takeLowTime = true;
@@ -160,9 +179,11 @@ void loop()
            //makes sure this block of code is only executed again after 
            //a new motion sequence has been detected
            lockLow = true;                        
+           /*
            Serial.print("motion ended at ");      //output
            Serial.print((millis() - pause)/1000);
            Serial.println(" sec");
+           */
            delay(50);
        }
      }
@@ -171,8 +192,8 @@ void loop()
 
 void my_printf(char * _text)
 {
-    Serial.println("---");
-    Serial.println(_text); 
+    //Serial.println("---");
+    //Serial.println(_text); 
     delay(50);
 
 }
