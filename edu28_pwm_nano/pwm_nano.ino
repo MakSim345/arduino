@@ -18,6 +18,7 @@ void setup()
     pinMode(PWM_LED_PIN_BLUE, OUTPUT);
     pinMode(PWM_LED_PIN_ONBOARD, OUTPUT);
     pinMode(PWM_LED_PIN_RED, OUTPUT); 
+    pinMode(PWM_LED_PIN_ONBOARD, OUTPUT); 
     Serial.begin(9600);   
     //pinMode(A2, OUTPUT); 
     //digitalWrite(A2, LOW); 
@@ -31,7 +32,12 @@ void loop()
     // this will set LDE brightness.
     analogWrite(PWM_LED_PIN_BLUE, brightness_blue);   
     analogWrite(PWM_LED_PIN_RED,  brightness_red);   
+<<<<<<< HEAD
     analogWrite(PWM_LED_PIN_ONBOARD, brightness_blue);
+=======
+    analogWrite(PWM_LED_PIN_ONBOARD,  brightness_red); 
+ 
+>>>>>>> 3701d87b328181bb1f1b5cc108c837d5a04b5e47
     // change brightness with predefined step:
     brightness_red = brightness_red + fadeAmount;
     brightness_blue = brightness_blue + fade;

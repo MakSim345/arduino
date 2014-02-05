@@ -10,8 +10,8 @@ A clock without RTC, using 8 seven-segment leds.
 
 /* Set the appropriate digital I/O pin connections */
 uint8_t CE_PIN   = 13; //5; // RST?
-uint8_t IO_PIN   = A1; //6; // DAT?
-uint8_t SCLK_PIN = A0; //7; // CLK
+uint8_t IO_PIN   = 6;//A1; //6; // DAT?
+uint8_t SCLK_PIN = 7;//A0; //7; // CLK
 
 
 long nextChange;
@@ -36,7 +36,7 @@ Time t;
 void setup() 
 {
     sdl = new segment8x7();    
-    Serial.begin(9600);
+    // Serial.begin(9600);
 
     // Follow is fot Time.h:
     // setTime(9, 21, 45, 29, 12, 2013); // HH-MM-SS DD-MM-YYYY

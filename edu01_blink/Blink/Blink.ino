@@ -7,7 +7,7 @@
  
 // Pin 13 has an LED connected on most Arduino boards.
 // give it a name:
-int ledPin = 11;// 13;
+int ledPin = 13;
 int ledGreenPin = 1;
 int longWait = 500;
 int shortWait = 200;
