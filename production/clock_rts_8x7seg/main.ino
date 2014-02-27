@@ -46,7 +46,7 @@ void setup()
   rtc.halt(false);
   
   // Uncomment this function if new time has to be set to RTC:
-  // setTimeInRTC();  
+  //setTimeInRTC();  
 }
 
 
@@ -84,7 +84,7 @@ void setTimeInRTC()
 {
     
   /* Make a new time object to set the date and time */
-  Time t(2014, 2, 27, 8, 50, 00, 3);
+  Time t(2014, 2, 27, 9, 9, 00, 3);
 
   /* Set the time and date on the chip */
   rtc.time(t);
