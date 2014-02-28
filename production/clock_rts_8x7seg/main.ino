@@ -1,16 +1,13 @@
 /*
-Example sketch for interfacing with the DS1302 timekeeping chip.
+A clock with RTC module, using 8 seven-segment leds.
+ */
 
-Copyright (c) 2009, Matt Sparks
-All rights reserved.
-
-http://quadpoint.org/projects/arduino-ds1302
-*/
 #include <stdio.h>
 #include <string.h>
 #include <DS1302.h>
 #include "seven_digit_led.h"
 #include "print_time.h"
+#include "segment8x7.h"
 
 /* Set the appropriate digital I/O pin connections */
 uint8_t CE_PIN   = 13; //5; // RST?
@@ -24,31 +21,32 @@ char buf[50];
 char day[10];
 
 char dateString[30];
-seven_digit_led *sdl;
 const int DIGIT_DELAY = 5; // 2ms optimal
 const int NUM_DIGITS = 1000;
 long nextChange;
 long oneSecond;
 
-/* Create a DS1302 object */
+// Create a DS1302 object
 DS1302 rtc(CE_PIN, IO_PIN, SCLK_PIN);
+
+// create a display object:
+segment8x7 *sdl;
+
+void setTimeInRTC();
 
 void setup()
 {
   Serial.begin(9600);
-  sdl = new seven_digit_led(4);
+  sdl = new segment8x7();    
+
   /* Initialize a new chip by turning off write protection and clearing the
      clock halt flag. These methods needn't always be called. See the DS1302
      datasheet for details. */
   rtc.write_protect(false);
   rtc.halt(false);
-
-  /* Make a new time object to set the date and time */
-  /*   Tuesday, May 19, 2009 at 21:16:37.            */
-  Time t(2013, 10, 31, 16, 13, 00, 3);
-
-  /* Set the time and date on the chip */
-  // rtc.time(t);
+  
+  // Uncomment this function if new time has to be set to RTC:
+  //setTimeInRTC();  
 }
 
 
@@ -58,8 +56,6 @@ void loop()
     long time = millis();
     if (time >= nextChange) 
     {
-        // currentDigit = (millis()/1000) % NUM_DIGITS;
-        // sdl->show_number(currentDigit);
         nextChange = time + DIGIT_DELAY;
         //print_time();
         /* Get the current time and date from the chip */
@@ -67,17 +63,31 @@ void loop()
         int _hour_to_print = t.hr; //hour();
         int _min_to_print = t.min; //min(); 
         int _sec_to_print = t.sec; //sec(); 
+              
+        sdl->show_hour(_hour_to_print);
+        sdl->show_min (_min_to_print);
+        sdl->show_sec (_sec_to_print);
+    
+
         // sdl->show_number(_hour_to_print * 100 + _min_to_print);
-        sdl->show_number(_min_to_print * 100 + _sec_to_print);
+        // sdl->show_number(_min_to_print * 100 + _sec_to_print);
     }
     
-    if (time >=       ) 
+    if (time >= oneSecond) 
     {
-        // currentDigit = (millis()/1000) % NUM_DIGITS;
-        // sdl->show_number(currentDigit);
         oneSecond = time + NUM_DIGITS;
-        // print_time();
+        print_time();
     }
+}
+
+void setTimeInRTC()
+{
+    
+  /* Make a new time object to set the date and time */
+  Time t(2014, 2, 27, 9, 9, 00, 3);
+
+  /* Set the time and date on the chip */
+  rtc.time(t);
 }
 
 void print_time()

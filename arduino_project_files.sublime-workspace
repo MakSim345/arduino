@@ -1,0 +1,1313 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"led",
+				"ledState"
+			],
+			[
+				"fl",
+				"flag_11"
+			],
+			[
+				"PWM_LED_PIN_",
+				"PWM_LED_PIN_11"
+			],
+			[
+				"previous",
+				"previousONEsec"
+			],
+			[
+				"pre",
+				"previousMillis"
+			],
+			[
+				"tr",
+				"trigPin"
+			],
+			[
+				"get",
+				"getdistance"
+			],
+			[
+				"ser",
+				"servoPin"
+			],
+			[
+				"Inter",
+				"Interrupt"
+			],
+			[
+				"за",
+				"заказал"
+			],
+			[
+				"инди",
+				"индикатор"
+			],
+			[
+				"кар",
+				"карту"
+			],
+			[
+				"led_di",
+				"led_display_drv"
+			],
+			[
+				"no",
+				"not	keyword"
+			],
+			[
+				"dsPIC",
+				"dsPIC30F5011"
+			],
+			[
+				"иг",
+				"игрушку"
+			],
+			[
+				"присоб",
+				"присобачить"
+			],
+			[
+				"wa",
+				"watchdog"
+			],
+			[
+				"питан",
+				"питания"
+			],
+			[
+				"до",
+				"добавил"
+			],
+			[
+				"поч",
+				"почте"
+			],
+			[
+				"отраж",
+				"отображалась"
+			],
+			[
+				"что",
+				"чтобы"
+			],
+			[
+				"отре",
+				"отрефакторил"
+			],
+			[
+				"блок",
+				"блок-схему"
+			],
+			[
+				"mai",
+				"main_flag"
+			],
+			[
+				"che",
+				"check_bounce"
+			],
+			[
+				"д",
+				"для"
+			],
+			[
+				"при",
+				"припаял"
+			],
+			[
+				"преры",
+				"прерыванию"
+			],
+			[
+				"interr",
+				"interrupts"
+			],
+			[
+				"int",
+				"interrupts"
+			],
+			[
+				"py",
+				"pygame"
+			],
+			[
+				"noi",
+				"nokia"
+			],
+			[
+				"init",
+				"initalize"
+			],
+			[
+				"нас",
+				"настроил"
+			],
+			[
+				"inte",
+				"interrupted"
+			],
+			[
+				"сле",
+				"склепал"
+			],
+			[
+				"FRI",
+				"FRI"
+			],
+			[
+				"Дан",
+				"Даньки"
+			],
+			[
+				"пере",
+				"перечитать"
+			],
+			[
+				"осмотре",
+				"посмотрели"
+			],
+			[
+				"зак",
+				"закуски"
+			],
+			[
+				"магаз",
+				"магазинов"
+			],
+			[
+				"b",
+				"buffer"
+			],
+			[
+				"A",
+				"A180"
+			],
+			[
+				"ini",
+				"init_pygame"
+			],
+			[
+				"System",
+				"SystemExit	exit"
+			],
+			[
+				"WIN_",
+				"WIN_WIDTH"
+			],
+			[
+				"WIN",
+				"WIN_WIDTH"
+			],
+			[
+				"star",
+				"ADC_SamplingStart"
+			],
+			[
+				"TRA",
+				"TRACE_LINE"
+			],
+			[
+				"in",
+				"include"
+			],
+			[
+				"one",
+				"oneSecond"
+			],
+			[
+				"_PRI",
+				"_PRINT_TIME_"
+			],
+			[
+				"pri",
+				"print_time"
+			],
+			[
+				"Soft",
+				"software"
+			],
+			[
+				"Con",
+				"Control"
+			],
+			[
+				"pro",
+				"provide"
+			],
+			[
+				"fr",
+				"frequency"
+			],
+			[
+				"Trans",
+				"Transducers"
+			],
+			[
+				"di",
+				"display"
+			],
+			[
+				"val",
+				"valves"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "edu28_pwm_nano/pwm_nano.ino",
+			"settings":
+			{
+				"buffer_size": 1889,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "edu01_blink_no_delay/Blink_without_delay.ino",
+			"settings":
+			{
+				"buffer_size": 1800,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "edu18_pwm/pwm_01.ino",
+			"settings":
+			{
+				"buffer_size": 3134,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "edu17_infrared/infrared2/infrared2.ino",
+			"settings":
+			{
+				"buffer_size": 6039,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "edu01_blink/Blink.ino",
+			"settings":
+			{
+				"buffer_size": 2404,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "edu02_serial/serial_04/serial_04.ino",
+			"settings":
+			{
+				"buffer_size": 2411,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "edu33_clock_8x7segment/main.ino",
+			"settings":
+			{
+				"buffer_size": 2224,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "edu33_snake_ultrasound/snake.ino",
+			"settings":
+			{
+				"buffer_size": 4983,
+				"line_ending": "Windows",
+				"name": "Here is the Arduino code that I'm running. It's a"
+			}
+		},
+		{
+			"file": "edu32_8x7segment/main_8x7segment.ino",
+			"settings":
+			{
+				"buffer_size": 5992,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "edu22_clock_rts/rts_clock_display.ino",
+			"settings":
+			{
+				"buffer_size": 3007,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 311.0,
+		"selected_items":
+		[
+			[
+				"Package Control: ",
+				"Package Control: List Packages"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"pac",
+				"Preferences: Browse Packages"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"",
+				"Package Control: List Packages"
+			],
+			[
+				"pack",
+				"Preferences: Browse Packages"
+			],
+			[
+				"in",
+				"Package Control: Install Package"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 400.0
+	},
+	"console":
+	{
+		"height": 255.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/D/dev/arduino/edu16_infrared/infrared.ino",
+		"/D/Dropbox/[9] work/TODO/_TODO_A180.txt",
+		"/D/Dropbox/[9] work/_under_work/A180_FIB_SDD.txt",
+		"/D/Dropbox/[9] work/TODO/_TODO_FIB_NOV2013.txt",
+		"/D/Dropbox/[9] work/list_of_changes_v_04.txt",
+		"/D/Dropbox/[0] INBOX/Циркониевая керамика.txt",
+		"/D/dev/cpp/_make_4_queens/main.cpp",
+		"/D/dev/mplab-dev/I2C_main.c",
+		"/C/Program Files/Sublime Portable/Data/Packages/Default/Preferences.sublime-settings",
+		"/D/Dropbox/SEND/results.log",
+		"/D/Dropbox/[9] work/DONE/2013/2013_DONE.txt",
+		"/D/Dropbox/[9] work/list_of_changes_v_02.txt",
+		"/D/Dropbox/[9] work/list_of_changes_v_03.txt",
+		"/D/Dropbox/[9] work/GE Docs/EMS Related Docs/2013 G&O plan.txt",
+		"/D/Dropbox/[9] work/GE Docs/EMS Related Docs/2013 EMS.txt",
+		"/D/Dropbox/[9] work/_under_work/Microprocessor_Abbreviations.txt",
+		"/D/Dropbox/[9] work/TODO/TODO_Genie_Longterm.txt",
+		"/D/dev/MS-VC08/thread_example/main.cpp",
+		"/D/Dropbox/[9] work/DONE/2013/Tomato.txt",
+		"/C/Windows/Temp/_tc/BOOTLOAD.cod",
+		"/D/dev/arduino/edu22_clock_rts/rts_clock_display.ino",
+		"/D/dev/arduino/edu27_button/button_main.ino",
+		"/C/Windows/Temp/_tc/gist1736542-b3ee9c5e3f062a9e2fca6dbc73397890c95d1f24/gistfile1.textile",
+		"/D/dev/Python/pygame/fractal.py",
+		"/D/dev/A180_main_trunk/software/doc/SDLC/SAD/bounce_use.cpp",
+		"/D/dev/arduino/edu26_button/button_main.ino",
+		"/D/dev/arduino/edu26_button/bounce_use.cpp",
+		"/D/dev/arduino/edu24_button/button_main.ino",
+		"/D/dev/arduino/edu14_interrupts/edu14_interrupts.ino",
+		"/D/dev/arduino/edu02_serial/serial.ino",
+		"/D/dev/arduino/edu19_interrupts/edu_interrupts.ino",
+		"/D/Dropbox/[9] work/Маленькие советы.txt",
+		"/D/dev/arduino/edu01_blink_no_delay/Blink_without_delay.ino",
+		"/D/Dropbox/[2] dev/Python/pygame/pygame05_sun_system.py",
+		"/D/Dropbox/[2] dev/Python/pygame/pygame06_xonix.py",
+		"/D/Dropbox/[2] dev/Python/pygame/pygame03_xakep.py",
+		"/D/Dropbox/[2] dev/Python/dictionary_test.py",
+		"/D/Dropbox/[2] dev/Python/pygame/pygame01.py",
+		"/D/Dropbox/[2] dev/Python/pygame/pygame04_esp.py",
+		"/D/Dropbox/[2] dev/Python/pygame/pygame02.py",
+		"/D/Dropbox/[2] dev/Python/SMS/sms_Юра.py",
+		"/D/dev/MS-VC08/edu_Prostotron_vs/trash.cpp",
+		"/D/dev/MS-VC08/edu_Prostotron_vs/sumX.log",
+		"/D/dev/cpp/lotto/mainc.cpp",
+		"/D/dev/cvs-repo/DOSIX/main.cpp",
+		"/D/dev/cvs-repo/DOS_LIFE/main.c",
+		"/D/dev/cvs-repo/Calc/mainc.cpp",
+		"/D/dev/cpp/File_bit_calc/mainc.cpp",
+		"/D/dev/cpp/_make_0_start/cTimer.cpp",
+		"/D/dev/cpp/_make_0_start/phone_book.cpp",
+		"/D/Dropbox/[9] work/_under_work/A180_Abbreviations.txt",
+		"/D/Dropbox/[2] dev/java/HW.java",
+		"/D/Dropbox/[2] dev/java/hello1.class",
+		"/D/Dropbox/[9] work/DONE/2013 - Kos.txt",
+		"/D/Dropbox/[7] Utils/BAT-Files/._Практические задачи на бат.doc",
+		"/D/dev/mplab-dev/spi_main.c",
+		"/D/dev/A180_main_trunk/software/src/application/src/filter_flow.c",
+		"/D/dev/A180_main_trunk/software/src/experimental/dsPIC_ADC/dsPIC_ADC.X/main.c",
+		"/D/dev/A180_main_trunk/software/tools/FIBTestPCGUI/FIBTestPCGUI/RegIf.cpp",
+		"/D/Dropbox/[2] dev/Python/net_monitor_sms/net_control.py",
+		"/D/Dropbox/[2] dev/Python/SMS/sendSMS.py",
+		"/D/Dropbox/[9] work/TODO/isr_example.cpp",
+		"/D/Dropbox/[9] work/DONE/RTOS.txt",
+		"/C/Program Files/Sublime Portable/Data/Packages/User/Preferences.sublime-settings",
+		"/C/Program Files/Sublime Portable/Data/Packages/User/Distraction Free.sublime-settings",
+		"/C/Program Files/Sublime Portable/Data/Packages/User/JSON.sublime-settings",
+		"/D/dev/MS-VC08/_tips/Sublime_text_2_notes.txt",
+		"/D/Dropbox/[4] Video/Klovn.2010.rus.srt",
+		"/D/dev/arduino/edu21_clock/edu_21_clock.ino",
+		"/D/dev/arduino/edu22_clock_rts/print_time.h",
+		"/D/dev/arduino/edu22_clock_rts/print_time.cpp",
+		"/D/Dropbox/[2] dev/Microcontrollers/binary_tricks.cpp",
+		"/D/Dropbox/[2] dev/cpp/_make_27_CRC_calc/main.cpp",
+		"/D/dev/arduino/edu22_clock_rts/set_clock.ino",
+		"/D/Dropbox/[9] work/_under_work/SRS/A180 FIB Software Requirement Specifications 2013-05.cpp",
+		"/D/dev/arduino/edu01_blink/Blink.ino",
+		"/D/dev/mplab-dev/con_mcu.cpp",
+		"/D/dev/arduino/edu18_clock_green/green_clock.ino",
+		"/D/dev/arduino/edu18_clock_green/green_clock_2.ino",
+		"/D/dev/CVS-repo/File_IO/mainc.cpp",
+		"/D/dev/A180_main_trunk/software/design/AcVentFib_2.mdd",
+		"/C/Program Files/Vim/vim72/syntax/qt.vim",
+		"/C/Program Files/Vim/vim72/plugin/acp.vim",
+		"/D/Dropbox/[2] dev/cpp/_make_30_Prostotron/_ReadMe.txt",
+		"/D/Dropbox/[2] dev/cpp/_make_30_Prostotron/main.cpp",
+		"/D/Dropbox/[2] dev/cpp/_make_30_Prostotron/processor.cpp",
+		"/D/dev/.gitconfig",
+		"/D/dev/arduino/edu16_infrared/infrared2.ino",
+		"/D/Dropbox/[2] dev/cpp/_make_30_Prostotron/gen.h",
+		"/D/Dropbox/[2] dev/cpp/_make_30_Prostotron/processor.h",
+		"/D/Dropbox/[2] dev/cpp/_make_30_Prostotron/memory.cpp",
+		"/D/dev/mplab-dev/SevenSegmentsEdu.cpp",
+		"/D/Dropbox/[9] work/TIPS/Sublime_text_2_notes.txt",
+		"/D/Dropbox/[9] work/_under_work/SRS/_TODO.txt",
+		"/D/Dropbox/[9] work/DONE/2013/2013_DONE.log",
+		"/D/dev/A180_main_trunk/software/src/experimental/9300_SPI_LED_Display_02/edu14_SPI.c",
+		"/D/dev/MS-VC08/_tips/GIT_help.txt",
+		"/D/Dropbox/[2] dev/cpp/_make_25_abstract_factory/abstract_factory.cpp",
+		"/D/Dropbox/[0] INBOX/Паттерн Singleton (Одиночка).cpp",
+		"/D/dev/arduino/edu15_SPI_LED/SPI_LED_c/SPI_LED_c.ino",
+		"/D/dev/MS-VC08/edu_vectors/vectors_info.cpp",
+		"/D/Dropbox/[0] INBOX/Микроядро - статья.log",
+		"/C/Windows/Temp/pic24_delay.h",
+		"/H/tmp/arduino/edu15_SPI_LED/SPI_LED_c/SPI_LED_c.ino",
+		"/D/Dropbox/[9] work/TODO/Книги открытые в DJVU.txt",
+		"/D/dev/arduino/_TODO_Ardo.txt",
+		"/D/Dropbox/[2] dev/Python/PyQt4 projects/ICS_GUI_06/airwayGasAnimWidget.py",
+		"/D/Dropbox/[2] dev/Python/PyQt4 projects/ICS_GUI_06/mainWidget.py",
+		"/D/dev/A180_main_trunk/software/reference/VIB/source/experimental/9300_Interrupts/_ReadMe.txt",
+		"/D/Dropbox/[9] work/TODO/Микроконтроллеры PIC. Список DeJaVu.txt",
+		"/D/Dropbox/[2] dev/Microcontrollers/_12_5_9_clock2.ino",
+		"/D/Dropbox/[9] work/SPRINTS/A180_Abbreviations.txt",
+		"/D/Dropbox/[9] work/_under_work/SRS/A180 FIB Software Requirement Specifications.cpp",
+		"/D/Dropbox/[9] work/_under_work/SRS/A180 FIB Software Requirement Specifications MAY-2013.txt",
+		"/D/Dropbox/[9] work/SPRINTS/Notes_2013_03_A180_4.log",
+		"/D/Dropbox/[9] work/TIPS/GIT_help.txt",
+		"/D/Dropbox/[9] work/_under_work/SRS/A180 FIB SRS ver 01.txt",
+		"/D/dev/A180_main_trunk/software/doc/SDLC/SRS/A180 FIB SRS ver 01.txt",
+		"/D/Dropbox/[9] work/_under_work/MPLABX files to ignor in SVN.txt",
+		"/D/Dropbox/[9] work/TIPS/find_tips.txt",
+		"/D/Dropbox/[2] dev/Python/PyQt4 projects/KeyboardWidget01/src/main.py",
+		"/D/Dropbox/[2] dev/Python/auto_update/module_kill_process.pyc",
+		"/D/Dropbox/[2] dev/Python/truRandom.py",
+		"/D/Dropbox/[2] dev/Python/Singleton01.py",
+		"/D/dev/MS-VC08/edu_threedot/_ReadMe.txt",
+		"/D/dev/mplab-dev/.gitignore",
+		"/D/dev/mplab-dev/A180_FIB.X/nbproject/private/configurations.xml",
+		"/D/data/4-CL_VMX_SVGA"
+	],
+	"find":
+	{
+		"height": 38.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"LED_PIN",
+			"previousMillis",
+			"currentMillis",
+			"PWM_LED_PIN",
+			"PWM_LED_PIN_09IN",
+			"ledInfoState",
+			"LED_PIN",
+			"ledState",
+			"previousMillis",
+			"interval",
+			"Serial",
+			"SERIAL",
+			"Serial",
+			"PWM_LED_PIN_ONBOARD",
+			"cm",
+			"get_distance",
+			"long",
+			"Write",
+			"write",
+			"pingPin",
+			"Serial",
+			"serial",
+			"Serial",
+			"setTimeInRTC",
+			"nextChange",
+			"NUM_DIGITS",
+			"currentDigit",
+			"oneSecond",
+			"NUM_DIGITS",
+			"oneSecond",
+			"DIGIT_DELAY",
+			"nextChange",
+			"RC279854777CN",
+			"bread",
+			"ether",
+			"changed",
+			"ini",
+			"кост",
+			"кости",
+			"рубить",
+			"доск",
+			"керамический",
+			"fall",
+			"cpp",
+			"checkout",
+			"rever",
+			"EEPROM",
+			"dx",
+			"deal",
+			"A180",
+			"ADD",
+			"sequence",
+			"dele",
+			";\n",
+			"rever",
+			"DONE",
+			"LED",
+			"execution",
+			"jump",
+			"boot",
+			"watchdog",
+			"shall",
+			"active",
+			"msec",
+			" \n",
+			"Pomodoro",
+			"Pythonomodoro",
+			"флешку",
+			"киев",
+			"74HC595",
+			"питания",
+			"компилится",
+			"компилит",
+			"зайцев",
+			"A1",
+			"end",
+			"утв",
+			"show",
+			"xonix",
+			"max7219_Write",
+			"blink",
+			"Rever",
+			"rever",
+			"кумуке",
+			"только",
+			"дребезг",
+			"наблюдаю",
+			"btnPin",
+			"state",
+			"launchpad",
+			"number",
+			"PyGame",
+			"pygame",
+			"RND_Array",
+			"readFileLoop",
+			"while",
+			"ломовые",
+			"лежак",
+			"лежаков",
+			"топчанов",
+			"топ",
+			"m_ms",
+			"*/\n",
+			"myArr",
+			"self.status",
+			"status",
+			"for",
+			"configure_pins",
+			"init_UART",
+			"screen",
+			"display",
+			"DISPLAY",
+			"display",
+			"MyClass",
+			"dictTest",
+			"MyClass",
+			"MyArray",
+			"TimeTest002",
+			"TimeTest001",
+			"ventilationStatus",
+			"Fibonacci",
+			"TOP_RIGHT_LIGHT_CTRL",
+			"set_top_right_light",
+			"ADC_SamplingStart",
+			"clock_show_time",
+			"myprintf",
+			"myp",
+			"init_UART"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"ON and OFF"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 4,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "edu28_pwm_nano/pwm_nano.ino",
+					"settings":
+					{
+						"buffer_size": 1889,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								425,
+								425
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Arduino-like IDE/Arduino.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 264.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "edu01_blink_no_delay/Blink_without_delay.ino",
+					"settings":
+					{
+						"buffer_size": 1800,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								945,
+								945
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Arduino-like IDE/Arduino.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 198.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "edu18_pwm/pwm_01.ino",
+					"settings":
+					{
+						"buffer_size": 3134,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3134,
+								3133
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Arduino-like IDE/Arduino.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1917.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "edu17_infrared/infrared2/infrared2.ino",
+					"settings":
+					{
+						"buffer_size": 6039,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								545,
+								545
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Arduino-like IDE/Arduino.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "edu01_blink/Blink.ino",
+					"settings":
+					{
+						"buffer_size": 2404,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								296,
+								296
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Arduino-like IDE/Arduino.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "edu02_serial/serial_04/serial_04.ino",
+					"settings":
+					{
+						"buffer_size": 2411,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								696,
+								696
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Arduino-like IDE/Arduino.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 330.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "edu33_clock_8x7segment/main.ino",
+					"settings":
+					{
+						"buffer_size": 2224,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1717,
+								1717
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Arduino-like IDE/Arduino.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1100.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "edu33_snake_ultrasound/snake.ino",
+					"settings":
+					{
+						"buffer_size": 4983,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3837,
+								3837
+							]
+						],
+						"settings":
+						{
+							"auto_name": "Here is the Arduino code that I'm running. It's a",
+							"syntax": "Packages/Arduino-like IDE/Arduino.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1980.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "edu32_8x7segment/main_8x7segment.ino",
+					"settings":
+					{
+						"buffer_size": 5992,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								273,
+								273
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Arduino-like IDE/Arduino.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "edu22_clock_rts/rts_clock_display.ino",
+					"settings":
+					{
+						"buffer_size": 3007,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1836,
+								1836
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Arduino-like IDE/Arduino.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1304.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 38.0
+	},
+	"input":
+	{
+		"height": 38.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.Compilation_edu01_blink_182000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu01_blink_27000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu01_blink_577000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu01_blink_622000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu01_blink_956000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu01_blink_no_delay_141000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu01_blink_no_delay_986000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu21_clock_20000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu21_clock_399000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_105000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_126000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_128000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_251000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_252000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_263000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_33000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_332000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_348000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_364000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_376000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_390000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_46000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_466000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_497000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_503000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_520000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_534000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_558000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_561000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_615000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_633000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_65000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_655000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_666000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_673000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_674000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_685000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_688000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_692000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_711000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_744000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_768000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_79000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_808000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_82000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_915000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_918000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_977000":
+	{
+		"height": 142.0
+	},
+	"output.Compilation_edu22_clock_rts_979000":
+	{
+		"height": 142.0
+	},
+	"output.dsPIC_ADC.X":
+	{
+		"height": 142.0
+	},
+	"output.edu01_blink":
+	{
+		"height": 210.0
+	},
+	"output.edu01_blink_no_delay":
+	{
+		"height": 230.0
+	},
+	"output.edu02_serial":
+	{
+		"height": 251.0
+	},
+	"output.edu14_interrupts":
+	{
+		"height": 142.0
+	},
+	"output.edu18_pwm":
+	{
+		"height": 177.0
+	},
+	"output.edu22_clock_rts":
+	{
+		"height": 194.0
+	},
+	"output.edu24_button":
+	{
+		"height": 185.0
+	},
+	"output.edu27_button":
+	{
+		"height": 162.0
+	},
+	"output.edu28_pwm_nano":
+	{
+		"height": 196.0
+	},
+	"output.edu33_clock_8x7segment":
+	{
+		"height": 265.0
+	},
+	"output.edu33_snake_ultrasound":
+	{
+		"height": 194.0
+	},
+	"output.infrared2":
+	{
+		"height": 142.0
+	},
+	"output.serial_04":
+	{
+		"height": 222.0
+	},
+	"output.stino_log":
+	{
+		"height": 142.0
+	},
+	"replace":
+	{
+		"height": 70.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"soft",
+				"/D/Dropbox/[9] work/_under_work/SRS/A180 FIB Software Requirement Specifications 2013-05.cpp"
+			],
+			[
+				"ab",
+				"/D/Dropbox/[2] dev/cpp/_make_25_abstract_factory/abstract_factory.cpp"
+			],
+			[
+				"todo",
+				"/D/Dropbox/[9] work/_under_work/SRS/_TODO.txt"
+			],
+			[
+				"map",
+				"/D/Dropbox/[2] dev/cpp/_make_25_abstract_factory/abstract_factory.cpp"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"selected_items":
+		[
+		],
+		"width": 380.0
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true
+}
