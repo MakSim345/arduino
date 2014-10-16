@@ -3,8 +3,9 @@ SEP-2014.
 An app for Hellowin pumpkins lights: red, blue and white
  */
 
-#define LED_PIN     7
-#define PWM_LED_PIN 9
+#define LED_PIN      7
+#define PWM_LED_PIN  9
+#define PWM_LED_PIN2 6
 
 // const unsigned int LED_PIN = A0;
 // Variables will change:
@@ -16,6 +17,7 @@ long prev_fade_millis = 0;      // will store last time LED was updated
 // will quickly become a bigger number than can be stored in an int.
 long interval = 80;           // interval at which to blink (milliseconds)
 long fade_interval = 4;      // interval at which to fade
+long fire_interval = 100;      // interval at which to fade
 
 int brightness = 0;    // LED brightness init
 int fadeAmount = 1;    // step add/decrease brightness
@@ -28,6 +30,7 @@ void setup()
     // set the digital pin as output:
     pinMode(LED_PIN, OUTPUT);
     pinMode(PWM_LED_PIN, OUTPUT);
+    pinMode(PWM_LED_PIN2, OUTPUT);
     randomSeed (analogRead (0));    // randomize 
     // interval = random (100, 1200);    // generate ON time between 0.1 and 1.2 seconds
 }
@@ -47,6 +50,16 @@ void fadeLed()
     {
         fadeAmount = -fadeAmount;
     }
+}
+
+void fire_simul()
+{
+    //analogWrite(ledPin1, random(120)+135);
+    //analogWrite(ledPin2, random(120)+135);
+    // analogWrite(ledPin3, random(120)+135);
+    analogWrite(PWM_LED_PIN, random(120)+135);   
+    analogWrite(PWM_LED_PIN2, random(120)+135);   
+    //delay(random(100));
 }
 
 void loop()
@@ -75,10 +88,12 @@ void loop()
         // interval = random (100, 1200);    // generate ON time between 0.1 and 1.2 seconds
     }
 
-    if(currentMillis - prev_fade_millis > fade_interval) 
+    if(currentMillis - prev_fade_millis > fire_interval) 
     {
         // save the last time you blinked the LED
         prev_fade_millis = currentMillis;
-        fadeLed();        
+        // fadeLed();
+        fire_simul();
+        fire_interval = random (100);
     }
 }
