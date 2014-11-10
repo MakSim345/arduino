@@ -37,6 +37,8 @@ void star_two()
   //take the latch pin high so the LEDs will light up:
   digitalWrite(latchPin, HIGH);
   rotateLeft(nomad);
+  // pause before next value:
+  delay(500);
 }
 
 void star_one()
@@ -69,20 +71,23 @@ void updateShiftRegister(int leds)
 void loop() 
 {  
   byte leds = 0;
-  
+  star_two();
+  // star_one();
+  // updateShiftRegister(255);
+/*
   if (nFlag == 1)
   {
     nFlag = 0;
-    updateShiftRegister(128);
-    /*for (leds = 0; leds < 8; leds++)
+    updateShiftRegister(10);
+    for (leds = 0; leds < 8; leds++)
     {
       updateShiftRegister(leds);
       delay(1000);
       // leds++;
-    } 
-    */ 
-  }
-  
+    }   
+ }
+ 
+*/
 
   /*
   for (int i = 0; i < 8; i++)

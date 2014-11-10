@@ -22,29 +22,55 @@ void setup()
   pinMode(ledPin, OUTPUT); 
   pinMode(ledGreenPin, OUTPUT); 
   randomSeed (analogRead (0));    // randomize 
-  Serial.begin(9600);   
+  // Serial.begin(9600);   
+  Serial.begin(38400);
 }
 
 void random_leds()
 {
-  
-  randOn = random (100, 1200);    // generate ON time between 0.1 and 1.2 seconds
-  randOff = random (200, 900);    // generate OFF time between 0.2 and 0.9 seconds
-  
-  Serial.write("--\n"); // 
+  int i = 0;
   char v_str[8] = "       ";  //reserve the string space first
-  itoa(randOn, v_str, 6);
+  randOn = random (100, 1200);    // generate ON time between 0.1 and 1.2 seconds
+  randOff = random (2, 300);    // generate OFF time between 0.2 and 0.9 seconds
+/*
+  // Serial.write("--\n"); // 
+  itoa(randOff, v_str, 6);
   // lcd.printIn(v_str);
   int bytesSent = Serial.write(v_str); //send the string and return the length of the string.
-  Serial.write("--\n"); 
-
-  digitalWrite(ledPin, HIGH);   // sets the LED on
-  digitalWrite(ledGreenPin, LOW);
-  delay(randOn);                // waits for a random time while ON
+  Serial.write("\n"); 
+  delay (5);
+*/
   
-  digitalWrite(ledPin, LOW);    // sets the LED off
-  digitalWrite(ledGreenPin, HIGH);
-  delay(randOff);               // waits for a random time while OFF
+  for(i=0; i<100; i++)
+  {
+    // Serial.write("--\n"); // 
+    // itoa(randOn, v_str, 6);
+    itoa(i, v_str, 6);
+    // lcd.printIn(v_str);
+    int bytesSent = Serial.write(v_str); //send the string and return the length of the string.
+    Serial.write("\n"); 
+
+    delay (5);
+  }
+
+  for(i; i>0; i--)
+  {    
+    // itoa(randOn, v_str, 6);
+    itoa(i, v_str, 6);
+    // lcd.printIn(v_str);
+    int bytesSent = Serial.write(v_str); //send the string and return the length of the string.
+    Serial.write("\n"); 
+
+    delay (5);
+  }
+  
+  //digitalWrite(ledPin, HIGH);   // sets the LED on
+  //digitalWrite(ledGreenPin, LOW);
+  //delay(randOn);                // waits for a random time while ON
+  
+  //digitalWrite(ledPin, LOW);    // sets the LED off
+  //digitalWrite(ledGreenPin, HIGH);
+  //delay(randOff);               // waits for a random time while OFF
 }
 
 // the loop routine runs over and over again forever:

@@ -34,7 +34,7 @@ long previousMillis = 0;        // will store last time LED was updated
 // the follow variables is a long because the time, measured in miliseconds,
 // will quickly become a bigger number than can be stored in an int.
 
-long interval = 1000;           // interval at which to blink (milliseconds)
+long interval = 50;           // interval at which to blink (milliseconds)
 
 int get_sin_val();
 
@@ -51,7 +51,7 @@ void setup()
 void loop() 
 {
   unsigned long currentMillis = millis();
-/*
+
     if(currentMillis - previousMillis > interval) 
     {
         // save the last time you blinked the LED
@@ -66,14 +66,13 @@ void loop()
         // set the LED with the ledState of the variable:
         digitalWrite(LED_PIN, ledState);
     }
- */
+ 
   // read A0:
   sensorValue = analogRead(A0);
-
-  Serial.println(sensorValue);             // debug value
-  /*
+  
   // sensorValue = random (2, 300);    // generate random value between 0.2 and 0.9 seconds
   // sensorValue = get_sin_val();
+  // Serial.println(sensorValue);             // debug value
   
   // shift sample by 3 bits, and select higher byte  
   hb=highByte(sensorValue<<3); 
@@ -83,7 +82,7 @@ void loop()
   lb=(lowByte(sensorValue))&0b00011111;
   // set bits 5 and 6 and send out
   Serial.write(lb|0b01100000);  
-*/
+
 }
 
 
