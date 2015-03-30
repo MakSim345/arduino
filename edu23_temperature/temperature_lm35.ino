@@ -10,7 +10,7 @@
 */
  
 // #include <LiquidCrystal.h>
-int potPin = 5; //input read pin for LM35 is Analog Pin 5
+int potPin = 5; //input read pin for LM35 is Analog Pin 5 (A5 on the board, not just 5!)
 int temperature = 0;  //variable which will be calculated in process
 long val=0; //variable to store the value coming from the sensor
 // LiquidCrystal lcd(7, 6, 5, 4, 3, 2);
@@ -33,7 +33,7 @@ void loop ()  //loop below process
 {
     val = analogRead(potPin); //read the value of sensor
     temperature = (5*val*100/1024); //convert voltage to temperature
-    Serial.println("\nCurrent temperature: ");
+    Serial.println("\n---Current temperature: ");
     Serial.println ((float)temperature);
     //print temperature value on serial screen
     //lcd.setCursor(0,1);
