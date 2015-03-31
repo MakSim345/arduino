@@ -83,8 +83,9 @@ void loop()
 void setTimeInRTC()
 {
     
-  /* Make a new time object to set the date and time */
-  Time t(2014, 2, 27, 9, 9, 00, 3);
+  /* Make a new time object to set the date and time 
+         YYYY  M   D  H  M   S*/
+  Time t(2014, 5, 18, 10, 40, 00, 3);
 
   /* Set the time and date on the chip */
   rtc.time(t);

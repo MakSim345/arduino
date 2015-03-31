@@ -26,7 +26,7 @@
 
 // array to activate particular digit on the 8x7segment module
 // it is the common anode of 7 segment
-byte anode[8] = { 0b10000000,  //digit 1 from right
+byte anode_[8] = {0b10000000,  //digit 1 from right
                   0b01000000,  //digit 2 from right
                   0b00100000,  //digit 3 from right
                   0b00010000,  //digit 4 from right
@@ -36,10 +36,34 @@ byte anode[8] = { 0b10000000,  //digit 1 from right
                   0b00000001   //digit 8 from right                                         
                   };
 
+byte anode[8] = {  0b01111111,  //digit 1 from right
+                   0b10111111,  //digit 2 from right
+                   0b11011111,  //digit 3 from right
+                   0b11101111,  //digit 4 from right
+                   0b11110111,  //digit 5 from right
+                   0b11111011,  //digit 6 from right
+                   0b11111101,  //digit 7 from right
+                   0b11111110   //digit 8 from right                                         
+                  };                  
+
 //array for decimal number, it is the cathode, please refer to the datasheet.
 //therefore a logic low will activate the particular segment
                   //xxPGFEDCBA, segment on 7 segment, P is the dot
-byte cathode[12] = {0b11000000,  // 0
+byte cathode[12] = {0b00111111,  // 0
+                    0b00000110,  // 1
+                    0b01011011,  // 2                    
+                    0b01001111,  // 3
+                    0b01100110,  // 4
+                    0b01101101,  // 5
+                    0b01111101,  // 6
+                    0b00000111,  // 7
+                    0b01111111,  // 8
+                    0b01101111,  // 9
+                    0b10000000,  //dot
+                    0b00000000   //blank
+                    };     
+
+byte cathode_[12] = {0b11000000,  // 0
                     0b11111001,  // 1
                     0b10100100,  // 2
                     0b10110000,  // 3
@@ -51,7 +75,7 @@ byte cathode[12] = {0b11000000,  // 0
                     0b10010000,  // 9  
                     0b01111111,  //dot                  
                     0b11111111   //blank
-                    };     
+                    };
  
 //fucntion to send the serial data out to two 74HC595 serial to parallel shift register and activate the 7 segment.                  
 void display8x7segment(byte datapin, byte clockpin, byte latchpin, byte digit, byte number)
