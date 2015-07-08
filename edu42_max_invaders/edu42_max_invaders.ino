@@ -13,7 +13,9 @@ We have only a single MAX72XX.
 #include "LedControl.h"
  
 LedControl lc=LedControl(12, 11, 10, 2);  // Pins: DIN,CLK,CS, number of Display connected
- 
+
+const int numDevices = 4;      // number of MAX7219s used
+const long scrollDelay = 75;   // adjust scrolling speed 
 unsigned long delayTime=200;  // Delay between Frames
  
 // Put values in arrays
@@ -67,14 +69,12 @@ byte invader2b[] =
  
 void setup()
 {
-  lc.shutdown(0, false);  // Wake up displays
-  lc.shutdown(1, false);
-  
-  lc.setIntensity(0, 5);  // Set intensity levels
-  lc.setIntensity(1,5);
-
-  lc.clearDisplay(0);  // Clear Displays
-  lc.clearDisplay(1);
+    for (int x=0; x<numDevices; x++)
+    {
+        lc.shutdown(x, false);      //The MAX72XX is in power-saving mode on startup
+        lc.setIntensity(x, 4);      // Set the brightness to default value
+        lc.clearDisplay(x);         // and clear the display
+    }
 }
  
  
