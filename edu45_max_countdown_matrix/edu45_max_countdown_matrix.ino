@@ -40,7 +40,10 @@ void setup_matrix()
 void setup()
 {
     setup_matrix();
+    Serial.begin(9600);
     setTime(12, 34, 0, 8, 7, 2015); // HH-MM-SS DD-MM-YYYY
+    Serial.write("START - \n"); //
+    _sec_to_print = now();
 }
 
 void loop()
@@ -52,13 +55,28 @@ void loop()
     //print_time();
     /* Get the current time and date from the chip */
     //Time t = rtc.time();
-    int _hour_to_print = hour();
-    int _min_to_print = minute();
-    _cur_sec = second();    
-    if (_sec_to_print != _cur_sec)
+    //int _hour_to_print = hour();
+    //int _min_to_print = minute();
+
+    // _cur_sec = second();
+     _cur_sec = now();
+    if (_sec_to_print < _cur_sec)
     {
-      decrement_timer();
-      _sec_to_print = second();
+        /*
+        Serial.write("decrement_timer\n");
+        itoa(_cur_sec, v_str, 6);
+
+        Serial.write("_cur: ");
+        Serial.write(v_str);
+        Serial.write(" ");
+
+        itoa(_sec_to_print, v_str, 6);
+        Serial.write("_prt: ");
+        Serial.write(v_str);
+        Serial.write("--\n");
+        */
+        decrement_timer();
+        _sec_to_print = now();
     }
     if (0 == stop_timer)
     {
@@ -72,12 +90,12 @@ void loop()
         delay(delayTime);
         sinvader2a();
         delay(delayTime);
-  
+
         // Put #2 frame on both Display
         sinvader1b();
         delay(delayTime);
         sinvader2b();
-        delay(delayTime); 
+        delay(delayTime);
         inv_ctr = inv_ctr - 1;
         if (inv_ctr <= 0)
            resetFunc();
@@ -89,20 +107,22 @@ void loop()
 
 void decrement_timer()
 {
-    if (timer_sec == 0)
-    {
-        timer_sec = 59;
-        timer_min = timer_min - 1;
-        if (timer_min < 0)
-        {
-            timer_min = 0;
-            stop_timer = 1;
-        }
-    }
-
     if (0 == stop_timer)
     {
-        timer_sec = timer_sec - 1;
+        if (timer_sec == 0)
+        {
+            timer_sec = 59;
+            timer_min = timer_min - 1;
+            if (timer_min < 0)
+            {
+                timer_min = 0;
+                stop_timer = 1;
+            }
+        }
+        else
+        {
+            timer_sec = timer_sec - 1;
+        }
     }
     else
     {
