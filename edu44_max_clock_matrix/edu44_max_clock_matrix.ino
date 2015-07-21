@@ -26,7 +26,7 @@ void setup()
         lc.setIntensity(x, 4 );      // Set the brightness to default value
         lc.clearDisplay(x);         // and clear the display
     }
-    setTime(12, 34, 0, 8, 7, 2015); // HH-MM-SS DD-MM-YYYY
+    setTime(9, 0, 0, 15, 7, 2015); // HH-MM-SS DD-MM-YYYY
 }
  
 void loop()
@@ -42,9 +42,9 @@ void loop()
     int _min_to_print = minute(); 
     _sec_to_print = second(); 
               
-    //show_hour(_hour_to_print);
+    show_hour(_hour_to_print);
     show_min (_min_to_print);
-    show_sec (_sec_to_print);
+    // show_sec (_sec_to_print);
     // sdl->show_number(_hour_to_print * 100 + _min_to_print);
     // sdl->show_number(_min_to_print * 100 + _sec_to_print);
   }
@@ -80,6 +80,26 @@ void show_min(int minutes)
   
   for (int i = 0; i < 8; i++)  
   {
+    lc.setRow(0, i, nums[decimal[0]][i]);
+  }
+  
+  for (int i = 0; i < 8; i++)  
+  {
+    lc.setRow(1, i, nums[decimal[1]][i]);
+  }
+
+ //lc.setDigit(0, 3, decimal[0], false);
+ //lc.setDigit(0, 4, decimal[1], false);
+}
+
+void show_hour(int hours)
+{
+  byte decimal[8] = {0};
+  decimal[1] = hours / 10;
+  decimal[0] = hours % 10;
+  
+  for (int i = 0; i < 8; i++)  
+  {
     lc.setRow(2, i, nums[decimal[0]][i]);
   }
   
@@ -87,21 +107,9 @@ void show_min(int minutes)
   {
     lc.setRow(3, i, nums[decimal[1]][i]);
   }
-
- //lc.setDigit(0, 3, decimal[0], false);
- //lc.setDigit(0, 4, decimal[1], false);
 }
+
 /*
-void show_hour(int hours)
-{
-  byte decimal[8] = {0};
-  decimal[1] = hours / 10;
-  decimal[0] = hours % 10;
- 
-  lc.setDigit(0, 6, decimal[0], false);
-  lc.setDigit(0, 7, decimal[1], false);
-}
-
 void sinvader1a()
 {
   for (int i = 0; i < 8; i++)  

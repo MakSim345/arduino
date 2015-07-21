@@ -40,9 +40,9 @@ void setup_matrix()
 void setup()
 {
     setup_matrix();
-    Serial.begin(9600);
+    //Serial.begin(9600);
     setTime(12, 34, 0, 8, 7, 2015); // HH-MM-SS DD-MM-YYYY
-    Serial.write("START - \n"); //
+    //Serial.write("START - \n"); //
     _sec_to_print = now();
 }
 
