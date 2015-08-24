@@ -10,15 +10,21 @@ const int numDevices = 4;      // number of MAX7219s used
 const long scrollDelay = 75;   // adjust scrolling speed
 const int DIGIT_DELAY = 5; // 2ms optimal
 const int NUM_DIGITS = 1000;
+const int TOMATO = 2;//25;
+const int BREAK = 1;//5;
+const int MONSTERS = 20;//5;
+
 long nextChange;
 int _sec_to_print = 0;
 int _cur_sec = 0;
 unsigned long delayTime=200;  // Delay between Frames
-int inv_ctr = 20;
+
 
 unsigned long bufferLong [14] = {0};
 
-int timer_min = 25;
+int flag = TOMATO;
+int timer_min = TOMATO;
+int inv_ctr = MONSTERS;
 int timer_sec = 0;
 int stop_timer = 0;
 
@@ -98,7 +104,22 @@ void loop()
         delay(delayTime);
         inv_ctr = inv_ctr - 1;
         if (inv_ctr <= 0)
-           resetFunc();
+        { 
+          inv_ctr = 20;
+          stop_timer = 0;
+          if (flag == TOMATO)
+          {
+            flag = BREAK;
+            timer_min = BREAK;
+          }            
+          else
+          {
+            flag = TOMATO;
+            timer_min = TOMATO;
+          }
+        }
+
+           // resetFunc();
     }
     // sdl->show_number(_hour_to_print * 100 + _min_to_print);
     // sdl->show_number(_min_to_print * 100 + _sec_to_print);
