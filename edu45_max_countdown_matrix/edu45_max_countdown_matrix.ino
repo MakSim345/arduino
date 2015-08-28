@@ -14,6 +14,9 @@ const int TOMATO = 2;//25;
 const int BREAK = 1;//5;
 const int MONSTERS = 20;//5;
 
+const int TOMATO_IN_RUN = 1;
+const int BREAK_IN_RUN = 0;
+
 long nextChange;
 int _sec_to_print = 0;
 int _cur_sec = 0;
@@ -22,7 +25,7 @@ unsigned long delayTime=200;  // Delay between Frames
 
 unsigned long bufferLong [14] = {0};
 
-int flag = TOMATO;
+int flag = TOMATO_IN_RUN;
 int timer_min = TOMATO;
 int inv_ctr = MONSTERS;
 int timer_sec = 0;
@@ -46,9 +49,9 @@ void setup_matrix()
 void setup()
 {
     setup_matrix();
-    //Serial.begin(9600);
+    Serial.begin(9600);
     setTime(12, 34, 0, 8, 7, 2015); // HH-MM-SS DD-MM-YYYY
-    //Serial.write("START - \n"); //
+    Serial.write("START - \n"); //
     _sec_to_print = now();
 }
 
@@ -107,15 +110,17 @@ void loop()
         { 
           inv_ctr = 20;
           stop_timer = 0;
-          if (flag == TOMATO)
+          if (flag == TOMATO_IN_RUN)
           {
-            flag = BREAK;
+            flag = BREAK_IN_RUN;
             timer_min = BREAK;
+            Serial.write("BREAK_IN_RUN \n"); //
           }            
           else
           {
-            flag = TOMATO;
+            flag = TOMATO_IN_RUN;
             timer_min = TOMATO;
+            Serial.write("TOMATO_IN_RUN \n"); //
           }
         }
 
