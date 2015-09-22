@@ -6,6 +6,38 @@
 #include "char_matrix.h"
 #include "Time.h" 
 
+
+// #define NANO_IN_USE 
+#define ARDUINO_IN_USE 
+/*
+Now we need a LedControl to work with.
+***** These pin numbers will probably not work with your hardware *****
+pin 12 is connected to the DataIn, DIN
+pin 11 is connected to the CLK
+pin 10 is connected to LOAD
+We have only a single MAX72XX.
+*/
+#ifdef ARDUINO_IN_USE 
+    #define DATA_IN_PIN 12
+    #define CLK_PIN 11
+    #define LOAD_PIN 10
+#endif
+/*
+ Arduino NANO, pin #XX 
+ */
+#ifdef NANO_IN_USE 
+    #define DATA_IN_PIN 5  // (D5)
+    #define CLK_PIN     12 // (D9)
+    #define LOAD_PIN    13 // (D13)
+#endif
+
+
+/* Set the appropriate digital I/O pin connections */
+uint8_t CE_PIN   = 13; //5; // RST?
+uint8_t IO_PIN   = A1; //6; // DAT?
+uint8_t SCLK_PIN = A0; //7; // CLK
+ 
+
 const int numDevices = 4;      // number of MAX7219s used
 const long scrollDelay = 75;   // adjust scrolling speed
 const int DIGIT_DELAY = 5; // 2ms optimal
@@ -15,7 +47,8 @@ int _sec_to_print = 0;
  
 unsigned long bufferLong [14] = {0};
  
-LedControl lc=LedControl(12, 11, 10, numDevices);
+LedControl lc=LedControl(DATA_IN_PIN, CLK_PIN, LOAD_PIN, numDevices);
+
 byte* nums[] = {number0, number1, number2, number3, number4, number5, number6, number7, number8, number9};
 
 void setup()
@@ -26,7 +59,7 @@ void setup()
         lc.setIntensity(x, 4 );      // Set the brightness to default value
         lc.clearDisplay(x);         // and clear the display
     }
-    setTime(9, 0, 0, 15, 7, 2015); // HH-MM-SS DD-MM-YYYY
+    setTime(10, 0, 0, 15, 7, 2015); // HH-MM-SS DD-MM-YYYY
 }
  
 void loop()

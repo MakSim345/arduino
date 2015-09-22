@@ -53,7 +53,7 @@ void setup()
   lc.setIntensity(_device, 10);
   /* and clear the display */
   lc.clearDisplay(_device);
-  setTime(07, 42, 0, 3, 7, 2015); // HH-MM-SS DD-MM-YYYY
+  setTime(10, 50, 0, 3, 7, 2015); // HH-MM-SS DD-MM-YYYY
 }
 
 
