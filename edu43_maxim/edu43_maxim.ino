@@ -34,7 +34,7 @@ LedControl lc=LedControl(DATA_IN_PIN, CLK_PIN, LOAD_PIN, 1);
 char dateString[30];
 const int DIGIT_DELAY = 5; // 2ms optimal
 const int NUM_DIGITS = 1000;
-long nextChange;
+long nextChan ge;
 long oneSecond;
 int _sec_to_print = 0;
 /* we always wait a bit between updates of the display */
@@ -53,7 +53,8 @@ void setup()
   lc.setIntensity(_device, 10);
   /* and clear the display */
   lc.clearDisplay(_device);
-  setTime(10, 50, 0, 3, 7, 2015); // HH-MM-SS DD-MM-YYYY
+
+  setTime(21, 23, 0, 3, 7, 2015); // HH-MM-SS DD-MM-YYYY
 }
 
 

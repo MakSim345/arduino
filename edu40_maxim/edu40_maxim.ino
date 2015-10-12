@@ -3,8 +3,8 @@
 #include <Time.h> 
 
 
-// #define NANO_IN_USE 
-#define ARDUINO_IN_USE 
+#define NANO_IN_USE 
+//#define ARDUINO_IN_USE 
 /*
 Now we need a LedControl to work with.
 ***** These pin numbers will probably not work with your hardware *****
@@ -53,7 +53,7 @@ void setup()
   lc.setIntensity(_device, 10);
   /* and clear the display */
   lc.clearDisplay(_device);
-  setTime(9, 01, 0, 16, 7, 2015); // HH-MM-SS DD-MM-YYYY
+  setTime(21, 21, 0, 16, 7, 2015); // HH-MM-SS DD-MM-YYYY
 }
 
 
