@@ -1,10 +1,10 @@
 // based on an orginal sketch by Arduino forum member "danigom"
 // http://forum.arduino.cc/index.php?action=profile;u=188950
  
-#include <avr/pgmspace.h>
+// #include <avr/pgmspace.h>
 #include <LedControl.h>
 #include "char_matrix.h"
-#include <DS1302.h>
+#include "DS1302.h"
 #include "Time.h" 
 
 
@@ -62,6 +62,7 @@ void setTimeInRTC();
 
 void setup()
 {    
+  // Turn the Serial Protocol ON
   Serial.begin(9600);
   
   /* Initialize a new chip by turning off write protection and clearing the
@@ -79,7 +80,7 @@ void setup()
     lc.setIntensity(x, 4 );      // Set the brightness to default value
     lc.clearDisplay(x);         // and clear the display
   }
-  // setTime(10, 0, 0, 15, 7, 2015); // HH-MM-SS DD-MM-YYYY
+  setTime(10, 50, 0, 12, 10, 2015); // HH-MM-SS DD-MM-YYYY
 }
  
 void loop()
@@ -95,14 +96,31 @@ void loop()
     int _hour_to_print = t.hr; //hour();
     int _min_to_print = t.min; //min(); 
     int _sec_to_print = t.sec; //sec();
-
+    
+    // Serial.write("--\n"); // 
+    char v_str[8] = "       ";  //reserve the string space first
+    itoa(_hour_to_print, v_str, 6);
+    // lcd.printIn(v_str);
+    int bytesSent = Serial.write(v_str); //send the string and return the length of the string.
+    Serial.write(" - Hr\n");
+    itoa(_min_to_print, v_str, 6);
+    // lcd.printIn(v_str);
+    bytesSent = Serial.write(v_str); //send the string and return the length of the string. 
+    Serial.write(" - Min\n");
+    itoa(_sec_to_print, v_str, 6);
+    // lcd.printIn(v_str);
+    bytesSent = Serial.write(v_str); //send the string and return the length of the string.
+    
+    Serial.write(" - Sec\n\n"); 
+    delay (5);
+    // _sec_to_print++;
     //int _hour_to_print = hour();
     //int _min_to_print = minute(); 
     //int _sec_to_print = second(); 
               
     show_hour(_hour_to_print);
     show_min (_min_to_print);
-    // show_sec (_sec_to_print);    
+    //show_sec (_sec_to_print);    
   }
 }
  

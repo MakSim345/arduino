@@ -1,10 +1,10 @@
 // based on an orginal sketch by Arduino forum member "danigom"
 // http://forum.arduino.cc/index.php?action=profile;u=188950
  
-#include <avr/pgmspace.h>
+//#include <avr/pgmspace.h>
 #include <LedControl.h>
 #include "char_matrix.h"
-#include "Time.h" 
+#include <Time.h>
 
 
 // #define NANO_IN_USE 
@@ -56,10 +56,10 @@ void setup()
     for (int x=0; x<numDevices; x++)
     {
         lc.shutdown(x, false);      //The MAX72XX is in power-saving mode on startup
-        lc.setIntensity(x, 4 );      // Set the brightness to default value
+        lc.setIntensity(x, 4 );     // Set the brightness to default value
         lc.clearDisplay(x);         // and clear the display
     }
-    setTime(10, 0, 0, 15, 7, 2015); // HH-MM-SS DD-MM-YYYY
+    //setTime(10, 0, 0, 15, 7, 2015); // HH-MM-SS DD-MM-YYYY
 }
  
 void loop()

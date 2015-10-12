@@ -7,7 +7,7 @@
  
 // Pin 13 has an LED connected on most Arduino boards.
 // give it a name:
-int ledPin = 11;// 13;
+int ledPin = 13;// 13;
 int ledGreenPin = 1;
 int longWait = 500;
 int shortWait = 200;
@@ -32,14 +32,14 @@ void random_leds()
   char v_str[8] = "       ";  //reserve the string space first
   randOn = random (100, 1200);    // generate ON time between 0.1 and 1.2 seconds
   randOff = random (2, 300);    // generate OFF time between 0.2 and 0.9 seconds
-/*
+
   // Serial.write("--\n"); // 
   itoa(randOff, v_str, 6);
   // lcd.printIn(v_str);
   int bytesSent = Serial.write(v_str); //send the string and return the length of the string.
   Serial.write("\n"); 
   delay (5);
-*/
+
   
   for(i=0; i<100; i++)
   {
