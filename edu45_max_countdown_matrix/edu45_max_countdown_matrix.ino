@@ -6,6 +6,31 @@
 #include "char_matrix.h"
 #include "Time.h"
 
+// #define NANO_IN_USE 
+#define ARDUINO_IN_USE 
+/*
+Now we need a LedControl to work with.
+***** These pin numbers will probably not work with your hardware *****
+pin 12 is connected to the DataIn, DIN
+pin 11 is connected to the CLK
+pin 10 is connected to LOAD
+We have only a single MAX72XX.
+*/
+#ifdef ARDUINO_IN_USE 
+    #define DATA_IN_PIN 12
+    #define CLK_PIN 11
+    #define LOAD_PIN 10
+#endif
+/*
+ Arduino NANO, pin #XX 
+ */
+#ifdef NANO_IN_USE 
+    #define DATA_IN_PIN 5  // (D5)
+    #define CLK_PIN     12 // (D9)
+    #define LOAD_PIN    13 // (D13)
+#endif
+
+
 const int numDevices = 4;      // number of MAX7219s used
 const long scrollDelay = 75;   // adjust scrolling speed
 const int DIGIT_DELAY = 5; // 2ms optimal

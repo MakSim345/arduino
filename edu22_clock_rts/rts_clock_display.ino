@@ -13,9 +13,13 @@ http://quadpoint.org/projects/arduino-ds1302
 #include "print_time.h"
 
 /* Set the appropriate digital I/O pin connections */
-uint8_t CE_PIN   = 13; //5; // RST?
-uint8_t IO_PIN   = A1; //6; // DAT?
-uint8_t SCLK_PIN = A0; //7; // CLK
+//uint8_t CE_PIN   = 13; //5; // RST?
+//uint8_t IO_PIN   = A1; //6; // DAT?
+//uint8_t SCLK_PIN = A0; //7; // CLK
+
+#define CE_PIN   7  // RST?
+#define IO_PIN   6  // DAT?
+#define SCLK_PIN 5  // CLK
 
 // const unsigned int LED_PIN = A0;
 
@@ -25,7 +29,7 @@ char day[10];
 
 char dateString[30];
 seven_digit_led *sdl;
-const int DIGIT_DELAY = 5; // 2ms optimal
+const int DIGIT_DELAY = 500; // 2ms optimal
 const int NUM_DIGITS = 1000;
 long nextChange;
 long oneSecond;
@@ -44,11 +48,11 @@ void setup()
   rtc.halt(false);
 
   /* Make a new time object to set the date and time */
-  /*   Tuesday, May 19, 2009 at 21:16:37.            */
-  Time t(2013, 10, 31, 16, 13, 00, 3);
+  //Time t(2013, 10, 31, 16, 13, 00, 3);
+  Time t(2015, 10, 13, 14, 17, 0, 3);
 
   /* Set the time and date on the chip */
-  // rtc.time(t);
+  rtc.time(t);
 }
 
 
@@ -71,12 +75,14 @@ void loop()
         sdl->show_number(_min_to_print * 100 + _sec_to_print);
     }
     
-    if (time >=       ) 
-    {
-        // currentDigit = (millis()/1000) % NUM_DIGITS;
-        // sdl->show_number(currentDigit);
-        oneSecond = time + NUM_DIGITS;
-        // print_time();
+  //long time = millis();
+  if (time >= oneSecond) 
+  {
+      oneSecond = time + DIGIT_DELAY;
+      // currentDigit = (millis()/1000) % NUM_DIGITS;
+      // sdl->show_number(currentDigit);
+      //oneSecond = time + NUM_DIGITS;
+      print_time();
     }
 }
 
