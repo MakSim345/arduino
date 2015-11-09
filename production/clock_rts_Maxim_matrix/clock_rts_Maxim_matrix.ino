@@ -65,11 +65,7 @@ void setup()
   // Turn the Serial Protocol ON
   Serial.begin(9600);
   
-  /* Initialize a new chip by turning off write protection and clearing the
-     clock halt flag. These methods needn't always be called. See the DS1302
-     datasheet for details. */
-  rtc.write_protect(false);
-  rtc.halt(false);
+  
   
   // Uncomment this function if new time has to be set to RTC:
   // setTimeInRTC();  
@@ -304,6 +300,12 @@ void printBufferLong()
 void setTimeInRTC()
 {
     
+  /* Initialize a new chip by turning off write protection and clearing the
+     clock halt flag. These methods needn't always be called. See the DS1302
+     datasheet for details. */
+  rtc.write_protect(false);
+  rtc.halt(false);
+  
   /* Make a new time object to set the date and time 
          YYYY  M  DD  HH  M  S  ?*/
   Time t(2015, 9, 21, 16, 4, 0, 3);

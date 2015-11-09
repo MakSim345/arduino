@@ -58,18 +58,9 @@ void print_time();
 
 void setup()
 {
-  /*
-   The MAX72XX is in power-saving mode on startup,
-   we have to do a wakeup call
-   */
   // Turn the Serial Protocol ON
   // Serial.begin(9600);
   int _device = DEVICE;
-  lc.shutdown(_device, false);
-  /* Set the brightness to a medium values */
-  lc.setIntensity(_device, 10);
-  /* and clear the display */
-  lc.clearDisplay(_device);
   
   // Uncomment this function if new time has to be set to RTC:
   //setTimeInRTC();
@@ -88,122 +79,8 @@ void setup()
   setTime(_hr, _min, _sec, _day, _mon, _year); // HH-MM-SS DD-MM-YYYY
 }
 
-
-/*
-This method will display the characters for the
-word "Arduino" one after the other on digit 0.
-*/
-void writeArduinoOn7Segment()
-{
-  int _device = DEVICE;
-  lc.setChar(_device, 1, 'a', false);
-  delay(delaytime);
-  lc.setRow(_device, 0, 0x05);
-  delay(delaytime);
-  lc.setChar(_device, 0, 'd',false);
-  delay(delaytime);
-  lc.setRow(_device, 0, 0x1c);
-  delay(delaytime);
-  lc.setRow(_device, 0, B00010000);
-  delay(delaytime);
-  lc.setRow(_device, 0, 0x15);
-  delay(delaytime);
-  lc.setRow(_device, 0, 0x1D);
-  delay(delaytime);
-  lc.clearDisplay(0);
-  delay(delaytime);
-}
-
-/*
-  This method will scroll all the hexa-decimal
-numbers and letters on the display. You will need at least
-four 7-Segment digits. otherwise it won't really look that good.
-*/
-void scrollDigits()
-{
-  int _num = DEVICE;
-  for(int i=0; i<13; i++)
-  {
-    lc.setDigit(_num, 8, i+1,   false);
-    lc.setDigit(_num, 7, i+2,   false);
-    lc.setDigit(_num, 6, i+3,   false);
-    lc.setDigit(_num, 5, i+4,   false);
-    lc.setDigit(_num, 4, i+5,   false);
-    lc.setDigit(_num, 3, i+6,   false);
-    lc.setDigit(_num, 2, i+7, false);
-    lc.setDigit(_num, 1, i+8, false);
-    lc.setDigit(_num, 0, i+9, false);
-    delay(delaytime);
-  }
-
-  lc.clearDisplay(0);
-  delay(delaytime);
-}
-
-void show_sec(int seconds)
-{
-  byte decimal[8] = {0};
-  decimal[1] = seconds / 10;
-  decimal[0] = seconds % 10;
- 
-  lc.setDigit(0, 0, decimal[0], false);
-  lc.setDigit(0, 1, decimal[1], false);
-}
-
-void show_min(int minutes)
-{
-  byte decimal[8] = {0};
-  decimal[1] = minutes / 10;
-  decimal[0] = minutes % 10;
- 
-  lc.setDigit(0, 3, decimal[0], false);
-  lc.setDigit(0, 4, decimal[1], false);
-}
-
-void show_hour(int hours)
-{
-  byte decimal[8] = {0};
-  decimal[1] = hours / 10;
-  decimal[0] = hours % 10;
- 
-  lc.setDigit(0, 6, decimal[0], false);
-  lc.setDigit(0, 7, decimal[1], false);
-}
-
-void displayNumber(unsigned long value)
-{
-   byte decimal[8] = {0};
-   value = value % 100000000;  //ensure the value is within 8 digits only
-   decimal[7] = value / 10000000;  //extract digit 7 from value
-   value = value % 10000000;       //extract the rest of 7 digit value
-   decimal[6] = value / 1000000;
-   value = value % 1000000;
-   decimal[5] = value / 100000;
-   value = value % 100000;
-   decimal[4] = value / 10000;
-   value = value % 10000;
-   decimal[3] = value / 1000;
-   value = value % 1000;
-   decimal[2] = value / 100;
-   value = value % 100;
-   decimal[1] = value / 10;
-   decimal[0] = value % 10;
-   byte zero = 0;
-   int _num = 0;
-
-   for(int i=0; i<8; i++)
-   {
-     lc.setDigit(0, i, decimal[i], false);
-   }
-}
-
 void loop()
 {
-  //displayNumber(_ctr);
-  //delay(10);
-  //_ctr = _ctr + 1;
-  //writeArduinoOn7Segment();
-  //scrollDigits();
   long time = millis();
   if (time >= nextChange) 
   {
@@ -213,6 +90,10 @@ void loop()
     /* Get the current time and date from the chip */
     //Time t = rtc.time();
     
+    int _hour_to_print = t.hr; //hour();
+    int _min_to_print = t.min; //min(); 
+    int _sec_to_print = t.sec; //sec();
+
     int _hour_to_print = hour();
     int _min_to_print  = minute(); 
     int _sec_to_print  = second(); 
@@ -230,19 +111,12 @@ void loop()
 void setTimeInRTC()
 {
     
-  /* Initialize a new chip by turning off write protection and clearing the
-     clock halt flag. These methods needn't always be called. See the DS1302
-     datasheet for details. */
-  rtc.write_protect(false);
-  rtc.halt(false);
-
   /* Make a new time object to set the date and time 
          YYYY  M  DD  HH  M  S  ?*/
-  Time t(2015, 10, 26, 10, 43, 0, 3);
+  Time t(2015, 10, 20, 10, 15, 0, 3);
 
   /* Set the time and date on the chip */
   rtc.time(t);
-  rtc.write_protect(true);
 }
 
 void print_time()
