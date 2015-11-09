@@ -42,7 +42,7 @@ char chr_buf[50];
 char chr_day[10];
 
 char dateString[30];
-const int DIGIT_DELAY = 500; // 5 is optimal
+const int DIGIT_DELAY = 5000; // 5 sec is optimal
 const int NUM_DIGITS = 1000;
 long nextChange;
 long oneSecond;
@@ -59,7 +59,7 @@ void print_time();
 void setup()
 {
   // Turn the Serial Protocol ON
-  // Serial.begin(9600);
+  Serial.begin(9600);
   int _device = DEVICE;
   
   // Uncomment this function if new time has to be set to RTC:
@@ -88,19 +88,20 @@ void loop()
     print_time();
     
     /* Get the current time and date from the chip */
-    //Time t = rtc.time();
+    /* Time t = rtc.time();
     
     int _hour_to_print = t.hr; //hour();
     int _min_to_print = t.min; //min(); 
     int _sec_to_print = t.sec; //sec();
+    */
 
-    int _hour_to_print = hour();
-    int _min_to_print  = minute(); 
-    int _sec_to_print  = second(); 
+    //int _hour_to_print = hour();
+    //int _min_to_print  = minute(); 
+    //int _sec_to_print  = second(); 
               
-    show_hour(_hour_to_print);
-    show_min (_min_to_print);
-    show_sec (_sec_to_print);
+    //show_hour(_hour_to_print);
+    //show_min (_min_to_print);
+    //show_sec (_sec_to_print);
 
     // sdl->show_number(_hour_to_print * 100 + _min_to_print);
     // sdl->show_number(_min_to_print * 100 + _sec_to_print);
@@ -113,7 +114,7 @@ void setTimeInRTC()
     
   /* Make a new time object to set the date and time 
          YYYY  M  DD  HH  M  S  ?*/
-  Time t(2015, 10, 20, 10, 15, 0, 3);
+  Time t(2015, 11, 9, 14, 45, 0, 3);
 
   /* Set the time and date on the chip */
   rtc.time(t);
