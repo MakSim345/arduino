@@ -8,16 +8,41 @@ We have only a single MAX72XX.
 */
 // LedControl lc=LedControl(12, 11, 10, 1);
 
-#define DEVICE 0
-
 #include "LedControl.h"
  
-LedControl lc=LedControl(12, 11, 10, 2);  // Pins: DIN,CLK,CS, number of Display connected
+#define NANO_IN_USE 
+// #define ARDUINO_IN_USE 
+/*
+Now we need a LedControl to work with.
+***** These pin numbers will probably not work with your hardware *****
+pin 12 is connected to the DataIn, DIN
+pin 11 is connected to the CLK
+pin 10 is connected to LOAD
+We have only a single MAX72XX.
+*/
+#ifdef ARDUINO_IN_USE 
+    #define DATA_IN_PIN 12
+    #define CLK_PIN 11
+    #define LOAD_PIN 10
+#endif
+/*
+ Arduino NANO, pin #XX 
+ */
+#ifdef NANO_IN_USE 
+    #define DATA_IN_PIN 5  // (D5)
+    #define CLK_PIN     12 // (D9)
+    #define LOAD_PIN    13 // (D13)
+#endif
 
 const int numDevices = 4;      // number of MAX7219s used
 const long scrollDelay = 75;   // adjust scrolling speed 
 unsigned long delayTime=200;  // Delay between Frames
- 
+
+
+LedControl lc=LedControl(DATA_IN_PIN, CLK_PIN, LOAD_PIN, numDevices);
+// LedControl lc=LedControl(12, 11, 10, 2);  // Pins: DIN,CLK,CS, number of Display connected
+
+
 // Put values in arrays
 byte invader1a[] =
 {

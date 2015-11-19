@@ -92,12 +92,12 @@ void scrollDigits()
   int _num = DEVICE;
   for(int i=0; i<13; i++)
   {
-    lc.setDigit(_num, 8, i+1,   false);
-    lc.setDigit(_num, 7, i+2,   false);
-    lc.setDigit(_num, 6, i+3,   false);
-    lc.setDigit(_num, 5, i+4,   false);
-    lc.setDigit(_num, 4, i+5,   false);
-    lc.setDigit(_num, 3, i+6,   false);
+    lc.setDigit(_num, 8, i+1, false);
+    lc.setDigit(_num, 7, i+2, false);
+    lc.setDigit(_num, 6, i+3, false);
+    lc.setDigit(_num, 5, i+4, false);
+    lc.setDigit(_num, 4, i+5, false);
+    lc.setDigit(_num, 3, i+6, false);
     lc.setDigit(_num, 2, i+7, false);
     lc.setDigit(_num, 1, i+8, false);
     lc.setDigit(_num, 0, i+9, false);
