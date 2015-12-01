@@ -8,8 +8,8 @@
 #include "Time.h" 
 
 
-// #define NANO_IN_USE 
-#define ARDUINO_IN_USE 
+#define NANO_IN_USE 
+//#define ARDUINO_IN_USE 
 /*
 Now we need a LedControl to work with.
 ***** These pin numbers will probably not work with your hardware *****
@@ -33,9 +33,9 @@ We have only a single MAX72XX.
 #endif
 
 
-    #define CE_PIN   4  // RST?
-    #define IO_PIN   3  // DAT?
-    #define SCLK_PIN 2  // CLK
+#define CE_PIN   4  // RST?
+#define IO_PIN   3  // DAT?
+#define SCLK_PIN 2  // CLK
 
 /* Set the appropriate digital I/O pin connections
 uint8_t CE_PIN   = 13; //5; // RST?
@@ -63,9 +63,7 @@ void setTimeInRTC();
 void setup()
 {    
   // Turn the Serial Protocol ON
-  Serial.begin(9600);
-  
-  
+  Serial.begin(9600);  
   
   // Uncomment this function if new time has to be set to RTC:
   // setTimeInRTC();  
