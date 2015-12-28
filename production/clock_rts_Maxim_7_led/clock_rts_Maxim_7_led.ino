@@ -8,10 +8,9 @@
 #define ARDUINO_IN_USE 
 /*
 Now we need a LedControl to work with.
-***** These pin numbers will probably not work with your hardware *****
 pin 12 is connected to the DataIn, DIN
 pin 11 is connected to the CLK
-pin 10 is connected to LOAD
+pin 10 is connected to LOAD / CS
 We have only a single MAX72XX.
 */
 #ifdef ARDUINO_IN_USE 
@@ -72,9 +71,10 @@ void setup()
   lc.clearDisplay(_device);
   
   // Uncomment this function if new time has to be set to RTC:
-  //setTimeInRTC();
+  // setTimeInRTC();
 
   // Get time from the RTC module:
+  
   Time t = rtc.time();
   int _hr = t.hr;
   int _min = t.min;
@@ -86,7 +86,41 @@ void setup()
   
   // init internal timer:  
   setTime(_hr, _min, _sec, _day, _mon, _year); // HH-MM-SS DD-MM-YYYY
+  //setTime(10, 50, 0, 12, 10, 2015); // HH-MM-SS DD-MM-YYYY
 }
+
+void loop()
+{
+  /*
+  displayNumber(_ctr);
+  delay(10);
+  _ctr = _ctr + 1;
+  */
+  //writeArduinoOn7Segment();
+  //scrollDigits();
+   
+  long time = millis();
+  if (time >= nextChange) 
+  {
+    nextChange = time + DIGIT_DELAY;
+    print_time();
+    
+    // Get the current time and date from the chip 
+    //Time t = rtc.time();
+    
+    int _hour_to_print = hour();
+    int _min_to_print  = minute(); 
+    int _sec_to_print  = second(); 
+              
+    show_hour(_hour_to_print);
+    show_min (_min_to_print);
+    show_sec (_sec_to_print);
+
+    // sdl->show_number(_hour_to_print * 100 + _min_to_print);
+    // sdl->show_number(_min_to_print * 100 + _sec_to_print);
+  }   
+}
+
 
 
 /*
@@ -197,57 +231,28 @@ void displayNumber(unsigned long value)
    }
 }
 
-void loop()
-{
-  //displayNumber(_ctr);
-  //delay(10);
-  //_ctr = _ctr + 1;
-  //writeArduinoOn7Segment();
-  //scrollDigits();
-  long time = millis();
-  if (time >= nextChange) 
-  {
-    nextChange = time + DIGIT_DELAY;
-    print_time();
-    
-    /* Get the current time and date from the chip */
-    //Time t = rtc.time();
-    
-    int _hour_to_print = hour();
-    int _min_to_print  = minute(); 
-    int _sec_to_print  = second(); 
-              
-    show_hour(_hour_to_print);
-    show_min (_min_to_print);
-    show_sec (_sec_to_print);
-
-    // sdl->show_number(_hour_to_print * 100 + _min_to_print);
-    // sdl->show_number(_min_to_print * 100 + _sec_to_print);
-  } 
-}
-
-
 void setTimeInRTC()
 {
     
   /* Initialize a new chip by turning off write protection and clearing the
      clock halt flag. These methods needn't always be called. See the DS1302
      datasheet for details. */
-  rtc.write_protect(false);
-  rtc.halt(false);
+    rtc.write_protect(false);
+    rtc.halt(false);
 
   /* Make a new time object to set the date and time 
          YYYY  M  DD  HH  M  S  ?*/
-  Time t(2015, 10, 26, 10, 43, 0, 3);
+    Time t(2015, 12, 28, 14, 10, 0, 3);
 
   /* Set the time and date on the chip */
-  rtc.time(t);
-  rtc.write_protect(true);
+    rtc.time(t);
+    rtc.write_protect(true);
 }
 
 void print_time()
 {
   // Get the current time and date from the chip
+  /* 
   Time t = rtc.time();
 
   // Name the day of the week
@@ -285,4 +290,5 @@ void print_time()
 
   // Print the formatted string to serial so we can see the time
   Serial.println(chr_buf);
+  */
 }
