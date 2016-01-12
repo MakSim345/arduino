@@ -63,7 +63,7 @@ void setup()
   int _device = DEVICE;
   
   // Uncomment this function if new time has to be set to RTC:
-  //setTimeInRTC();
+  setTimeInRTC();
 
   // Get time from the RTC module:
   Time t = rtc.time();
@@ -108,16 +108,22 @@ void loop()
   } 
 }
 
-
 void setTimeInRTC()
 {
     
+  /* Initialize a new chip by turning off write protection and clearing the
+     clock halt flag. These methods needn't always be called. See the DS1302
+     datasheet for details. */
+  rtc.write_protect(false);
+  rtc.halt(false);
+
   /* Make a new time object to set the date and time 
-         YYYY  M  DD  HH  M  S  ?*/
-  Time t(2015, 11, 9, 14, 45, 0, 3);
+         YYYY  M   DD  HH M  S  ?*/
+  Time t(2015, 11, 10, 8, 6, 0, 3);
 
   /* Set the time and date on the chip */
   rtc.time(t);
+  rtc.write_protect(true);
 }
 
 void print_time()
