@@ -6,6 +6,7 @@
 
 //#define NANO_IN_USE 
 #define ARDUINO_IN_USE 
+#define TIME_FROM_RTC 
 /*
 Now we need a LedControl to work with.
 pin 12 is connected to the DataIn, DIN
@@ -49,8 +50,14 @@ long oneSecond;
 unsigned long delaytime=250;
 unsigned long _ctr = 0;
 
+int _hour_to_print;
+int _min_to_print; 
+int _sec_to_print; 
+
 // Create a DS1302 object
 DS1302 rtc(CE_PIN, IO_PIN, SCLK_PIN);
+
+Time t;
 
 void setTimeInRTC();
 void print_time();
@@ -71,11 +78,11 @@ void setup()
   lc.clearDisplay(_device);
   
   // Uncomment this function if new time has to be set to RTC:
-  // setTimeInRTC();
+  //setTimeInRTC();
 
-  // Get time from the RTC module:
-  
-  Time t = rtc.time();
+  // Get time from the RTC module:  
+  t = rtc.time();
+
   int _hr = t.hr;
   int _min = t.min;
   int _sec = t.sec;
@@ -83,7 +90,7 @@ void setup()
   int _mon = t.mon;
   int _day = t.day;
   int _year = t.yr;
-  
+
   // init internal timer:  
   setTime(_hr, _min, _sec, _day, _mon, _year); // HH-MM-SS DD-MM-YYYY
   //setTime(10, 50, 0, 12, 10, 2015); // HH-MM-SS DD-MM-YYYY
@@ -104,14 +111,21 @@ void loop()
   {
     nextChange = time + DIGIT_DELAY;
     print_time();
-    
+
+#ifdef TIME_FROM_RTC
     // Get the current time and date from the chip 
     //Time t = rtc.time();
+    t = rtc.time();
+    _hour_to_print = t.hr; //hour();
+    _min_to_print = t.min; //min(); 
+    _sec_to_print = t.sec; //sec(); 
+
+#else    
+    _hour_to_print = hour();
+    _min_to_print  = minute(); 
+    _sec_to_print  = second(); 
+#endif              
     
-    int _hour_to_print = hour();
-    int _min_to_print  = minute(); 
-    int _sec_to_print  = second(); 
-              
     show_hour(_hour_to_print);
     show_min (_min_to_print);
     show_sec (_sec_to_print);
@@ -242,7 +256,7 @@ void setTimeInRTC()
 
   /* Make a new time object to set the date and time 
          YYYY  M  DD  HH  M  S  ?*/
-    Time t(2015, 12, 28, 14, 10, 0, 3);
+    Time t(2015, 12, 28, 15, 45, 0, 3);
 
   /* Set the time and date on the chip */
     rtc.time(t);
