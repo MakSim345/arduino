@@ -39,8 +39,9 @@ void loop()
         val = analogRead(POT_PIN); //read the value of sensor
         temperature = (val)*(500/1024.0); //convert voltage to temperature
         // Voltage at pin in milliVolts = (reading from ADC) * (5000/1024) 
-        Serial.println("Current temperature: ");
-        Serial.println ((float)temperature);
+        Serial.print("Current temperature: ");
+        Serial.print((float)temperature);
+        Serial.print("\n");
 
         currentDigit = temperature;// (millis()/1000) % NUM_DIGITS;
         //sdl->show_number(1114);
