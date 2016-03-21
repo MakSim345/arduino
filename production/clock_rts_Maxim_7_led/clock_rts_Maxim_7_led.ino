@@ -33,6 +33,8 @@ We have only a single MAX72XX.
 #define IO_PIN   6 //3  // DAT?
 #define SCLK_PIN 5 //2  // CLK
 
+#define VIBRO_PIN 13 
+
 LedControl lc=LedControl(DATA_IN_PIN, CLK_PIN, LOAD_PIN, 1);
 
 #define DEVICE 0
@@ -53,6 +55,7 @@ unsigned long _ctr = 0;
 int _hour_to_print;
 int _min_to_print; 
 int _sec_to_print; 
+int tmp_sec = 0;
 
 // Create a DS1302 object
 DS1302 rtc(CE_PIN, IO_PIN, SCLK_PIN);
@@ -70,6 +73,7 @@ void setup()
    */
   // Turn the Serial Protocol ON
   // Serial.begin(9600);
+  pinMode(VIBRO_PIN, OUTPUT); 
   int _device = DEVICE;
   lc.shutdown(_device, false);
   /* Set the brightness to a medium values */
@@ -82,6 +86,7 @@ void setup()
 
   // Get time from the RTC module:  
   t = rtc.time();
+  rtc.write_protect(true);
 
   int _hr = t.hr;
   int _min = t.min;
@@ -106,7 +111,7 @@ void loop()
   //writeArduinoOn7Segment();
   //scrollDigits();
    
-  long time = millis();
+  long time = millis();  
   if (time >= nextChange) 
   {
     nextChange = time + DIGIT_DELAY;
@@ -119,13 +124,23 @@ void loop()
     _hour_to_print = t.hr; //hour();
     _min_to_print = t.min; //min(); 
     _sec_to_print = t.sec; //sec(); 
-
 #else    
     _hour_to_print = hour();
     _min_to_print  = minute(); 
-    _sec_to_print  = second(); 
+    _sec_to_print  = second();    
 #endif              
     
+    if (tmp_sec != _hour_to_print)
+    {
+      
+      tmp_sec = _hour_to_print;
+      digitalWrite(VIBRO_PIN, HIGH);
+    }
+    else
+    {
+      digitalWrite(VIBRO_PIN, LOW);
+    }
+
     show_hour(_hour_to_print);
     show_min (_min_to_print);
     show_sec (_sec_to_print);
@@ -256,7 +271,7 @@ void setTimeInRTC()
 
   /* Make a new time object to set the date and time 
          YYYY  M  DD  HH  M  S  ?*/
-    Time t(2015, 12, 28, 15, 45, 0, 3);
+    Time t(2016, 2, 12, 8, 47, 0, 3);
 
   /* Set the time and date on the chip */
     rtc.time(t);
