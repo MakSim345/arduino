@@ -39,7 +39,7 @@ uint8_t CE_PIN   = 13; //5; // RST?
 uint8_t IO_PIN   = A1; //6; // DAT?
 uint8_t SCLK_PIN = A0; //7; // CLK
  
-RTC_DS1307 RTC;
+RTC_DS1307 RTCDS1307;
 
 const int numDevices = 4;      // number of MAX7219s used
 const long scrollDelay = 75;   // adjust scrolling speed
@@ -62,19 +62,17 @@ void setup()
         lc.setIntensity(x, 4 );     // Set the brightness to default value
         lc.clearDisplay(x);         // and clear the display
     }
-    Serial.begin(9600);
     
+    Serial.begin(9600);
     Wire.begin();
-    RTC.begin();
-    /*
+    RTCDS1307.begin();
+    
     if (! RTC.isrunning()) 
     {
         Serial.println("RTC is NOT running!");
         // following line sets the RTC to the date & time this sketch was compiled
         // RTC.adjust(DateTime(__DATE__, __TIME__));
     }
-    */
-    setTime(11, 50, 0, 19, 11, 2015); // HH-MM-SS DD-MM-YYYY
 }
  
 void loop()
@@ -83,31 +81,23 @@ void loop()
   if (time >= nextChange) 
   {
     nextChange = time + DIGIT_DELAY;
-    //print_time();
     /* Get the current time and date from the chip */
     //Time t = rtc.time();
-    
-    
-    //DateTime now = RTC.now();
+      
+    DateTime now = RTCDS1307.now();
 
-    //int _hour_to_print = now.hour(); //hour();
-    //int _min_to_print = now.minute(); //min(); 
-    //int _sec_to_print = now.second(); //sec();
+    int _hour_to_print = now.hour(); //hour();
+    int _min_to_print = now.minute(); //min(); 
+    int _sec_to_print = now.second(); //sec();
 
-    int _hour_to_print = hour();
-    int _min_to_print = minute(); 
-    _sec_to_print = second(); 
-              
-    //show_hour(10);
-    //show_min(17);
+    //int _hour_to_print = hour();
+    //int _min_to_print = minute(); 
+    //_sec_to_print = second(); 
     
-    //show_hour (_hour_to_print);
-    //show_min (_min_to_print);
-    
-    //show_hour (_hour_to_print);
-    show_hour (_min_to_print);
-    
-    show_min (_sec_to_print);
+    show_hour (_hour_to_print);
+    show_min (_min_to_print);
+    //show_hour (_min_to_print);
+    //show_min (_sec_to_print);
     // sdl->show_number(_hour_to_print * 100 + _min_to_print);
     // sdl->show_number(_min_to_print * 100 + _sec_to_print);
   }
