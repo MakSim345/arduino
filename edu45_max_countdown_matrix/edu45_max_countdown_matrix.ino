@@ -1,7 +1,4 @@
-// based on an orginal sketch by Arduino forum member "danigom"
-// http://forum.arduino.cc/index.php?action=profile;u=188950
-
-//#include <avr/pgmspace.h>
+#include <avr/pgmspace.h>
 #include <LedControl.h>
 #include "char_matrix.h"
 #include "Time.h"
@@ -34,7 +31,6 @@ We have only a single MAX72XX.
 const int numDevices = 4;      // number of MAX7219s used
 const long scrollDelay = 75;   // adjust scrolling speed
 const int DIGIT_DELAY = 5; // 2ms optimal
-const int NUM_DIGITS = 1000;
 const int TOMATO = 2;//25;
 const int BREAK = 1;//5;
 const int MONSTERS = 20;//5;
@@ -47,7 +43,7 @@ int _sec_to_print = 0;
 int _cur_sec = 0;
 unsigned long delayTime=200;  // Delay between Frames
 
-
+char v_str[8] = "       ";  //reserve the string space first
 unsigned long bufferLong [14] = {0};
 
 int flag = TOMATO_IN_RUN;
@@ -58,7 +54,7 @@ int stop_timer = 0;
 
 void(* resetFunc) (void) = 0; //declare reset function @ address 0
 
-LedControl lc=LedControl(12, 11, 10, numDevices);
+LedControl lc=LedControl(DATA_IN_PIN, CLK_PIN, LOAD_PIN, numDevices);
 byte* nums[] = {number0, number1, number2, number3, number4, number5, number6, number7, number8, number9};
 
 void setup_matrix()
@@ -94,32 +90,30 @@ void loop()
 
     // _cur_sec = second();
      _cur_sec = now();
-    /*
+    
     if (_sec_to_print < _cur_sec)
     {
-        /*
+        
         Serial.write("decrement_timer\n");
         itoa(_cur_sec, v_str, 6);
 
-        Serial.write("_cur: ");
+        Serial.write("_cur_sec: ");
         Serial.write(v_str);
         Serial.write(" ");
 
         itoa(_sec_to_print, v_str, 6);
-        Serial.write("_prt: ");
+        Serial.write("_sec_to_print: ");
         Serial.write(v_str);
         Serial.write("--\n");
-        
+       
         decrement_timer();
         _sec_to_print = now();
     }
 
     if (0 == stop_timer)
     {
-        //show_min (timer_min);
-        //show_sec (timer_sec);
-          show_min (10);
-          show_sec (12);
+        show_min (timer_min);
+        show_sec (timer_sec);
     }
     else
     {
@@ -134,8 +128,7 @@ void loop()
         delay(delayTime);
         sinvader2b();
         delay(delayTime);
-        inv_ctr = in
-        v_ctr - 1;
+        inv_ctr = inv_ctr - 1;
         if (inv_ctr <= 0)
         { 
           inv_ctr = 20;
@@ -156,11 +149,10 @@ void loop()
 
            // resetFunc();
     }
-    */
 
     int _hour_to_print = hour();
     int _min_to_print = minute(); 
-    _sec_to_print = second(); 
+    // _sec_to_print = second(); 
               
     //show_hour(10);
     //show_min(17);
@@ -171,8 +163,8 @@ void loop()
     //show_hour (_hour_to_print);
     //show_hour (_min_to_print);
     //show_min (_sec_to_print);
-    show_min (10);
-    show_sec (12);
+    //show_min (_min_to_print);
+    //show_sec (_sec_to_print);
     // sdl->show_number(_hour_to_print * 100 + _min_to_print);
     // sdl->show_number(_min_to_print * 100 + _sec_to_print);
   }
