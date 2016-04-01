@@ -1,17 +1,38 @@
-// based on an orginal sketch by Arduino forum member "danigom"
-// http://forum.arduino.cc/index.php?action=profile;u=188950
- 
-#include <avr/pgmspace.h>
+// #include <avr/pgmspace.h>
 #include <LedControl.h>
  
 typedef unsigned char PROGMEM prog_uchar;
+
+#define NANO_IN_USE 
+// #define ARDUINO_IN_USE 
+/*
+Now we need a LedControl to work with.
+***** These pin numbers will probably not work with your hardware *****
+pin 12 is connected to the DataIn, DIN
+pin 11 is connected to the CLK
+pin 10 is connected to LOAD
+We have only a single MAX72XX.
+*/
+#ifdef ARDUINO_IN_USE 
+    #define DATA_IN_PIN 12
+    #define CLK_PIN 11
+    #define LOAD_PIN 10
+#endif
+/*
+ Arduino NANO, pin #XX 
+ */
+#ifdef NANO_IN_USE 
+    #define DATA_IN_PIN 5  // (D5)
+    #define CLK_PIN     12 // (D9)
+    #define LOAD_PIN    13 // (D13)
+#endif
 
 const int numDevices = 4;      // number of MAX7219s used
 const long scrollDelay = 75;   // adjust scrolling speed
  
 unsigned long bufferLong [14] = {0};
  
-LedControl lc=LedControl(12, 11, 10, numDevices);
+LedControl lc=LedControl(DATA_IN_PIN, CLK_PIN, LOAD_PIN, numDevices);
  
 const prog_uchar scrollText[] PROGMEM = {
     "  THE QUICK BROWN FOX JUMPED OVER THE LAZY DOG 1234567890 the quick brown fox jumped over the lazy dog   \0"};
@@ -29,7 +50,7 @@ void setup()
 void loop()
 {
     scrollMessage(scrollText);
-    //scrollFont();
+    scrollFont();
 }
  
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
