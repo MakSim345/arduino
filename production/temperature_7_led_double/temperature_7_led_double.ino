@@ -4,6 +4,9 @@
 
 #include "seven_digit_led.h"
 
+// comment it out if LM35 is in use!
+#define TM36_IN_USE
+
 long led_update = 0;
 long tmp_update = 0; // temperature
 int currentDigit = -1;
@@ -13,7 +16,7 @@ const int NUM_DIGITS = 1000;
 
 seven_digit_led *sdl;
 int temperature = 0;  //variable which will be calculated in process
-long val=0; //variable to store the value coming from the sensor
+long sensorVal=0; //variable to store the value coming from the sensor
 int POT_PIN = 0; //input read pin for LM35 is Analog Pin X (AX on the board, not just X!)
 
 void setup() 
@@ -21,7 +24,11 @@ void setup()
     sdl = new seven_digit_led(4);
     // Turn the Serial Protocol ON
     Serial.begin(9600);
+#ifdef TM36_IN_USE
+    Serial.println("TM36 Thermometer - Start.");
+#else
     Serial.println("LM35 Thermometer - Start.");
+#endif    
 }
 
 void loop() 
@@ -36,10 +43,16 @@ void loop()
 
     if (time >= tmp_update) 
     {
-        val = analogRead(POT_PIN); //read the value of sensor
-        temperature = (val)*(500/1024.0); //convert voltage to temperature
+        sensorVal = analogRead(POT_PIN); //read the value of sensor
+        float voltage = (sensorVal/1024.0) * 5.0;
+#ifdef TM36_IN_USE
+        float temperature = (voltage - .5) * 100;
+        Serial.print("Sensor TM36 temperature: ");
+#else                
         // Voltage at pin in milliVolts = (reading from ADC) * (5000/1024) 
-        Serial.print("Current temperature: ");
+        temperature = (sensorVal)*(500/1024.0); //convert voltage to temperature
+        Serial.print("Sensor LM35 temperature: ");
+#endif        
         Serial.print((float)temperature);
         Serial.print("\n");
 
