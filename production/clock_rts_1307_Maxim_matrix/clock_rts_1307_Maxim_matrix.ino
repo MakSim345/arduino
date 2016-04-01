@@ -1,11 +1,12 @@
 // based on an orginal sketch by Arduino forum member "danigom"
 // http://forum.arduino.cc/index.php?action=profile;u=188950
  
-// #include <avr/pgmspace.h>
+//#include <avr/pgmspace.h>
+#include <Wire.h>
+#include "RTClib.h"
 #include <LedControl.h>
 #include "char_matrix.h"
-#include "DS1302.h"
-#include "Time.h" 
+#include <Time.h>
 
 
 #define NANO_IN_USE 
@@ -33,21 +34,19 @@ We have only a single MAX72XX.
 #endif
 
 
-#define CE_PIN   4  // RST?
-#define IO_PIN   3  // DAT?
-#define SCLK_PIN 2  // CLK
-
-/* Set the appropriate digital I/O pin connections
+/* Set the appropriate digital I/O pin connections */
 uint8_t CE_PIN   = 13; //5; // RST?
 uint8_t IO_PIN   = A1; //6; // DAT?
 uint8_t SCLK_PIN = A0; //7; // CLK
-*/
+ 
+RTC_DS1307 RTC;
 
 const int numDevices = 4;      // number of MAX7219s used
 const long scrollDelay = 75;   // adjust scrolling speed
 const int DIGIT_DELAY = 5; // 2ms optimal
 const int NUM_DIGITS = 1000;
 long nextChange;
+int _sec_to_print = 0;
  
 unsigned long bufferLong [14] = {0};
  
@@ -55,26 +54,27 @@ LedControl lc=LedControl(DATA_IN_PIN, CLK_PIN, LOAD_PIN, numDevices);
 
 byte* nums[] = {number0, number1, number2, number3, number4, number5, number6, number7, number8, number9};
 
-// Create a DS1302 object
-DS1302 rtc(CE_PIN, IO_PIN, SCLK_PIN);
-
-void setTimeInRTC();
-
 void setup()
-{    
-  // Turn the Serial Protocol ON
-  Serial.begin(9600);  
-  
-  // Uncomment this function if new time has to be set to RTC:
-  //setTimeInRTC();  
-
-  for (int x=0; x<numDevices; x++)
-  {
-    lc.shutdown(x, false);      //The MAX72XX is in power-saving mode on startup
-    lc.setIntensity(x, 4 );      // Set the brightness to default value
-    lc.clearDisplay(x);         // and clear the display
-  }
-  setTime(10, 50, 0, 12, 10, 2015); // HH-MM-SS DD-MM-YYYY
+{
+    for (int x=0; x<numDevices; x++)
+    {
+        lc.shutdown(x, false);      //The MAX72XX is in power-saving mode on startup
+        lc.setIntensity(x, 4 );     // Set the brightness to default value
+        lc.clearDisplay(x);         // and clear the display
+    }
+    Serial.begin(9600);
+    
+    Wire.begin();
+    RTC.begin();
+    /*
+    if (! RTC.isrunning()) 
+    {
+        Serial.println("RTC is NOT running!");
+        // following line sets the RTC to the date & time this sketch was compiled
+        // RTC.adjust(DateTime(__DATE__, __TIME__));
+    }
+    */
+    setTime(11, 50, 0, 19, 11, 2015); // HH-MM-SS DD-MM-YYYY
 }
  
 void loop()
@@ -85,36 +85,31 @@ void loop()
     nextChange = time + DIGIT_DELAY;
     //print_time();
     /* Get the current time and date from the chip */
-    Time t = rtc.time();
+    //Time t = rtc.time();
+    
+    
+    //DateTime now = RTC.now();
 
-    int _hour_to_print = t.hr; //hour();
-    int _min_to_print = t.min; //min(); 
-    int _sec_to_print = t.sec; //sec();
-    
-    // Serial.write("--\n"); // 
-    char v_str[8] = "       ";  //reserve the string space first
-    itoa(_hour_to_print, v_str, 6);
-    // lcd.printIn(v_str);
-    int bytesSent = Serial.write(v_str); //send the string and return the length of the string.
-    Serial.write(" - Hr\n");
-    itoa(_min_to_print, v_str, 6);
-    // lcd.printIn(v_str);
-    bytesSent = Serial.write(v_str); //send the string and return the length of the string. 
-    Serial.write(" - Min\n");
-    itoa(_sec_to_print, v_str, 6);
-    // lcd.printIn(v_str);
-    bytesSent = Serial.write(v_str); //send the string and return the length of the string.
-    
-    Serial.write(" - Sec\n\n"); 
-    delay (500);
-    // _sec_to_print++;
-    //int _hour_to_print = hour();
-    //int _min_to_print = minute(); 
-    //int _sec_to_print = second(); 
+    //int _hour_to_print = now.hour(); //hour();
+    //int _min_to_print = now.minute(); //min(); 
+    //int _sec_to_print = now.second(); //sec();
+
+    int _hour_to_print = hour();
+    int _min_to_print = minute(); 
+    _sec_to_print = second(); 
               
-    show_hour(_hour_to_print);
-    show_min (_min_to_print);
-    //show_sec (_sec_to_print);    
+    //show_hour(10);
+    //show_min(17);
+    
+    //show_hour (_hour_to_print);
+    //show_min (_min_to_print);
+    
+    //show_hour (_hour_to_print);
+    show_hour (_min_to_print);
+    
+    show_min (_sec_to_print);
+    // sdl->show_number(_hour_to_print * 100 + _min_to_print);
+    // sdl->show_number(_min_to_print * 100 + _sec_to_print);
   }
 }
  
@@ -292,22 +287,4 @@ void printBufferLong()
     y = (x>>8);                             // Mask off forth character
     lc.setRow(0,a,y);                       // Send row to relevent MAX7219 chip
   }
-}
-
-
-void setTimeInRTC()
-{
-    
-  /* Initialize a new chip by turning off write protection and clearing the
-     clock halt flag. These methods needn't always be called. See the DS1302
-     datasheet for details. */
-  rtc.write_protect(false);
-  rtc.halt(false);
-  
-  /* Make a new time object to set the date and time 
-         YYYY  M  DD  HH  M  S  ?*/
-  Time t(2016, 3, 31, 16, 10, 53, 3);
-
-  /* Set the time and date on the chip */
-  rtc.time(t);
 }

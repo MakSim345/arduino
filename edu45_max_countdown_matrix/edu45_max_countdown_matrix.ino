@@ -1,13 +1,13 @@
 // based on an orginal sketch by Arduino forum member "danigom"
 // http://forum.arduino.cc/index.php?action=profile;u=188950
 
-#include <avr/pgmspace.h>
+//#include <avr/pgmspace.h>
 #include <LedControl.h>
 #include "char_matrix.h"
 #include "Time.h"
 
-// #define NANO_IN_USE 
-#define ARDUINO_IN_USE 
+#define NANO_IN_USE 
+//#define ARDUINO_IN_USE 
 /*
 Now we need a LedControl to work with.
 ***** These pin numbers will probably not work with your hardware *****
@@ -94,6 +94,7 @@ void loop()
 
     // _cur_sec = second();
      _cur_sec = now();
+    /*
     if (_sec_to_print < _cur_sec)
     {
         /*
@@ -108,14 +109,17 @@ void loop()
         Serial.write("_prt: ");
         Serial.write(v_str);
         Serial.write("--\n");
-        */
+        
         decrement_timer();
         _sec_to_print = now();
     }
+
     if (0 == stop_timer)
     {
-        show_min (timer_min);
-        show_sec (timer_sec);
+        //show_min (timer_min);
+        //show_sec (timer_sec);
+          show_min (10);
+          show_sec (12);
     }
     else
     {
@@ -130,7 +134,8 @@ void loop()
         delay(delayTime);
         sinvader2b();
         delay(delayTime);
-        inv_ctr = inv_ctr - 1;
+        inv_ctr = in
+        v_ctr - 1;
         if (inv_ctr <= 0)
         { 
           inv_ctr = 20;
@@ -151,6 +156,23 @@ void loop()
 
            // resetFunc();
     }
+    */
+
+    int _hour_to_print = hour();
+    int _min_to_print = minute(); 
+    _sec_to_print = second(); 
+              
+    //show_hour(10);
+    //show_min(17);
+    
+    //show_hour (_hour_to_print);
+    //show_min (_min_to_print);
+    
+    //show_hour (_hour_to_print);
+    //show_hour (_min_to_print);
+    //show_min (_sec_to_print);
+    show_min (10);
+    show_sec (12);
     // sdl->show_number(_hour_to_print * 100 + _min_to_print);
     // sdl->show_number(_min_to_print * 100 + _sec_to_print);
   }
