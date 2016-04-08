@@ -31,8 +31,8 @@ We have only a single MAX72XX.
 const int numDevices = 4;      // number of MAX7219s used
 const long scrollDelay = 75;   // adjust scrolling speed
 const int DIGIT_DELAY = 5; // 2ms optimal
-const int TOMATO = 2;//25;
-const int BREAK = 1;//5;
+const int TOMATO = 25; //2;//25;
+const int BREAK = 5;//5;
 const int MONSTERS = 20;//5;
 
 const int TOMATO_IN_RUN = 1;
