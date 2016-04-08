@@ -2,6 +2,11 @@
 #include "LedControl.h"
 #include <Time.h> 
 
+// comment it out if LM35 is in use!
+#define TM36_IN_USE
+
+#define DECIMAL_NO false
+#define DECIMAL_OK true
 
 //#define NANO_IN_USE 
 #define ARDUINO_IN_USE 
@@ -32,11 +37,13 @@ We have only a single MAX72XX.
 #define IO_PIN   6 //3  // DAT?
 #define SCLK_PIN 5 //2  // CLK
 
-int POT_PIN = 0; //input read pin for LM35 is Analog Pin X (AX on the board, not just X!)
+int POT_PIN = A0; //input read pin for LM35 is Analog Pin X (AX on the board, not just X!)
 
 LedControl lc=LedControl(DATA_IN_PIN, CLK_PIN, LOAD_PIN, 1);
 
 #define DEVICE 0
+
+#define VCCPIN 8     // 
 
 /* Create buffers */
 char chr_buf[50];
@@ -45,8 +52,8 @@ char chr_day[10];
 char dateString[30];
 const int DIGIT_DELAY = 2000; // 2 sec
 const int NUM_DIGITS = 1000;
-long nextChange;
-long oneSecond;
+long tmp_update = 0; // temperature
+long sensorVal=0; //variable to store the value coming from the sensor
 int temperature = 0;  //variable which will be calculated in process
 long val=0; //variable to store the value coming from the sensor
 /* we always wait a bit between updates of the display */
@@ -59,9 +66,16 @@ void setup()
    The MAX72XX is in power-saving mode on startup,
    we have to do a wakeup call
    */
+  pinMode(VCCPIN, OUTPUT);
+  digitalWrite(VCCPIN, HIGH);
+
   // Turn the Serial Protocol ON
   Serial.begin(9600);
-  Serial.println("LM35 Thermometer - Start.");
+#ifdef TM36_IN_USE
+    Serial.println("TM36 Thermometer - Start.");
+#else
+    Serial.println("LM35 Thermometer - Start.");
+#endif    
   
   int _device = DEVICE;
   lc.shutdown(_device, false);
@@ -69,88 +83,6 @@ void setup()
   lc.setIntensity(_device, 10);
   /* and clear the display */
   lc.clearDisplay(_device);
-}
-
-
-/*
-This method will display the characters for the
-word "Arduino" one after the other on digit 0.
-*/
-void writeArduinoOn7Segment()
-{
-  int _device = DEVICE;
-  lc.setChar(_device, 1, 'a', false);
-  delay(delaytime);
-  lc.setRow(_device, 0, 0x05);
-  delay(delaytime);
-  lc.setChar(_device, 0, 'd',false);
-  delay(delaytime);
-  lc.setRow(_device, 0, 0x1c);
-  delay(delaytime);
-  lc.setRow(_device, 0, B00010000);
-  delay(delaytime);
-  lc.setRow(_device, 0, 0x15);
-  delay(delaytime);
-  lc.setRow(_device, 0, 0x1D);
-  delay(delaytime);
-  lc.clearDisplay(0);
-  delay(delaytime);
-}
-
-/*
-  This method will scroll all the hexa-decimal
-numbers and letters on the display. You will need at least
-four 7-Segment digits. otherwise it won't really look that good.
-*/
-void scrollDigits()
-{
-  int _num = DEVICE;
-  for(int i=0; i<13; i++)
-  {
-    lc.setDigit(_num, 8, i+1,   false);
-    lc.setDigit(_num, 7, i+2,   false);
-    lc.setDigit(_num, 6, i+3,   false);
-    lc.setDigit(_num, 5, i+4,   false);
-    lc.setDigit(_num, 4, i+5,   false);
-    lc.setDigit(_num, 3, i+6,   false);
-    lc.setDigit(_num, 2, i+7, false);
-    lc.setDigit(_num, 1, i+8, false);
-    lc.setDigit(_num, 0, i+9, false);
-    delay(delaytime);
-  }
-
-  lc.clearDisplay(0);
-  delay(delaytime);
-}
-
-void show_sec(int seconds)
-{
-  byte decimal[8] = {0};
-  decimal[1] = seconds / 10;
-  decimal[0] = seconds % 10;
- 
-  lc.setDigit(0, 0, decimal[0], false);
-  lc.setDigit(0, 1, decimal[1], false);
-}
-
-void show_min(int minutes)
-{
-  byte decimal[8] = {0};
-  decimal[1] = minutes / 10;
-  decimal[0] = minutes % 10;
- 
-  lc.setDigit(0, 3, decimal[0], false);
-  lc.setDigit(0, 4, decimal[1], false);
-}
-
-void show_hour(int hours)
-{
-  byte decimal[8] = {0};
-  decimal[1] = hours / 10;
-  decimal[0] = hours % 10;
- 
-  lc.setDigit(0, 6, decimal[0], false);
-  lc.setDigit(0, 7, decimal[1], false);
 }
 
 void displayNumber(unsigned long value)
@@ -180,37 +112,70 @@ void displayNumber(unsigned long value)
    }
 }
 
+void disp_right_lcd(int val_to_show)
+{
+  int ones, tens;
+  int tmp_val;
+  int minus_pos = 0;
+
+  if (val_to_show < 0)  
+    tmp_val = val_to_show*(-1); // make positive to show
+  else
+    tmp_val = val_to_show;
+  
+  ones = tmp_val%10;
+  tens = (tmp_val/10)%10;
+
+  if (0 == tens)
+  {
+    lc.setDigit(0, 2,  ' ', DECIMAL_NO);
+    minus_pos = 2;
+  }
+  else
+  {
+    lc.setDigit(0, 2, (byte)tens, DECIMAL_NO);
+    minus_pos = 3;
+  }
+
+  if (val_to_show < 0)
+  {
+    lc.setChar(0,  minus_pos, '-', DECIMAL_NO);    
+  }
+  else
+  {
+    lc.setChar(0,  minus_pos, ' ', DECIMAL_NO);
+  }
+
+  lc.setDigit(0, 1, (byte)ones, DECIMAL_NO);
+
+  // show last char as degree
+  lc.setChar(0,  0, 'C', DECIMAL_NO);
+}
+
 void loop()
 {
   //displayNumber(_ctr);
-  //delay(10);
-  //_ctr = _ctr + 1;
-  //writeArduinoOn7Segment();
-  //scrollDigits();
   long time = millis();
-  if (time >= nextChange) 
+  if (time >= tmp_update) 
   {
-    nextChange = time + DIGIT_DELAY;    
-    val = analogRead(POT_PIN); //read the value of sensor
-    // temperature = (5*val*100/1024); //convert voltage to temperature
-    // temperature = (val/1024.0)*500; //convert voltage to temperature
-    temperature = (val)*(500/1024.0); //convert voltage to temperature
+    tmp_update = time + DIGIT_DELAY;    
+
+    sensorVal = analogRead(POT_PIN); //read the value of sensor
+    float voltage = (sensorVal/1024.0) * 5.0;
+#ifdef TM36_IN_USE
+    float temperature = (voltage - .5) * 100;
+    Serial.print("Sensor TM36 temperature: ");
+#else                
     // Voltage at pin in milliVolts = (reading from ADC) * (5000/1024) 
-    Serial.println("\n---Current temperature: ");
-    Serial.println ((float)temperature);
+    temperature = (sensorVal)*(500/1024.0); //convert voltage to temperature
+    Serial.print("Sensor LM35 temperature: ");
+#endif        
+    Serial.print((float)temperature);
+    Serial.print("\n");
 
-    displayNumber(temperature);
-    //show_hour(_hour_to_print);
-    //show_min (_min_to_print);
-    //show_sec (_sec_to_print);
-
-    // sdl->show_number(_hour_to_print * 100 + _min_to_print);
-    // sdl->show_number(_min_to_print * 100 + _sec_to_print);
-    
-
- 
- delay(1000);                                     //waiting a second
-
-
+    disp_right_lcd(temperature);
+    // displayNumber(temperature*100.0);
+    // displayNumber(1234);
+    // delay(1000);                                     //waiting a second
   } 
 }
