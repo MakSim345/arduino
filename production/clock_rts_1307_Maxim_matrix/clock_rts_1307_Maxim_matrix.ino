@@ -67,11 +67,11 @@ void setup()
     Wire.begin();
     RTCDS1307.begin();
     
-    if (! RTC.isrunning()) 
+    if (! RTCDS1307.isrunning()) 
     {
         Serial.println("RTC is NOT running!");
         // following line sets the RTC to the date & time this sketch was compiled
-        // RTC.adjust(DateTime(__DATE__, __TIME__));
+        // RTCDS1307.adjust(DateTime(__DATE__, __TIME__));
     }
 }
  
