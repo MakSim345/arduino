@@ -34,7 +34,7 @@ LedControl lc=LedControl(DATA_IN_PIN, CLK_PIN, LOAD_PIN, 1);
 char dateString[30];
 const int DIGIT_DELAY = 5; // 2ms optimal
 const int NUM_DIGITS = 1000;
-long nextChan ge;
+long nextChange;
 long oneSecond;
 int _sec_to_print = 0;
 /* we always wait a bit between updates of the display */
