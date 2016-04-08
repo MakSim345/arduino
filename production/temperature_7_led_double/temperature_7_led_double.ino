@@ -7,14 +7,14 @@
 // comment it out if LM35 is in use!
 #define TM36_IN_USE
 
+seven_digit_led *sdl;
+
 long led_update = 0;
 long tmp_update = 0; // temperature
 int currentDigit = -1;
 const int DIGIT_DELAY = 8; // led update
 const int TEMP_DELAY = 10000; // temp update: 10 sec.
 const int NUM_DIGITS = 1000;
-
-seven_digit_led *sdl;
 int temperature = 0;  //variable which will be calculated in process
 long sensorVal=0; //variable to store the value coming from the sensor
 int POT_PIN = 0; //input read pin for LM35 is Analog Pin X (AX on the board, not just X!)
