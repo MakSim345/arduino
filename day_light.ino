@@ -303,7 +303,7 @@ lcd.print(s);
 }
 else {
 lcd.setCursor(0, 1);
-lcd.print(“Сигнал: --:--:--»);
+lcd.print("Сигнал: --:--:--");
 }
 
 if (Hour == h && Minute == m && Second == s && AlarmOn) { // срабатывание будильника!
