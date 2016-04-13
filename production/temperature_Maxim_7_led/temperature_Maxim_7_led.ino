@@ -50,7 +50,7 @@ char chr_buf[50];
 char chr_day[10];
 
 char dateString[30];
-const int DIGIT_DELAY = 2000; // 2 sec
+const int DIGIT_DELAY = 10000; // 2 sec
 const int NUM_DIGITS = 1000;
 long tmp_update = 0; // temperature
 long sensorVal=0; //variable to store the value coming from the sensor
@@ -68,6 +68,7 @@ void setup()
    */
   pinMode(VCCPIN, OUTPUT);
   digitalWrite(VCCPIN, HIGH);
+  pinMode(POT_PIN, INPUT); 
 
   // Turn the Serial Protocol ON
   Serial.begin(9600);
@@ -161,13 +162,13 @@ void loop()
     tmp_update = time + DIGIT_DELAY;    
 
     sensorVal = analogRead(POT_PIN); //read the value of sensor
-    float voltage = (sensorVal/1024.0) * 5.0;
 #ifdef TM36_IN_USE
+    float voltage = (sensorVal/1024.0) * 5.0;
     float temperature = (voltage - .5) * 100;
     Serial.print("Sensor TM36 temperature: ");
 #else                
-    // Voltage at pin in milliVolts = (reading from ADC) * (5000/1024) 
-    temperature = (sensorVal)*(500/1024.0); //convert voltage to temperature
+    // Volts at pin in milliVolts = (reading from ADC) * (5000/1024) 
+    temperature = (sensorVal)*(500/1024.0); //convert volts to temperature
     Serial.print("Sensor LM35 temperature: ");
 #endif        
     Serial.print((float)temperature);
