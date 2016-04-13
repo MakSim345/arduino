@@ -41,8 +41,8 @@ We have only a single MAX72XX.
 /*
 In this project, we insert the DHT11 sensor directly into the right female headers of the Arduino Uno board such that the pin 4 (GND) of DHT11 goes in to the GND pin (second pin from top right) of the Arduino header. With this arrangement, the pins 1 (VCC), 2 (Data), and 3 (NC) of DHT11 will be connected to Arduino digital I/O pins 11, 12, and 13, respectively. Since DHT11 requires only 2.5mA current at most during operation, it will be powered directly through Arduino pin 11 by setting it to 1. The Arduino pin 12 is used to read the sensor output.
 */
-#define DHTPIN 7     // 12 what pin we're connected to
-#define VCCPIN 8     // 11
+#define DHTPIN 7     //  what pin we're connected to
+#define VCCPIN 8     // 
 #define DHTTYPE DHT11   // DHT 11
 
 // Connect pin 1 (on the left) of the sensor to Pin 11 of Arduino
