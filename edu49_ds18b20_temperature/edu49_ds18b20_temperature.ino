@@ -67,20 +67,15 @@ LedControl lc=LedControl(DATA_IN_PIN, CLK_PIN, LOAD_PIN, 1);
 
 /*
 Сборка устройства:
-первую ногу датчика цепляем на «минус» GND
+первую ногу датчика цепляем на минус GND
 вторую ногу (DQ) на 7-й пин
 третью на плюс
 вторую и третью нужно соединить резистором на ~ 4,7 К. Но я заменил резистор на светодиод и получил индикатор обращения к шине датчика (ВНИМАНИЕ! Без резистора или светодиода работать ничего не будет. Не забудьте!)
 */
 
 const int DIGIT_DELAY = 3000; // millisec
-long tmp_update = 0; // temperature
-long sensorVal=0; //variable to store the value coming from the sensor
-int temperature = 0;  //variable which will be calculated in process
-long val=0; //variable to store the value coming from the sensor
-/* we always wait a bit between updates of the display */
-unsigned long delaytime=250;
-unsigned long _ctr = 0;
+long tmp_update = 0;
+// unsigned long _ctr = 0;
 
 // function to print a device address
 void printAddress(DeviceAddress deviceAddress)
