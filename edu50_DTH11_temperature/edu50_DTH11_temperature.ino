@@ -49,8 +49,7 @@ DHT dht(DHTPIN,  DHTTYPE);
 DHT dht2(DHTPIN2, DHTTYPE);
 LedControl lc=LedControl(DATA_IN_PIN, CLK_PIN, LOAD_PIN, 1);
 
-const int DIGIT_DELAY = 10000; // 2 sec
-const int NUM_DIGITS = 1000;
+const int DIGIT_DELAY = 3000; // millisec
 long tmp_update = 0; // temperature
 long sensorVal=0; //variable to store the value coming from the sensor
 int temperature = 0;  //variable which will be calculated in process
@@ -95,16 +94,22 @@ void loop()
 
     float t2 = dht2.readTemperature();
 
-    tempC = (int)t;
-    tempC2= (int)t2;
-
     rh   = (int)h;
     // check if returns are valid, if they are NaN (not a number) then something went wrong!
-    if (isnan(t) || isnan(h) || isnan(t2))
+    if (isnan(t))
     {
-        Serial.println("Failed to read from one of DHT sensors!");
+        Serial.println("Failed to read from DHT-1 sensor!");
+        t = -99;
     }
-    else
+    else if (isnan(t2))
+    {
+        Serial.println("Failed to read from DHT-2 sensor!");
+        t2 = -99;
+    }
+
+    tempC = (int)t;
+    tempC2= (int)t2;
+    
     {
         //Serial.print("Humidity: ");
         //Serial.print(rh);
