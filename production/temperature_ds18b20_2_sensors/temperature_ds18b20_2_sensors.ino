@@ -1,3 +1,5 @@
+#include <avr/wdt.h> //should be in any adruino IDE
+
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <LedControl.h>
@@ -31,12 +33,14 @@ We have only a single MAX72XX.
 
 void disp_right_lcd(int val_to_show);
 void disp_left_lcd(int val_to_show);
+void send_info_to_host(float, float);
 
 #define CE_PIN   7 //4  // RST?
 #define IO_PIN   6 //3  // DAT?
 #define SCLK_PIN 5 //2  // CLK
 
 int POT_PIN = A0; //input read pin for LM35 is Analog Pin X (AX on the board, not just X!)
+int resetPIN=5;
 
 #define DHTPIN 7     //  what pin we're connected to
 #define VCCPIN 8     //
@@ -51,7 +55,7 @@ int POT_PIN = A0; //input read pin for LM35 is Analog Pin X (AX on the board, no
 // Setup a oneWire instance to communicate with any OneWire devices (not just Maxim/Dallas temperature ICs)
 OneWire oneWire(ONE_WIRE_BUS);
 
-// Pass our oneWire reference to Dallas Temperature. 
+// Pass our oneWire reference to Dallas Temperature.
 DallasTemperature sensors(&oneWire);
 
 // arrays to hold device address
@@ -62,6 +66,7 @@ DeviceAddress insideThermometer, outsideThermometer;
 // Connect pin 4 (on the right) of the sensor to GROUND
 int tempC, tempC2;
 int rh;
+byte byteRead;
 LedControl lc=LedControl(DATA_IN_PIN, CLK_PIN, LOAD_PIN, 1);
 
 /*
@@ -73,8 +78,16 @@ LedControl lc=LedControl(DATA_IN_PIN, CLK_PIN, LOAD_PIN, 1);
 */
 
 const int DIGIT_DELAY = 3000; // millisec
+const int WDT_DELAY = 10000;
+
+long time = 0;
 long tmp_update = 0;
-// unsigned long _ctr = 0;
+long wdt_update = 0;
+unsigned long _ctr = 0;
+
+// Buffer to store incoming commands from serial port
+String inData;
+  
 
 // function to print a device address
 void printAddress(DeviceAddress deviceAddress)
@@ -108,6 +121,9 @@ void setup()
   pinMode(VCCPIN, OUTPUT);
   digitalWrite(VCCPIN, HIGH);
   pinMode(POT_PIN, INPUT);
+  digitalWrite(resetPIN, HIGH);
+  pinMode(resetPIN, OUTPUT);
+
 
   // Turn the Serial Protocol ON
   Serial.begin(9600);
@@ -122,16 +138,16 @@ void setup()
   Serial.print("Found ");
   Serial.print(sensors.getDeviceCount(), DEC);
   Serial.println(" devices.");
-  
-  if (!sensors.getAddress(insideThermometer, 0)) 
+
+  if (!sensors.getAddress(insideThermometer, 0))
   {
-    Serial.println("Unable to find address for Device 0");   
+    Serial.println("Unable to find address for Device 0");
   }
-  if (!sensors.getAddress(outsideThermometer, 1)) 
+  if (!sensors.getAddress(outsideThermometer, 1))
   {
-    Serial.println("Unable to find address for Device 1"); 
+    Serial.println("Unable to find address for Device 1");
   }
- 
+
   // show the addresses we found on the bus
   Serial.print("Device 0 Address: ");
   printAddress(insideThermometer);
@@ -141,51 +157,91 @@ void setup()
   // set the resolution to 9 bit
   sensors.setResolution(insideThermometer, TEMPERATURE_PRECISION);
   sensors.setResolution(outsideThermometer, TEMPERATURE_PRECISION);
- 
+
   Serial.print("Device 0 Resolution: ");
-  Serial.print(sensors.getResolution(insideThermometer), DEC); 
+  Serial.print(sensors.getResolution(insideThermometer), DEC);
   Serial.println();
 
   Serial.print("Device 1 Resolution: ");
-  Serial.print(sensors.getResolution(outsideThermometer), DEC); 
+  Serial.print(sensors.getResolution(outsideThermometer), DEC);
   Serial.println();
-} // setup
+  //wdt_disable(); //always good to disable it, if it was left 'on' or you need init time
+  //do some stuff here
+  //wdt_enable(WDTO_8S); //enable it, and set it to 8s
+  time = millis();
+  wdt_update = time + WDT_DELAY;
+} 
 
 
 void loop()
 {
   //displayNumber(_ctr);
-  long time = millis();
+  time = millis();
+  
+  char out_buf[255];  //reserve the string space first
+
+  if (Serial.available())
+  {
+    // byteRead = Serial.read();
+
+
+    char recieved = Serial.read();
+    inData += recieved; 
+
+    // Process message when new line character is recieved
+    if (recieved == '\n')
+    {
+      //Serial.print("Arduino Received: ");
+      //Serial.print(inData);
+      inData = ""; // Clear recieved buffer
+      
+    // if (byteRead)
+      // ECHO the value that was read, back to the serial port:
+      sprintf(out_buf, "INFO. Arduino report: watchdog got PING - %d", _ctr);
+      Serial.println(out_buf);    // print the info
+      _ctr++;
+      //wdt_reset();
+      wdt_update = time + WDT_DELAY;
+    }
+  }
+
+  // Watchdog simulator:
+  if (time >= wdt_update)
+  {
+    Serial.println("REBOOT!!!");
+    wdt_update = time + WDT_DELAY;
+    digitalWrite(resetPIN, LOW);
+  }
+
   if (time >= tmp_update)
   {
     tmp_update = time + DIGIT_DELAY;
 
     sensors.requestTemperatures(); // Send the command to get temperatures
-    
-    // Use a simple function to print out the data:    
-    // printTemperature(insideThermometer); 
-    
-    float f = sensors.getTempC(insideThermometer);
-    tempC2 = int (f); // (f - (int)f) * 100; //
 
-    float t = sensors.getTempC(outsideThermometer);
-    tempC = (int)t;
-    {
-        //Serial.print("Humidity: ");
-        //Serial.print(rh);
-        //Serial.print(" %\t");
-        Serial.print("Sensor DHT11(1) temperature: ");
-        Serial.print(t);
-        Serial.println(" *C");
-        disp_right_lcd(tempC);
+    // Use a simple function to print out the data:
+    // printTemperature(insideThermometer);
 
-        Serial.print("Sensor -DALLAS- temperature: ");
-        Serial.print(tempC2);
-        Serial.println(" *C");        
-        disp_left_lcd(tempC2);
-    }
+    float tempC2 = sensors.getTempC(insideThermometer);
+    float tempC = sensors.getTempC(outsideThermometer);
+
+    send_info_to_host(tempC, tempC2);
+
   } // if (time >= tmp_update)
 } // loop
+
+void send_info_to_host(float DHT, float DALLAS)
+{
+    Serial.print("Sensor DHT11(1) temperature: ");
+    Serial.print(tempC);
+    Serial.println(" *C");
+    disp_right_lcd(int(tempC));
+
+    Serial.print("Sensor -DALLAS- temperature: ");
+    Serial.print(tempC2);
+    Serial.println(" *C");
+    disp_left_lcd(int(tempC2));
+}
 
 void disp_right_lcd(int val_to_show)
 {
