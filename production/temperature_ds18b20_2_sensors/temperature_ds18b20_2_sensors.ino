@@ -34,14 +34,9 @@ We have only a single MAX72XX.
 void disp_right_lcd(int val_to_show);
 void disp_left_lcd(int val_to_show);
 void send_info_to_host(float, float);
+void display_info_on_led(float DHT, float DALLAS);
 
-#define CE_PIN   7 //4  // RST?
-#define IO_PIN   6 //3  // DAT?
-#define SCLK_PIN 5 //2  // CLK
-
-int POT_PIN = A0; //input read pin for LM35 is Analog Pin X (AX on the board, not just X!)
-int resetPIN=5;
-
+#define RESET_PIN 5 // pin for watchdog simulator
 #define DHTPIN 7     //  what pin we're connected to
 #define VCCPIN 8     //
 #define DHTTYPE DHT11   // DHT 11
@@ -49,7 +44,6 @@ int resetPIN=5;
 
 // Data wire is plugged into port 2 on the Arduino
 #define ONE_WIRE_BUS 2
-
 #define TEMPERATURE_PRECISION 9
 
 // Setup a oneWire instance to communicate with any OneWire devices (not just Maxim/Dallas temperature ICs)
@@ -64,9 +58,7 @@ DeviceAddress insideThermometer, outsideThermometer;
 // Connect pin 1 (on the left) of the sensor to VCCPIN of Arduino
 // Connect pin 2 of the sensor to whatever your DHTPIN of Arduino
 // Connect pin 4 (on the right) of the sensor to GROUND
-int tempC, tempC2;
-int rh;
-byte byteRead;
+
 LedControl lc=LedControl(DATA_IN_PIN, CLK_PIN, LOAD_PIN, 1);
 
 /*
@@ -77,17 +69,20 @@ LedControl lc=LedControl(DATA_IN_PIN, CLK_PIN, LOAD_PIN, 1);
 вторую и третью нужно соединить резистором на ~ 4,7 К. Но я заменил резистор на светодиод и получил индикатор обращения к шине датчика (ВНИМАНИЕ! Без резистора или светодиода работать ничего не будет. Не забудьте!)
 */
 
-const int DIGIT_DELAY = 3000; // millisec
-const int WDT_DELAY = 10000;
+const int DIGIT_DELAY_MS = 3000;
+const int WDT_DELAY_MS = 30000;
 
 long time = 0;
 long tmp_update = 0;
 long wdt_update = 0;
-unsigned long _ctr = 0;
+unsigned long ping_ctr = 0;
+
+float tempC = 0.0;
+float tempC2 = 0.0;
+byte byteRead;
 
 // Buffer to store incoming commands from serial port
 String inData;
-  
 
 // function to print a device address
 void printAddress(DeviceAddress deviceAddress)
@@ -120,10 +115,8 @@ void setup()
 {
   pinMode(VCCPIN, OUTPUT);
   digitalWrite(VCCPIN, HIGH);
-  pinMode(POT_PIN, INPUT);
-  digitalWrite(resetPIN, HIGH);
-  pinMode(resetPIN, OUTPUT);
-
+  digitalWrite(RESET_PIN, HIGH);
+  pinMode(RESET_PIN, OUTPUT);
 
   // Turn the Serial Protocol ON
   Serial.begin(9600);
@@ -169,13 +162,13 @@ void setup()
   //do some stuff here
   //wdt_enable(WDTO_8S); //enable it, and set it to 8s
   time = millis();
-  wdt_update = time + WDT_DELAY;
+  wdt_update = time + WDT_DELAY_MS;
 } 
 
 
 void loop()
 {
-  //displayNumber(_ctr);
+  //displayNumber(ping_ctr);
   time = millis();
   
   char out_buf[255];  //reserve the string space first
@@ -183,8 +176,6 @@ void loop()
   if (Serial.available())
   {
     // byteRead = Serial.read();
-
-
     char recieved = Serial.read();
     inData += recieved; 
 
@@ -197,35 +188,40 @@ void loop()
       
     // if (byteRead)
       // ECHO the value that was read, back to the serial port:
-      sprintf(out_buf, "INFO. Arduino report: watchdog got PING - %d", _ctr);
+      sprintf(out_buf, "INFO. Arduino report: watchdog got PING - %d", ping_ctr);
       Serial.println(out_buf);    // print the info
-      _ctr++;
+      ping_ctr++;
       //wdt_reset();
-      wdt_update = time + WDT_DELAY;
+      // send info to host by request:
+      send_info_to_host(tempC, tempC2);
+      wdt_update = time + WDT_DELAY_MS;
     }
   }
 
   // Watchdog simulator:
-  if (time >= wdt_update)
+  if (time > wdt_update)
   {
     Serial.println("REBOOT!!!");
-    wdt_update = time + WDT_DELAY;
-    digitalWrite(resetPIN, LOW);
+    Serial.println(time);
+    wdt_update = time + WDT_DELAY_MS;
+    digitalWrite(RESET_PIN, LOW);
   }
 
   if (time >= tmp_update)
   {
-    tmp_update = time + DIGIT_DELAY;
+    tmp_update = time + DIGIT_DELAY_MS;
 
     sensors.requestTemperatures(); // Send the command to get temperatures
 
     // Use a simple function to print out the data:
-    // printTemperature(insideThermometer);
+    //printTemperature(insideThermometer);
+    //printTemperature(outsideThermometer);
 
-    float tempC2 = sensors.getTempC(insideThermometer);
-    float tempC = sensors.getTempC(outsideThermometer);
+    tempC2 = sensors.getTempC(insideThermometer);
+    tempC = sensors.getTempC(outsideThermometer);
 
-    send_info_to_host(tempC, tempC2);
+    // send_info_to_host(tempC, tempC2);
+    display_info_on_led(tempC, tempC2);
 
   } // if (time >= tmp_update)
 } // loop
@@ -233,14 +229,20 @@ void loop()
 void send_info_to_host(float DHT, float DALLAS)
 {
     Serial.print("Sensor DHT11(1) temperature: ");
-    Serial.print(tempC);
+    Serial.print(DHT);
     Serial.println(" *C");
-    disp_right_lcd(int(tempC));
+    disp_right_lcd(int(DHT));
 
     Serial.print("Sensor -DALLAS- temperature: ");
-    Serial.print(tempC2);
+    Serial.print(DALLAS);
     Serial.println(" *C");
-    disp_left_lcd(int(tempC2));
+    disp_left_lcd(int(DALLAS));
+}
+
+void display_info_on_led(float DHT, float DALLAS)
+{
+    disp_right_lcd(int(DHT));
+    disp_left_lcd(int(DALLAS));
 }
 
 void disp_right_lcd(int val_to_show)
