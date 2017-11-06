@@ -13,7 +13,20 @@
 http://www.arduino.cc/en/Tutorial/BlinkWithoutDelay
  */
 
-const unsigned int LED_PIN =  7;
+#define NANO_IN_USE 
+//#define ARDUINO_IN_USE 
+
+#ifdef ARDUINO_IN_USE 
+const unsigned int LED_PIN = 7;
+#endif
+/*
+ Arduino NANO, pin #XX 
+*/
+#ifdef NANO_IN_USE 
+const unsigned int LED_PIN = 13;
+#endif
+
+
 // const unsigned int LED_PIN = A0;
 // Variables will change:
 int ledState = LOW;             // ledState used to set the LED
