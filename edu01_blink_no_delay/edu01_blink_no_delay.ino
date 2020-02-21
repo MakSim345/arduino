@@ -13,8 +13,8 @@
 http://www.arduino.cc/en/Tutorial/BlinkWithoutDelay
  */
 
-#define NANO_IN_USE 
-//#define ARDUINO_IN_USE 
+// #define NANO_IN_USE 
+#define ARDUINO_IN_USE 
 
 #ifdef ARDUINO_IN_USE 
 const unsigned int LED_PIN = 7;
