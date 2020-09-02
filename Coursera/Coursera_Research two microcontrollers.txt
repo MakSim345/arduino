@@ -1,0 +1,79 @@
+Datasheets for PIC and ATMEL, OS list for PI and Arduino
+Submitted on July 6, 2016
+
+Research two microcontrollers and provide information about them from their datasheets. There are several microcontroller manufacturers that you can investigate including Atmel, Microchip, Freescale, TI, etc. For each microcontroller, report the following information. (Be sure to include a link to an online reference where you found this information.)  
+
+    Clock frequency
+    Bitwidth of the datapath
+    Size of Flash memory
+    Number of pins
+    Does the microcontroller contain an Analog-to-Digital Converter? If so, how many bits of precision does it have?
+
+Atmel (ATmega328P)
+
+    1. Clock frequency
+        Max. Operating Freq - 20 MHz
+    2. Bitwidth of the datapath
+        8-bit
+    3. Size of Flash memory
+        32 kBytes
+    4. Number of pins
+        28 pins in DIP mode
+        32 pins in Quad Flat Package
+    5. Does the microcontroller contain an Analog-to-Digital Converter? If so, how many bits of precision does it have?
+        Yes, it does have ADC:
+        8-channel 10-bit ADC in TQFP and QFN/MLF package
+        6-channel 10-bit ADC in PDIP Package
+
+Resource:
+http://www.atmel.com/devices/atmega328p.aspx
+------------------
+
+Pic (PIC16F877A)
+
+    1. Clock frequency
+        20 MHz
+    2. Bitwidth of the datapath
+        8-bit
+    3. Size of Flash memory
+        14 kBytes
+    4. Number of pins
+        40 pins in DIP mode
+        44 pins in Quad Flat Package
+    5. Does the microcontroller contain an Analog-to-Digital Converter? If so, how many bits of precision does it have?
+        Yes, it does have ADC:
+        8-channel 10-bit ADC.
+Resource:
+http://www.microchip.com/wwwproducts/en/PIC16F877A
+
+Research the Arduino and Raspberry Pi platforms. 
+
+    Indicate if there are operating systems which can be used on each platform. If there are, list those operating systems
+    State whether the operating systems are open source or not. 
+
+Arduino has few pseudo-OS, I think they are "just for fun", because usually the main purpose of the Arduino board is to do one task in a main loop.
+List of avaliable OS:
+1. ArdOS (open source)
+2. DuinOS (open source)
+3. Pyxis OS (open source)
+4. ArduinoMacOS (open source)
+5. TaOS (open source)
+
+Raspberry Pi has a number of OS based on Linux, which include multitasking, resource managemnts and RTOS.
+List of avaliable OS:
+1. Raspbian (open source)
+2. Arch Linux ARM (open source)
+3. OpenELEC, an acronym for Open Embedded Linux Entertainment Center (open source)
+4. OSMC (Open Source Media Center)  (open source)
+5. OMV (OpenMediaVault )  (open source)
+6. Pidora (open source)
+7. Puppy Linux (open source)
+8. Raspbmc (open source)
+9. Minepeon (open source)
+10. Pi MusicBox (open source)
+11. RetroPie (open source)
+12. Kali Linux (open source)
+13. OpenWrt for Raspberry Pi (open source)
+14. Raspberry Digital Signage (open source)
+15. RISC OS Pi (open source)
+16. Windows IoT Core (not open source)
