@@ -1,7 +1,11 @@
 #include <avr/pgmspace.h>
-#include "Time.h"
 #include <LedControl.h>
+#include <Wire.h>
+#include <RTClib.h>
+#include "Time.h"
 #include "char_matrix.h"
+
+RTC_DS1307 RTC;
 
 #define NANO_IN_USE
 //#define ARDUINO_IN_USE
@@ -32,24 +36,29 @@ const int numDevices = 4;      // number of MAX7219s used
 const long scrollDelay = 75;   // adjust scrolling speed
 const int DIGIT_DELAY = 5; // 2ms optimal
 
-const int TOMATO = 25; //2;//25;
-const int BREAK = 5;//5;
-const int MONSTERS = 20;//5;
+const int TOMATO_TIME = 25;
+// const int TOMATO_TIME = 2;
+
+const int BREAK_TIME = 5;
+// const int BREAK_TIME = 1;
+
+const int MONSTERS_TIME = 20;//5;
 
 const int TOMATO_IN_RUN = 1;
 const int BREAK_IN_RUN = 0;
 
 long nextChange;
-int _sec_to_print = 0;
-int _cur_sec = 0;
-unsigned long delayTime = 200; // Delay between Frames
+unsigned long _sec_to_print = 0;
+unsigned long _cur_sec = 0;
+
+int delayTime = 200; // Delay between Frames
 
 char v_str[8] = "       ";  //reserve the string space first
 unsigned long bufferLong [14] = {0};
 
 int flag = TOMATO_IN_RUN;
-int timer_min = TOMATO;
-int inv_ctr = MONSTERS;
+int timer_min = TOMATO_TIME;
+int invider_show_ctr = MONSTERS_TIME;
 int timer_sec = 0;
 int stop_timer = 0;
 
@@ -70,58 +79,50 @@ void setup_matrix()
 
 void setup()
 {
-  setup_matrix();
-  Serial.begin(9600);
-  // setTime(12, 34, 0, 8, 7, 2015); // HH-MM-SS DD-MM-YYYY
-  Serial.write("START - \n"); //
-  _sec_to_print = now();
+    setup_matrix();
+    Serial.begin(9600);
+    Serial.write("APP START!\n");
+    _sec_to_print = now();
+
+    Wire.begin(); // need for RTC work!
+    RTC.begin();
+
+    if (!RTC.isrunning())
+    {
+        Serial.println("RTC is NOT running!");
+        // following line sets the RTC to the date & time this sketch was compiled:
+        RTC.adjust(DateTime(__DATE__, __TIME__));
+    }
 }
 
 void loop()
 {
-  long time = millis();
-  if (time >= nextChange)
+  long curentMillis = millis();
+  if (curentMillis >= nextChange)
   {
-    nextChange = time + DIGIT_DELAY;
-    //print_time();
-    /* Get the current time and date from the chip */
-    //Time t = rtc.time();
-    //int _hour_to_print = hour();
-    //int _min_to_print = minute();
-
-    // _cur_sec = second();
-    _cur_sec = now();
-
+    nextChange = curentMillis + DIGIT_DELAY;
+    _cur_sec = now(); // function from "Time.h"
     if (_sec_to_print < _cur_sec)
     {
+        DateTime ADTnow = RTC.now();
 
-      Serial.write("decrement_timer\n");
-      itoa(_cur_sec, v_str, 6);
+        // itoa(_cur_sec, v_str, 6);
+        Serial.print("_cur_sec: ");
+        Serial.print(_cur_sec);
+        Serial.print(" ");
+        // itoa(_sec_to_print, v_str, 6);
+        Serial.print("_sec_to_print: ");
+        Serial.println(_sec_to_print);
 
-      Serial.write("_cur_sec: ");
-      Serial.write(v_str);
-      Serial.write(" ");
+        decrement_timer();
+        _sec_to_print = now();
 
-      itoa(_sec_to_print, v_str, 6);
-      Serial.write("_sec_to_print: ");
-      Serial.write(v_str);
-      Serial.write("--\n");
-
-      decrement_timer();
-      _sec_to_print = now();
-
-      // DEBUG: check the current time:
-      int _hour_to_print = hour();
-      // itoa(_hour_to_print, v_str, 6);
-      Serial.write("_hour_to_print: ");
-      Serial.write(_hour_to_print);
-      Serial.write(" \n");
-
-      int _min_to_print = minute();
-      // itoa(_min_to_print, v_str, 6);
-      Serial.write("_min_to_print: ");
-      Serial.write(_min_to_print);
-      Serial.write(" \n");
+        // DEBUG: check the current time:
+        Serial.print(ADTnow.hour());
+        Serial.print(':');
+        Serial.print(ADTnow.minute());
+        Serial.print(':');
+        Serial.println(ADTnow.second());
     }
 
     if (0 == stop_timer)
@@ -142,48 +143,40 @@ void loop()
       delay(delayTime);
       sinvader2b();
       delay(delayTime);
-      inv_ctr = inv_ctr - 1;
-      if (inv_ctr <= 0)
+
+      invider_show_ctr = invider_show_ctr - 1;
+      if (invider_show_ctr <= 0)
       {
-        inv_ctr = 20;
+        invider_show_ctr = MONSTERS_TIME;
         stop_timer = 0;
         if (flag == TOMATO_IN_RUN)
         {
           flag = BREAK_IN_RUN;
-          timer_min = BREAK;
+          timer_min = BREAK_TIME;
           Serial.write("BREAK_IN_RUN \n"); //
         }
         else
         {
           flag = TOMATO_IN_RUN;
-          timer_min = TOMATO;
+          timer_min = TOMATO_TIME;
           Serial.write("TOMATO_IN_RUN \n"); //
         }
       }
-
       // resetFunc();
     }
-
-    // _sec_to_print = second();
-
-    //show_hour(10);
-    //show_min(17);
-
-    //show_hour (_hour_to_print);
-    //show_min (_min_to_print);
-
-    //show_hour (_hour_to_print);
-    //show_hour (_min_to_print);
-    //show_min (_sec_to_print);
-    //show_min (_min_to_print);
-    //show_sec (_sec_to_print);
-    // sdl->show_number(_hour_to_print * 100 + _min_to_print);
-    // sdl->show_number(_min_to_print * 100 + _sec_to_print);
   }
 }
 
 void decrement_timer()
 {
+  static int initSeconds = 1;
+
+  if (initSeconds == 1)
+  {
+    initSeconds = 0;
+    return;
+  }
+
   if (0 == stop_timer)
   {
     if (timer_sec == 0)
@@ -200,13 +193,6 @@ void decrement_timer()
     {
       timer_sec = timer_sec - 1;
     }
-  }
-  else
-  {
-    //delay(3000);
-    // setup_matrix();
-    // reset device:
-    //resetFunc();
   }
 }
 
