@@ -21,7 +21,7 @@
 #ifndef LedControl_h
 #define LedControl_h
 
-#include <WProgram.h>
+#include <Arduino.h>
 
 /*
  * Here are the segments to be switched on for characters and digits on
