@@ -1,10 +1,10 @@
 23-APR-2013
 
-=======
-arduino
-=======
+=========================================================================================
+#Arduino
+=========================================================================================
 
 My DIY arduino projects
 Repository for my arduino sketches.
 
-For information on installing libraries, see: http://www.arduino.cc/en/Guide/Libraries
+1. For information on installing libraries, see: "http://www.arduino.cc/en/Guide/Libraries"
