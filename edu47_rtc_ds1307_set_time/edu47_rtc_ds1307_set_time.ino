@@ -1,16 +1,16 @@
 #include <Wire.h>
-#include "RTClib.h"
+#include <RTClib.h>
 #include <Time.h>
 
 RTC_DS1307 RTC;
 
-void setup () 
+void setup ()
 {
     Serial.begin(9600);
     Wire.begin();
     RTC.begin();
 
-    if (! RTC.isrunning()) 
+    if (! RTC.isrunning())
     {
       Serial.println("RTC is NOT running!");
       // following line sets the RTC to the date & time this sketch was compiled
@@ -19,15 +19,15 @@ void setup ()
 }
 
 
-void loop () 
+void loop ()
 {
-    
+
     DateTime now = RTC.now();
 
     Serial.print(now.day());
     Serial.print('-');
     Serial.print(now.month());
-    Serial.print('-');    
+    Serial.print('-');
     Serial.println(now.year());
 
     Serial.print(now.hour());
@@ -59,7 +59,7 @@ void loop ()
       break;
      case 0:
       Serial.println("Sunday");
-      break;     
+      break;
     }
     */
     delay(1000);
@@ -75,7 +75,7 @@ void loop ()
          byte b = Serial.read();
          if (b == 255)
          {
-            continue; 
+            continue;
          }
          curTime += coef*(b-'0');
          coef /= 10;
