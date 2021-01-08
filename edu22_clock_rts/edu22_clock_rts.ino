@@ -8,7 +8,7 @@ http://quadpoint.org/projects/arduino-ds1302
 */
 #include <stdio.h>
 #include <string.h>
-#include <DS1302.h>
+#include "DS1302.h"
 #include "seven_digit_led.h"
 #include "print_time.h"
 
@@ -17,9 +17,13 @@ http://quadpoint.org/projects/arduino-ds1302
 //uint8_t IO_PIN   = A1; //6; // DAT?
 //uint8_t SCLK_PIN = A0; //7; // CLK
 
-#define CE_PIN   7  // RST?
-#define IO_PIN   6  // DAT?
-#define SCLK_PIN 5  // CLK
+#define CE_PIN   4  // RST?
+#define IO_PIN   3  // DAT?
+#define SCLK_PIN 2  // CLK
+
+//#define CE_PIN   7  // RST?
+//#define IO_PIN   6  // DAT?
+//#define SCLK_PIN 5  // CLK
 
 // const unsigned int LED_PIN = A0;
 
@@ -29,7 +33,7 @@ char day[10];
 
 char dateString[30];
 seven_digit_led *sdl;
-const int DIGIT_DELAY = 500; // 2ms optimal
+const int DIGIT_DELAY = 2000; // 2ms optimal
 const int NUM_DIGITS = 1000;
 long nextChange;
 long oneSecond;
@@ -41,11 +45,14 @@ void setup()
 {
   Serial.begin(9600);
   sdl = new seven_digit_led(4);
+  rtc.halt(false);
+
+// #define SET_TIME
+#ifdef SET_TIME      
   /* Initialize a new chip by turning off write protection and clearing the
      clock halt flag. These methods needn't always be called. See the DS1302
      datasheet for details. */
   rtc.write_protect(false);
-  rtc.halt(false);
 
   /* Make a new time object to set the date and time */
   //Time t(2013, 10, 31, 16, 13, 00, 3);
@@ -53,6 +60,7 @@ void setup()
 
   /* Set the time and date on the chip */
   rtc.time(t);
+#endif
 }
 
 
