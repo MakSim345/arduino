@@ -6,21 +6,26 @@ An app for Hellowin pumpkins lights: red, blue and white
 Update sketch to use with NANO
 */
 
-#define NANO_IN_USE
-//#define ARDUINO_IN_USE
+// #define NANO_IN_USE
+#define UNO_IN_USE
 
-#ifdef ARDUINO_IN_USE
-const unsigned int TST_LED_PIN = 7;
-const unsigned int PWM_LED_PIN_RED = 9; //PWM pin in use!
-const unsigned int PWM_LED_PIN_BLU = 6; //PWM pin in use!
+#ifdef UNO_IN_USE
+/* Arduino UNO */
+    const unsigned int TST_LED_PIN = 13;
+    
+    const unsigned int PWM_LED_PIN_RED = 9; //PWM pin in use!
+    // const unsigned int PWM_LED_PIN_RED = TST_LED_PIN;
+    
+    const unsigned int PWM_LED_PIN_BLU = TST_LED_PIN;
+    // const unsigned int PWM_LED_PIN_BLU = 6; //PWM pin in use!
 #endif
 
 
 #ifdef NANO_IN_USE
 /* Arduino NANO */
-const unsigned int TST_LED_PIN = 13;
-const unsigned int PWM_LED_PIN_RED = 9; //PWM pin in use!
-const unsigned int PWM_LED_PIN_BLU = 6; //PWM pin in use!
+    const unsigned int TST_LED_PIN = 13;
+    const unsigned int PWM_LED_PIN_RED = 9; //PWM pin in use!
+    const unsigned int PWM_LED_PIN_BLU = 6; //PWM pin in use!
 #endif
 
 
@@ -47,8 +52,8 @@ void setup()
 {
     // set the digital pin as output:
     pinMode(TST_LED_PIN, OUTPUT);
-    // pinMode(PWM_LED_PIN_BLU, OUTPUT);
     pinMode(PWM_LED_PIN_RED, OUTPUT);
+    pinMode(PWM_LED_PIN_BLU, OUTPUT);
     randomSeed (analogRead (0));    // randomize
     // interval = random (100, 1200);    // generate ON time between 0.1 and 1.2 seconds
 }
@@ -76,8 +81,8 @@ void fire_simul()
     //analogWrite(ledPin2, random(120)+135);
     // analogWrite(ledPin3, random(120)+135);
     
-    analogWrite(PWM_LED_PIN_RED, random(120)+135);
-    analogWrite(PWM_LED_PIN_BLU, random(120)+135);
+    // analogWrite(PWM_LED_PIN_RED, random(120)+135);
+    analogWrite(PWM_LED_PIN_BLU, random(120)+130);
     //delay(random(100));
 }
 
@@ -104,7 +109,7 @@ void loop()
 
         // set the LED with the ledState of the variable:
         digitalWrite(TST_LED_PIN, ledState);
-        // interval = random (100, 1200);    // generate ON time between 0.1 and 1.2 seconds
+        // interval = random (10, 1200);    // generate ON time between 0.1 and 1.2 seconds
     }
 
     if(currentMillis - prev_fire_millis > fire_interval)
@@ -113,14 +118,14 @@ void loop()
         prev_fire_millis = currentMillis;
         // fadeLed();
         fire_simul();
-        fire_interval = random (100);
+        fire_interval = random (100, 1200);
     }
 
     if(currentMillis - prev_fade_millis > fade_interval)
     {
         // save the last time you blinked the LED
         prev_fade_millis = currentMillis;
-        // fadeLed();       
+        fadeLed();       
         // fire_interval = random (100);
     }
 }
