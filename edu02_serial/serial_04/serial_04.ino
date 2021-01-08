@@ -6,8 +6,9 @@
  */
  
 // Pin 13 has an LED connected on most Arduino boards.
+#define BOOTLOADER_TEST_PIN_07 7
 // give it a name:
-int ledPin = 13;
+int ledPin = BOOTLOADER_TEST_PIN_07; //13;
 int ledGreenPin = 12;
 int longWait = 500;
 int shortWait = 200;
