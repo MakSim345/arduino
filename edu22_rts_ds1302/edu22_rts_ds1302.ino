@@ -1,4 +1,4 @@
-#include <virtuabotixRTC.h>
+#include "virtuabotixRTC.h"
 
 #define CE_PIN   4  // RST?
 #define IO_PIN   3  // DAT?
@@ -15,7 +15,7 @@ void setup()
   // Set the current date, and time in the following format:
   // seconds, minutes, hours, day of the week, day of the month, month, year
   //                  SS  MM  HH DW DD  MM  YYYY
-  myRTC.setDS1302Time(00, 21, 9, 2, 13, 10, 2015);
+  // myRTC.setDS1302Time(00, 21, 9, 2, 13, 10, 2015);
 }
 
 void loop()
