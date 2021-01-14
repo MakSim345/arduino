@@ -7,6 +7,8 @@
 
 RTC_DS1307 RTC;
 
+#define interruptPin 2 // A button between PIN-2 and GND
+
 #define NANO_IN_USE
 //#define ARDUINO_IN_USE
 /*
@@ -36,7 +38,7 @@ const int numDevices = 4;      // number of MAX7219s used
 const long scrollDelay = 75;   // adjust scrolling speed
 const int DIGIT_DELAY = 5; // 2ms optimal
 
-//#define DEBUG_FAST_TIME
+// #define DEBUG_FAST_TIME
 #ifdef DEBUG_FAST_TIME
     const int TOMATO_TIME = 1;
     const int BREAK_TIME = 1;
@@ -72,6 +74,9 @@ int timer_sec = 0;
 int invider_show_ctr = MONSTERS_TIME;
 bool is_timer_run = true;
 
+// a variable can change inside an ISR, thus must be volatile:
+volatile byte btn_pressed_state = false;
+
 DateTime ADTnow;
 
 void(* resetFunc) (void) = 0; //declare reset function @ address 0
@@ -89,11 +94,29 @@ void setup_matrix()
   }
 }
 
+
+void ISR_Button_Press()
+{
+    static unsigned long millis_prev;
+    const int debounce_delay = 10;
+
+    if (millis() - debounce_delay > millis_prev)
+    {
+        btn_pressed_state = !btn_pressed_state;   // reverse
+    }
+
+    millis_prev = millis();
+}
+
 void setup()
 {
     setup_matrix();
     Serial.begin(9600);
     Serial.write("APP START!\n");
+    
+    pinMode(interruptPin, INPUT); // use external resistor to pull-down (GND)
+    attachInterrupt(0, ISR_Button_Press, RISING); //raise ISR every time button pressed
+    
     _sec_to_print = now();
 
     Wire.begin(); // need for RTC work!
@@ -135,6 +158,19 @@ void loop()
         Serial.print(ADTnow.minute());
         Serial.print(':');
         Serial.println(ADTnow.second());
+
+        //Serial.print("btn_pressed_state:");
+        //Serial.println(btn_pressed_state);
+        if (btn_pressed_state)
+        {            
+            Serial.println("btn_pressed_state: TRUE. Reset back to FALSE.");
+            btn_pressed_state = false;
+            if (flag == CLOCK_IN_RUN)
+            {
+                Serial.println("btn_pressed_state: flag == CLOCK_IN_RUN. call changeState()");
+                changeState();
+            }
+        }
     }
 
     switch (flag)
