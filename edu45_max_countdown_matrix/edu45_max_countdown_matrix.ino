@@ -36,16 +36,26 @@ const int numDevices = 4;      // number of MAX7219s used
 const long scrollDelay = 75;   // adjust scrolling speed
 const int DIGIT_DELAY = 5; // 2ms optimal
 
-const int TOMATO_TIME = 25;
-// const int TOMATO_TIME = 2;
+//#define DEBUG_FAST_TIME
+#ifdef DEBUG_FAST_TIME
+    const int TOMATO_TIME = 1;
+    const int BREAK_TIME = 1;
+    const int MONSTERS_TIME = 5;
+#else
+    const int TOMATO_TIME = 25; // minutes
+    const int BREAK_TIME = 5;   // minutes
+    const int MONSTERS_TIME = 20; //counter
+#endif
 
-const int BREAK_TIME = 5;
-// const int BREAK_TIME = 1;
-
-const int MONSTERS_TIME = 20;//5;
-
-const int TOMATO_IN_RUN = 1;
-const int BREAK_IN_RUN = 0;
+enum RUN_FLAG
+{
+    BREAK_IN_RUN = 0,
+    TOMATO_IN_RUN,
+    MONSTERS_IN_RUN,
+    CLOCK_IN_RUN,
+    AFTER_TOMATO,
+    AFTER_BREAK
+};
 
 long nextChange;
 unsigned long _sec_to_print = 0;
@@ -56,11 +66,13 @@ int delayTime = 200; // Delay between Frames
 char v_str[8] = "       ";  //reserve the string space first
 unsigned long bufferLong [14] = {0};
 
-int flag = TOMATO_IN_RUN;
+RUN_FLAG flag = TOMATO_IN_RUN;
 int timer_min = TOMATO_TIME;
-int invider_show_ctr = MONSTERS_TIME;
 int timer_sec = 0;
-int stop_timer = 0;
+int invider_show_ctr = MONSTERS_TIME;
+bool is_timer_run = true;
+
+DateTime ADTnow;
 
 void(* resetFunc) (void) = 0; //declare reset function @ address 0
 
@@ -91,7 +103,7 @@ void setup()
     {
         Serial.println("RTC is NOT running!");
         // following line sets the RTC to the date & time this sketch was compiled:
-        RTC.adjust(DateTime(__DATE__, __TIME__));
+        // RTC.adjust(DateTime(__DATE__, __TIME__));
     }
 }
 
@@ -104,15 +116,15 @@ void loop()
     _cur_sec = now(); // function from "Time.h"
     if (_sec_to_print < _cur_sec)
     {
-        DateTime ADTnow = RTC.now();
+        ADTnow = RTC.now();
 
-        // itoa(_cur_sec, v_str, 6);
+        /*
         Serial.print("_cur_sec: ");
         Serial.print(_cur_sec);
         Serial.print(" ");
-        // itoa(_sec_to_print, v_str, 6);
         Serial.print("_sec_to_print: ");
         Serial.println(_sec_to_print);
+        */
 
         decrement_timer();
         _sec_to_print = now();
@@ -125,75 +137,133 @@ void loop()
         Serial.println(ADTnow.second());
     }
 
-    if (0 == stop_timer)
+    switch (flag)
     {
-      show_min (timer_min);
-      show_sec (timer_sec);
-    }
-    else
-    {
-      // Put #1 frame on both Display
-      sinvader1a();
-      delay(delayTime);
-      sinvader2a();
-      delay(delayTime);
-
-      // Put #2 frame on both Display
-      sinvader1b();
-      delay(delayTime);
-      sinvader2b();
-      delay(delayTime);
-
-      invider_show_ctr = invider_show_ctr - 1;
-      if (invider_show_ctr <= 0)
-      {
-        invider_show_ctr = MONSTERS_TIME;
-        stop_timer = 0;
-        if (flag == TOMATO_IN_RUN)
-        {
-          flag = BREAK_IN_RUN;
-          timer_min = BREAK_TIME;
-          Serial.write("BREAK_IN_RUN \n"); //
-        }
-        else
-        {
-          flag = TOMATO_IN_RUN;
-          timer_min = TOMATO_TIME;
-          Serial.write("TOMATO_IN_RUN \n"); //
-        }
-      }
-      // resetFunc();
+    case TOMATO_IN_RUN:
+        show_min (timer_min);
+        show_sec (timer_sec);
+        break;
+    case MONSTERS_IN_RUN:
+        showMonsters();
+        break;
+    case BREAK_IN_RUN:
+        show_min (timer_min);
+        show_sec (timer_sec);
+        break;
+    case CLOCK_IN_RUN:
+        show_min (ADTnow.hour());
+        show_sec (ADTnow.minute());
+        break;
+    default:
+        Serial.println("case - DEFAULT");
+        break;
     }
   }
 }
 
+void showMonsters()
+{
+    // Put #1 frame on both Display
+    sinvader1a();
+    delay(delayTime);
+    sinvader2a();
+    delay(delayTime);
+
+    // Put #2 frame on both Display
+    sinvader1b();
+    delay(delayTime);
+    sinvader2b();
+    delay(delayTime);
+
+    invider_show_ctr = invider_show_ctr - 1;
+
+    if (invider_show_ctr <= 0)
+    {
+        invider_show_ctr = MONSTERS_TIME;// set counter to initial
+        changeState();
+    }
+}
+
+void changeState()
+{
+    static RUN_FLAG prevStatus = TOMATO_IN_RUN;
+    switch (flag)
+    {
+    case TOMATO_IN_RUN:
+      flag = MONSTERS_IN_RUN;
+      prevStatus = TOMATO_IN_RUN;
+      timer_min = BREAK_TIME;
+      Serial.write("CHANGE from TOMATO_IN_RUN to MONSTERS_IN_RUN \n");
+      break;
+    case MONSTERS_IN_RUN:
+      if (prevStatus == TOMATO_IN_RUN)
+      {
+        flag = BREAK_IN_RUN;
+        is_timer_run = true;
+        Serial.write("CHANGE from MONSTERS_IN_RUN to BREAK_IN_RUN \n");
+      }
+      else
+      {
+        flag = CLOCK_IN_RUN;
+        Serial.write("CHANGE from MONSTERS_IN_RUN to CLOCK_IN_RUN \n");
+      }
+      break;
+    case BREAK_IN_RUN:
+      flag = MONSTERS_IN_RUN;
+      prevStatus = BREAK_IN_RUN;
+      timer_min = TOMATO_TIME;
+      Serial.write("CHANGE from BREAK_IN_RUN to MONSTERS_IN_RUN \n");
+      break;
+    case CLOCK_IN_RUN:
+      flag = TOMATO_IN_RUN;
+      is_timer_run = true;
+      Serial.write("CHANGE from CLOCK_IN_RUN to TOMATO_IN_RUN \n");
+      break;
+    default:
+      flag = TOMATO_IN_RUN;
+      Serial.println("case - DEFAULT: TOMATO_IN_RUN");
+      break;
+    }
+}
+
 void decrement_timer()
 {
-  static int initSeconds = 1;
+    static bool isNewTimerStart = false;
+    // Serial.println("enter decrement_timer()");
 
-  if (initSeconds == 1)
-  {
-    initSeconds = 0;
-    return;
-  }
-
-  if (0 == stop_timer)
-  {
-    if (timer_sec == 0)
+    if (!is_timer_run) 
     {
-      timer_sec = 59;
-      timer_min = timer_min - 1;
-      if (timer_min < 0)
-      {
-        timer_min = 0;
-        stop_timer = 1;
-      }
+        // Serial.println("return from decrement_timer(): is_timer_run is FALSE");
+        return;
+    }
+
+    if (isNewTimerStart == true)
+    {
+        // Serial.write("Set isNewTimerStart to 0\n");
+        isNewTimerStart = false;
+        return;
+    }
+
+    if (0 == timer_sec)
+    {
+        timer_sec = 59;
+        timer_min = timer_min - 1;
+        if (timer_min < 0)
+        {
+            timer_min = 0;
+            timer_sec = 0;
+            isNewTimerStart = true;
+            is_timer_run = false;
+            Serial.println("is_timer_run set to FALSE");
+            changeState();
+        }
     }
     else
     {
-      timer_sec = timer_sec - 1;
+        timer_sec = timer_sec - 1;
+        // Serial.print("decrement timer_sec: ");
+        // Serial.println(timer_sec);
     }
-  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
