@@ -68,7 +68,8 @@ int delayTime = 200; // Delay between Frames
 char v_str[8] = "       ";  //reserve the string space first
 unsigned long bufferLong [14] = {0};
 
-RUN_FLAG flag = TOMATO_IN_RUN;
+// RUN_FLAG flag = TOMATO_IN_RUN;
+RUN_FLAG flag = CLOCK_IN_RUN;
 int timer_min = TOMATO_TIME;
 int timer_sec = 0;
 int invider_show_ctr = MONSTERS_TIME;
@@ -97,6 +98,10 @@ void setup_matrix()
 
 void ISR_Button_Press()
 {
+#define USE_TRIGGER
+#ifdef USE_TRIGGER
+    btn_pressed_state = !btn_pressed_state;   // reverse
+#else
     static unsigned long millis_prev;
     const int debounce_delay = 10;
 
@@ -106,6 +111,8 @@ void ISR_Button_Press()
     }
 
     millis_prev = millis();
+#endif
+    
 }
 
 void setup()
@@ -115,19 +122,23 @@ void setup()
     Serial.write("APP START!\n");
     
     pinMode(interruptPin, INPUT); // use external resistor to pull-down (GND)
-    attachInterrupt(0, ISR_Button_Press, RISING); //raise ISR every time button pressed
+    attachInterrupt(0, ISR_Button_Press, FALLING); //raise ISR every time button pressed
+    // attachInterrupt(0, ISR_Button_Press, RISING);
     
     _sec_to_print = now();
 
     Wire.begin(); // need for RTC work!
     RTC.begin();
+    ADTnow = RTC.now();
 
     if (!RTC.isrunning())
     {
         Serial.println("RTC is NOT running!");
-        // following line sets the RTC to the date & time this sketch was compiled:
-        // RTC.adjust(DateTime(__DATE__, __TIME__));
     }
+
+    // following line sets the RTC to the date & time this sketch was compiled:
+    // RTC.adjust(DateTime(__DATE__, __TIME__));
+    // RTC.adjust(DateTime(__DATE__, "12:18:00"));
 }
 
 void loop()
@@ -159,12 +170,11 @@ void loop()
         Serial.print(':');
         Serial.println(ADTnow.second());
 
-        //Serial.print("btn_pressed_state:");
-        //Serial.println(btn_pressed_state);
         if (btn_pressed_state)
         {            
-            Serial.println("btn_pressed_state: TRUE. Reset back to FALSE.");
+            Serial.println("btn_pressed_state: set to TRUE.");
             btn_pressed_state = false;
+            Serial.println("btn_pressed_state: Reset back to FALSE.");
             if (flag == CLOCK_IN_RUN)
             {
                 Serial.println("btn_pressed_state: flag == CLOCK_IN_RUN. call changeState()");
@@ -187,8 +197,14 @@ void loop()
         show_sec (timer_sec);
         break;
     case CLOCK_IN_RUN:
-        show_min (ADTnow.hour());
-        show_sec (ADTnow.minute());
+        timer_min = ADTnow.hour();
+        timer_sec = ADTnow.minute();
+        //Serial.print(timer_min);
+        //Serial.print(':');
+        //Serial.print(timer_sec);
+        //Serial.println(':');
+        show_min (timer_min);
+        show_sec (timer_sec);
         break;
     default:
         Serial.println("case - DEFAULT");
@@ -229,6 +245,7 @@ void changeState()
       flag = MONSTERS_IN_RUN;
       prevStatus = TOMATO_IN_RUN;
       timer_min = BREAK_TIME;
+      timer_sec = 0;
       Serial.write("CHANGE from TOMATO_IN_RUN to MONSTERS_IN_RUN \n");
       break;
     case MONSTERS_IN_RUN:
@@ -248,11 +265,14 @@ void changeState()
       flag = MONSTERS_IN_RUN;
       prevStatus = BREAK_IN_RUN;
       timer_min = TOMATO_TIME;
+      timer_sec = 0;
       Serial.write("CHANGE from BREAK_IN_RUN to MONSTERS_IN_RUN \n");
       break;
     case CLOCK_IN_RUN:
       flag = TOMATO_IN_RUN;
       is_timer_run = true;
+      timer_min = TOMATO_TIME;
+      timer_sec = 0;
       Serial.write("CHANGE from CLOCK_IN_RUN to TOMATO_IN_RUN \n");
       break;
     default:
