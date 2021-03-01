@@ -74,6 +74,7 @@ int timer_min = TOMATO_TIME;
 int timer_sec = 0;
 int invider_show_ctr = MONSTERS_TIME;
 bool is_timer_run = true;
+bool is_time_ajusted_today = false;
 
 // a variable can change inside an ISR, thus must be volatile:
 volatile byte btn_pressed_state = false;
@@ -138,7 +139,7 @@ void setup()
 
     // following line sets the RTC to the date & time this sketch was compiled:
     // RTC.adjust(DateTime(__DATE__, __TIME__));
-    // RTC.adjust(DateTime(__DATE__, "12:18:00"));
+    // RTC.adjust(DateTime(__DATE__, "11:08:00"));
 }
 
 void loop()
@@ -169,6 +170,24 @@ void loop()
         Serial.print(ADTnow.minute());
         Serial.print(':');
         Serial.println(ADTnow.second());
+
+        if ( (10 == ADTnow.second()) && (32 == ADTnow.minute()) && (12 == ADTnow.hour()) )
+        {
+            Serial.println("seconds went to ZERO!");
+            if (!is_time_ajusted_today)
+            {
+                RTC.adjust(DateTime(__DATE__, "12:32:00"));
+                is_time_ajusted_today = true;
+                Serial.println("Time ajusted 10 seconds!");
+                Serial.println("Time ajusted flag dropped!");
+            }
+            else
+            {
+                is_time_ajusted_today = false;
+                Serial.println("Time ajusted flag ready!");
+            }
+
+        }
 
         if (btn_pressed_state)
         {            
