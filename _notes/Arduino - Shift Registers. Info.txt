@@ -1,0 +1,27 @@
+NOV-2013
+Заказал сдвиговых регистров на aliexpress.
+
+Инфо: 
+"8 digit 7 segment display with shift registers 74hc595" 
+http://girshwin.com/led_shift.php
+
+http://www.instructables.com/id/Arduino-powered-7-seg-LED-display-using-Shift-Regi/?ALLSTEPS
+
+http://avrproject.ru/publ/kak_podkljuchit/podkljuchenie_semisegmentnogo_indikatora_cherez_74hc595_staticheskaja_indikacija/2-1-0-57
+
+https://sites.google.com/site/poprobotics/home/ledmatrica8x8iregistry74hc164http://arduino.ru/Tutorial/registr_74HC595
+
+http://mk90.blogspot.fi/2009/12/arduino-1.html
+
+http://www.geeetech.com/wiki/index.php/Arduino_7_segment_LED_timer_with_74HC595_module
+
+http://www.instructables.com/id/The-74HC164-Shift-Register-and-your-Arduino/?ALLSTEP
+
+http://avru.cwx.ru/uchebnik/avr_and_registr_sdviga_74hc164.html#more-141
+
+http://www.getchip.net/posts/051-demostraciya-049-drajjver-linejjki-7-segmentnykh-indikatorov-na-attiny13-begushhaya-stroka/
+
+http://mcucpu.ru/index.php/pdevices/ustrojstva-indikatsii/105-shiftrregisterinind
+
+https://www.youtube.com/watch?v=l6Ag7uqktSs
+

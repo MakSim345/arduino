@@ -1,0 +1,24 @@
+http://codeandlife.com/2012/03/21/using-arduino-uno-as-isp/
+
+http://hackaday.com/2010/10/25/avr-programming-02-the-hardware/
+
+http://www.geeetech.com/usb-isp-programmer-for-atmel-avr-p-224.html
+
+http://www.fischl.de/usbasp/
+
+http://pdp11.byethost12.com/AVR/ArduinoAsProgrammer.htm
+
+http://forums.4fips.com/viewtopic.php?f=3&t=1080
+
+Make an Arduino into ISP programmer:
+
+http://www.buildcircuit.com/arduino-programmer-on-breadboard-using-ft232rl/
+
+http://arduino.cc/en/Tutorial/ArduinoISP
+
+http://flashgamer.com/arduino/comments/using-your-arduino-as-an-isp
+
+http://www.instructables.com/id/Bootload-an-ATmega328/?ALLSTEPS
+
+ATtiny Programming Shield:
+http://www.kobakant.at/DIY/?p=3996

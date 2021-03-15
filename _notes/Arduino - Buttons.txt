@@ -1,0 +1,7 @@
+http://www.instructables.com/id/How-to-make-an-Arduino-controlled-bike-light/?ALLSTEPS
+http://arduino.ru/forum/programmirovanie/rabota-s-knopkami-v-pomoshch-novichku
+
+http://www.instructables.com/id/Arduino-Push-Switch-Debouncing-Interrupts/?ALLSTEPS
+
+http://www.radioman.ru/teoria/1/mop_drebezg.php
+

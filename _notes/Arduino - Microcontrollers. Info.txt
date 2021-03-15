@@ -1,0 +1,33 @@
+2013-MAY
+Сначала была идея использовать Ардуину с системой реального времени и скетчем, запускающим насос через реле раз в сутки. 
+Потом внезапно пришло в голову что с этим справится и обычный таймер, которым я лампочки на Рождество включаю автоматически. 
+Блин.
+
+Кодовый замок:
+http://pole.dyndns.info/?p=870
+
+2013-APR
+Заказал за 70€ на dealextreme набор для начинающих и дополнительную плату.
+Все пришло, установил и написал программку для мигания LED-ами.
+
+2011-SEP
+
+TODO:
++Заказать ардуино, или микропроцессор в наборе за 85€, ссылка:
+http://www.adafruit.com/index.php?main_page=product_info&cPath=17&products_id=170
+http://robocraft.ru/blog/arduino/98.html
+
+Научиться его программировать
+Посмотреть готовые схемы решений
+
+INFO:
+Детали в Suomi:
+http://paeae.com/arduino/shields/adafruit-motor-shield.html
+http://www.robomaa.com/
+http://www.partco.biz
+
+http://habrahabr.ru/blogs/DIY/128904/#habracut
+http://bsvi.ru/
+http://proavr.narod.ru./
+http://we.easyelectronics.ru/angel5a/anons-urokov-po-lpcxpresso.html
+http://mk90.blogspot.com/

@@ -1,0 +1,11 @@
+
+ESP8266 тип 12
+
+Ардуина – это хорошо, но в последнее время все популярнее становятся беспроводные модули ESP8266. Это практически полноценный роутер с GPIO выводами, да еще и возможностью его программирования. С такими инструментами как Blynk им легко "рулить" через интернет со своего смартфона в любой точке земного шара, где есть связь.
+
+Esp8266 WiFi series of model ESP - 12 ESP 12F esp12F esp12 authenticity guaranteed
+
+https://elementztechblog.wordpress.com/2015/05/14/controlling-arduino-gpio-pins-from-webbrowser/
+
+http://blog.huntgang.com/2015/01/20/arduino-esp8266-tutorial-web-server-monitor-example/
+

@@ -1,0 +1,30 @@
+JUN-2013
+
+В роддоме, когда Данька родился, я видел прикольные часики на светодиодах. Фото:
+
+
+JUL-2013
+Заказал кучу светодиодных матриц на aliexpress. Пришли в августе.
+
+Инфо: 
+
+http://playground.arduino.cc/Main/DS1302
+http://we.easyelectronics.ru/antonluba/samye-prostye-chasy-na-avr.html#cut
+http://eiseler.synology.me/wordpress/?tag=arduino
+http://girshwin.com/led_shift.php
+
+http://www.sweeting.org/mark/blog/2011/11/27/arduino-74hc595-shift-register-and-a-7-segment-led-display
+http://avrproject.ru/publ/kak_podkljuchit/podkljuchenie_semisegmentnogo_indikatora_cherez_74hc595_staticheskaja_indikacija/2-1-0-57
+
+https://sites.google.com/site/poprobotics/home/ledmatrica8x8iregistry74hc164
+
+http://arduino.ru/Tutorial/registr_74HC595
+
+http://mk90.blogspot.fi/2009/12/arduino-1.html
+
+http://www.geeetech.com/wiki/index.php/Arduino_7_segment_LED_timer_with_74HC595_module
+
+
+http://www.instructables.com/id/The-74HC164-Shift-Register-and-your-Arduino/?ALLSTEPS
+
+http://playground.arduino.cc/Main/DS1302

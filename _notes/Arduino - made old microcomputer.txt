@@ -1,0 +1,18 @@
+1. KENBAK
+
+http://www.funnypolynomial.com/software/arduino/kenbak.html
+http://www.funnypolynomial.com/software/arduino/ken_pins.html
+
+https://www.flickr.com/photos/funnypolynomial/sets/72157627738613990/
+
+2. PDP11
+
+3. KIM-1 (похож на Простотрон)
+http://obsolescence.wix.com/obsolescence#!kim-uno-how-to-use/c1dj1
+
+4. Или по книге.
+
+
+#simulator emulator
+#симулятор эмулятор
+

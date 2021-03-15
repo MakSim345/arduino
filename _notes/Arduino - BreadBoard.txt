@@ -1,0 +1,17 @@
+http://arduino.cc/en/Main/Standalone
+
+http://zelectro.com.ua/atmega_main
+
+http://makezine.com/2011/10/10/how-to-shrinkify-your-arduino-projects/
+
+http://www.youtube.com/watch?v=ufQZnAAxZ7A
+
+http://itp.nyu.edu/physcomp/Tutorials/ArduinoBreadboard
+
+http://krazatchu.ca/2012/04/30/how-to-bread-board-arduino/
+
+http://www.theparsley.com/arduino/diy/#intro
+
+http://www.theparsley.com/arduino/diy/#etch
+
+
