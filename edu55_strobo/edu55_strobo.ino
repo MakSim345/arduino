@@ -62,8 +62,9 @@ long previousStrobMillis = 0;        // will store last time LED was updated
 // will quickly become a bigger number than can be stored in an int.
 
 // long interval = 35;           // interval at which to blink (milliseconds)
-long interval = 40;           // interval at which to blink (milliseconds)
-long strobInterval = 350;
+long interval = 25;           // interval at which to blink (milliseconds)
+// long strobInterval = 350;
+long strobInterval = 500;
 unsigned long currentMillis;
 
 void setup()
@@ -110,8 +111,8 @@ void loop()
     }
     else
     {
-        digitalWrite(RED_PIN, LOW);
-        digitalWrite(LED_STROBO_01, LOW);
+        digitalWrite(RED_PIN, HIGH);
+        digitalWrite(LED_STROBO_01, HIGH);
     }
 }
 
