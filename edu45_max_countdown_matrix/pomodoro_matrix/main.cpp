@@ -28,12 +28,11 @@ RTC_DS1307 RTC;
   Arduino NANO, pin #XX
 */
 #ifdef NANO_IN_USE
-#define DATA_IN_PIN     5  //
-#define CLK_PIN         12 //
-#define LOAD_PIN        11 //
-#define LED_TOMATO_PIN  9  //
-#define LED_MONSTER_PIN 7  //
+#define DATA_IN_PIN 5  // (D5)
+#define CLK_PIN     12 // (D9)
+#define LOAD_PIN    13 // (D13)
 #endif
+
 
 const int numDevices = 4;      // number of MAX7219s used
 const long scrollDelay = 75;   // adjust scrolling speed
@@ -47,7 +46,7 @@ const int DIGIT_DELAY = 5; // 2ms optimal
 #else
     const int TOMATO_TIME = 25; // minutes
     const int BREAK_TIME = 5;   // minutes
-    const int MONSTERS_TIME = 10; //counter
+    const int MONSTERS_TIME = 20; //counter
 #endif
 
 enum RUN_FLAG
@@ -61,7 +60,6 @@ enum RUN_FLAG
 };
 
 long nextChange;
-int ledState = LOW; // ledState used to set the LED
 unsigned long _sec_to_print = 0;
 unsigned long _cur_sec = 0;
 
@@ -115,7 +113,7 @@ void ISR_Button_Press()
 
     millis_prev = millis();
 #endif
-
+    
 }
 
 void setup()
@@ -123,17 +121,11 @@ void setup()
     setup_matrix();
     Serial.begin(9600);
     Serial.write("APP START!\n");
-
-    // set the digital pin as output:
-    // pinMode(PB5, OUTPUT); // LED_BUILTIN = PB5 = 13 pin
-    // pinMode(PB1, OUTPUT); //PB1 = 9 pin    
-    pinMode(LED_TOMATO_PIN, OUTPUT); 
-    pinMode(LED_MONSTER_PIN, OUTPUT); 
-
+    
     pinMode(interruptPin, INPUT); // use external resistor to pull-down (GND)
     attachInterrupt(0, ISR_Button_Press, FALLING); //raise ISR every time button pressed
     // attachInterrupt(0, ISR_Button_Press, RISING);
-
+    
     _sec_to_print = now();
 
     Wire.begin(); // need for RTC work!
@@ -144,12 +136,10 @@ void setup()
     {
         Serial.println("RTC is NOT running!");
     }
-    digitalWrite(LED_TOMATO_PIN, LOW); // initial: LED OFF, the led connect to this port and GND.
-    digitalWrite(LED_MONSTER_PIN, LOW); 
 
     // following line sets the RTC to the date & time this sketch was compiled:
     // RTC.adjust(DateTime(__DATE__, __TIME__));
-    // RTC.adjust(DateTime(__DATE__, "09:58:00"));
+    // RTC.adjust(DateTime(__DATE__, "11:08:00"));
 }
 
 void loop()
@@ -171,15 +161,6 @@ void loop()
         Serial.println(_sec_to_print);
         */
 
-        // if the LED is off turn it on and vice-versa:
-        if (ledState == LOW)
-            ledState = HIGH;
-        else
-            ledState = LOW;
-
-        // set the LED with the ledState of the variable:
-        // digitalWrite(LED_BUILTIN, ledState);
-
         decrement_timer();
         _sec_to_print = now();
 
@@ -190,9 +171,7 @@ void loop()
         Serial.print(':');
         Serial.println(ADTnow.second());
 
-        const int SECONDS_TO_AJUST= 7; // second used for ajust time once per day.
-        // once per day, at 12:32 time id ajusted because RTC is not perfect:
-        if ( (SECONDS_TO_AJUST == ADTnow.second()) && (32 == ADTnow.minute()) && (12 == ADTnow.hour()) )
+        if ( (10 == ADTnow.second()) && (32 == ADTnow.minute()) && (12 == ADTnow.hour()) )
         {
             Serial.println("seconds went to ZERO!");
             if (!is_time_ajusted_today)
@@ -211,9 +190,9 @@ void loop()
         }
 
         if (btn_pressed_state)
-        {
+        {            
             Serial.println("btn_pressed_state: set to TRUE.");
-            btn_pressed_state = false; // reset back
+            btn_pressed_state = false;
             Serial.println("btn_pressed_state: Reset back to FALSE.");
             if (flag == CLOCK_IN_RUN)
             {
@@ -255,7 +234,6 @@ void loop()
 
 void showMonsters()
 {
-    digitalWrite(LED_MONSTER_PIN, HIGH);
     // Put #1 frame on both Display
     sinvader1a();
     delay(delayTime);
@@ -267,8 +245,6 @@ void showMonsters()
     delay(delayTime);
     sinvader2b();
     delay(delayTime);
-    
-    digitalWrite(LED_MONSTER_PIN, LOW);
 
     invider_show_ctr = invider_show_ctr - 1;
 
@@ -289,7 +265,6 @@ void changeState()
       prevStatus = TOMATO_IN_RUN;
       timer_min = BREAK_TIME;
       timer_sec = 0;
-      digitalWrite(LED_TOMATO_PIN, LOW); // LED - OFF
       Serial.write("CHANGE from TOMATO_IN_RUN to MONSTERS_IN_RUN \n");
       break;
     case MONSTERS_IN_RUN:
@@ -317,7 +292,6 @@ void changeState()
       is_timer_run = true;
       timer_min = TOMATO_TIME;
       timer_sec = 0;
-      digitalWrite(LED_TOMATO_PIN, HIGH); // LED - ON, to show TOMATO in RUN
       Serial.write("CHANGE from CLOCK_IN_RUN to TOMATO_IN_RUN \n");
       break;
     default:
@@ -332,7 +306,7 @@ void decrement_timer()
     static bool isNewTimerStart = false;
     // Serial.println("enter decrement_timer()");
 
-    if (!is_timer_run)
+    if (!is_timer_run) 
     {
         // Serial.println("return from decrement_timer(): is_timer_run is FALSE");
         return;
