@@ -61,10 +61,14 @@ long previousStrobMillis = 0;        // will store last time LED was updated
 // the follow variables is a long because the time, measured in miliseconds,
 // will quickly become a bigger number than can be stored in an int.
 
-// long interval = 35;           // interval at which to blink (milliseconds)
-long interval = 25;           // interval at which to blink (milliseconds)
-// long strobInterval = 350;
-long strobInterval = 500;
+#define ON_INTERVAL 20
+#define OFF_INTERVAL 80
+#define STROB_ON_INTERVAL 350
+#define STROB_OFF_INTERVAL 250
+
+long blinkInterval = ON_INTERVAL;    // interval at which to blink (milliseconds)
+long strobInterval = STROB_ON_INTERVAL;
+
 unsigned long currentMillis;
 
 void setup()
@@ -77,39 +81,48 @@ void setup()
 
 void loop()
 {
-    // here is where you'd put code that needs to be running all the time.
-
-    // check to see if it's time to blink the LED; that is, if the
-    // difference between the current time and last time you blinked
-    // the LED is bigger than the interval at which you want to
-    // blink the LED.
     unsigned long strobMillis = millis();
 
     if(strobMillis - previousStrobMillis > strobInterval)
     {
         strobState = !strobState;
         previousStrobMillis = strobMillis;
-        Serial.println("state = OFF");
+        
+        if  (strobState)
+        {
+            strobInterval = STROB_ON_INTERVAL;
+        }
+        else
+        {
+            strobInterval = STROB_OFF_INTERVAL;
+        }        
+        // Serial.println("state = OFF");
     }
 
     if (strobState)
     {
         currentMillis = millis();
-        if (currentMillis - previousMillis > interval)
+        if (currentMillis - previousMillis > blinkInterval)
         {
             // save the last time you blinked the LED
             previousMillis = currentMillis;
             // if the LED is off turn it on and vice-versa:
             if (ledState == LOW)
+            {
                 ledState = HIGH;
+                blinkInterval = OFF_INTERVAL;
+            }
             else
-                ledState = LOW;
+            {
+                ledState = LOW;                
+                blinkInterval = ON_INTERVAL;
+            }
 
             digitalWrite(RED_PIN, ledState);
             digitalWrite(LED_STROBO_01, ledState);
         }
     }
-    else
+    else // all leds off
     {
         digitalWrite(RED_PIN, HIGH);
         digitalWrite(LED_STROBO_01, HIGH);
