@@ -1,8 +1,18 @@
 #include "virtuabotixRTC.h"
 
-#define CE_PIN   4  // RST?
-#define IO_PIN   3  // DAT?
-#define SCLK_PIN 2  // CLK
+// #define NANO_IN_USE
+#ifdef NANO_IN_USE
+    #define CE_PIN   4  // RST?
+    #define IO_PIN   3  // DAT?
+    #define SCLK_PIN 2  // CLK
+#endif
+
+#define UNO_IN_USE
+#ifdef UNO_IN_USE
+    #define CE_PIN   13  // RST?
+    #define IO_PIN   12  // DAT?
+    #define SCLK_PIN 11  // CLK
+#endif
 
 // Creation of the Real Time Clock Object
 // virtuabotixRTC(uint8_t inSCLK, uint8_t inIO, uint8_t inC_E);
@@ -11,11 +21,6 @@ virtuabotixRTC myRTC(SCLK_PIN, IO_PIN, CE_PIN);
 void setup()
 {
   Serial.begin(9600);
-
-  // Set the current date, and time in the following format:
-  // seconds, minutes, hours, day of the week, day of the month, month, year
-  //                  SS  MM  HH DW DD  MM  YYYY
-  // myRTC.setDS1302Time(00, 21, 9, 2, 13, 10, 2015);
 }
 
 void loop()
