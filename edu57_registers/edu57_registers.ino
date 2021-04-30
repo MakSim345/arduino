@@ -62,9 +62,9 @@ int main()
     while(1)
     {   // main endless loop
         PORTB |= 1 << PORTB_5;    // Set pin to 1
-        _delay_ms(300);
-        PORTB &= ~(1 << PORTB_5); // Set pin to 0
         _delay_ms(500);
+        PORTB &= ~(1 << PORTB_5); // Set pin to 0
+        _delay_ms(100);
     }
     return 0;
 }
