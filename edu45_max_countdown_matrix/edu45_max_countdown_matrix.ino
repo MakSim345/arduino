@@ -32,6 +32,7 @@ RTC_DS1307 RTC;
 #define CLK_PIN         12 //
 #define LOAD_PIN        11 //
 #define LED_TOMATO_PIN  9  //
+#define LED_BREAK_PIN   8  //
 #define LED_MONSTER_PIN 7  //
 #endif
 
@@ -127,6 +128,7 @@ void setup()
     // set the digital pin as output:
     // pinMode(PB5, OUTPUT); // LED_BUILTIN = PB5 = 13 pin
     // pinMode(PB1, OUTPUT); //PB1 = 9 pin    
+    pinMode(LED_BREAK_PIN, OUTPUT); 
     pinMode(LED_TOMATO_PIN, OUTPUT); 
     pinMode(LED_MONSTER_PIN, OUTPUT); 
 
@@ -142,14 +144,15 @@ void setup()
 
     if (!RTC.isrunning())
     {
-        Serial.println("RTC is NOT running!");
+        Serial.println("RTC is NOT running! Time will be 00:00");
     }
     digitalWrite(LED_TOMATO_PIN, LOW); // initial: LED OFF, the led connect to this port and GND.
+    digitalWrite(LED_BREAK_PIN, LOW); // initial: LED OFF, the led connect to this port and GND.
     digitalWrite(LED_MONSTER_PIN, LOW); 
 
     // following line sets the RTC to the date & time this sketch was compiled:
     // RTC.adjust(DateTime(__DATE__, __TIME__));
-    // RTC.adjust(DateTime(__DATE__, "09:58:00"));
+    // RTC.adjust(DateTime(__DATE__, "11:47:20"));
 }
 
 void loop()
@@ -297,11 +300,13 @@ void changeState()
       {
         flag = BREAK_IN_RUN;
         is_timer_run = true;
+        digitalWrite(LED_BREAK_PIN, HIGH); // LED - ON, to show BREAK in RUN
         Serial.write("CHANGE from MONSTERS_IN_RUN to BREAK_IN_RUN \n");
       }
       else
       {
         flag = CLOCK_IN_RUN;
+        digitalWrite(LED_BREAK_PIN, LOW); // LED - OFF, to show BREAK in OVER
         Serial.write("CHANGE from MONSTERS_IN_RUN to CLOCK_IN_RUN \n");
       }
       break;
