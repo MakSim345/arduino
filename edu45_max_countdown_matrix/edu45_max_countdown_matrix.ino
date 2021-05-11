@@ -76,7 +76,7 @@ RUN_FLAG flag = CLOCK_IN_RUN;
 int timer_min = TOMATO_TIME;
 int timer_sec = 0;
 int invider_show_ctr = MONSTERS_TIME;
-bool is_timer_run = true;
+bool is_timer_run = false;
 bool is_time_ajusted_today = false;
 
 // a variable can change inside an ISR, thus must be volatile:
@@ -102,16 +102,17 @@ void setup_matrix()
 
 void ISR_Button_Press()
 {
-#define USE_TRIGGER
+// uncomment it in case of usage a SCHMITT trigger:   
+// #define USE_TRIGGER
 #ifdef USE_TRIGGER
-    btn_pressed_state = !btn_pressed_state;   // reverse
+    btn_pressed_state = true;
 #else
     static unsigned long millis_prev;
     const int debounce_delay = 10;
 
     if (millis() - debounce_delay > millis_prev)
     {
-        btn_pressed_state = !btn_pressed_state;   // reverse
+        btn_pressed_state = true;
     }
 
     millis_prev = millis();
@@ -134,29 +135,44 @@ void setup()
 
     pinMode(interruptPin, INPUT); // use external resistor to pull-down (GND)
     attachInterrupt(0, ISR_Button_Press, FALLING); //raise ISR every time button pressed
-    // attachInterrupt(0, ISR_Button_Press, RISING);
+    //attachInterrupt(0, ISR_Button_Press, RISING); //raise ISR every time button pressed
 
     _sec_to_print = now();
 
     Wire.begin(); // need for RTC work!
     RTC.begin();
-    ADTnow = RTC.now();
 
     if (!RTC.isrunning())
     {
-        Serial.println("RTC is NOT running! Time will be 00:00");
+        Serial.println("RTC is NOT running! Time will be ");
+        Serial.println(__DATE__);
+        Serial.println(__TIME__);
+        // RTC.adjust(DateTime(__DATE__, __TIME__));
     }
+    ADTnow = RTC.now();
     digitalWrite(LED_TOMATO_PIN, LOW); // initial: LED OFF, the led connect to this port and GND.
     digitalWrite(LED_BREAK_PIN, LOW); // initial: LED OFF, the led connect to this port and GND.
     digitalWrite(LED_MONSTER_PIN, LOW); 
 
     // following line sets the RTC to the date & time this sketch was compiled:
     // RTC.adjust(DateTime(__DATE__, __TIME__));
-    // RTC.adjust(DateTime(__DATE__, "11:47:20"));
+    // RTC.adjust(DateTime(__DATE__, "10:27:50"));
 }
 
 void loop()
 {
+  if (btn_pressed_state)
+  {
+    Serial.println("btn_pressed_state: set to TRUE.");
+    btn_pressed_state = false; // reset back
+    Serial.println("btn_pressed_state: Reset back to FALSE.");
+    if (flag == CLOCK_IN_RUN)
+    {
+        Serial.println("btn_pressed_state: flag == CLOCK_IN_RUN. call changeState()");
+        changeState();
+    }
+  }
+  
   long curentMillis = millis();
   if (curentMillis >= nextChange)
   {
@@ -193,8 +209,14 @@ void loop()
         Serial.print(':');
         Serial.println(ADTnow.second());
 
-        const int SECONDS_TO_AJUST= 7; // second used for ajust time once per day.
-        // once per day, at 12:32 time id ajusted because RTC is not perfect:
+        Serial.print(ADTnow.day());
+        Serial.print('-');
+        Serial.print(ADTnow.month());
+        Serial.print('-');
+        Serial.println(ADTnow.year());
+
+        const int SECONDS_TO_AJUST= 7; // amount of seconds used for ajust time once per day.
+        // once per day, at 12:32 time it is ajusted because RTC is not perfect:
         if ( (SECONDS_TO_AJUST == ADTnow.second()) && (32 == ADTnow.minute()) && (12 == ADTnow.hour()) )
         {
             Serial.println("seconds went to ZERO!");
@@ -211,18 +233,6 @@ void loop()
                 Serial.println("Time ajusted flag ready!");
             }
 
-        }
-
-        if (btn_pressed_state)
-        {
-            Serial.println("btn_pressed_state: set to TRUE.");
-            btn_pressed_state = false; // reset back
-            Serial.println("btn_pressed_state: Reset back to FALSE.");
-            if (flag == CLOCK_IN_RUN)
-            {
-                Serial.println("btn_pressed_state: flag == CLOCK_IN_RUN. call changeState()");
-                changeState();
-            }
         }
     }
 
