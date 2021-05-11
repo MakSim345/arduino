@@ -76,7 +76,7 @@ int timer_min = TOMATO_TIME;
 int timer_sec = 0;
 int invider_show_ctr = MONSTERS_TIME;
 bool is_timer_run = false;
-bool is_time_ajusted_today = false;
+bool is_time_adjusted_today = false;
 
 // a variable can change inside an ISR, thus must be volatile:
 volatile byte btn_pressed_state = false;
@@ -205,22 +205,22 @@ void loop()
             Serial.print('-');
             Serial.println(ADTnow.year());
 
-            const int SECONDS_TO_AJUST= 7; // amount of seconds used for ajust time once per day.
-            // once per day, at 12:32 time it is ajusted because RTC is not perfect:
-            if ( (SECONDS_TO_AJUST == ADTnow.second()) && (32 == ADTnow.minute()) && (12 == ADTnow.hour()) )
+            const int SECONDS_TO_ADJUST= 7; // amount of seconds used for adjust time once per day.
+            // once per day, at 12:32 time it is adjusted because RTC is not perfect:
+            if ( (SECONDS_TO_ADJUST == ADTnow.second()) && (32 == ADTnow.minute()) && (12 == ADTnow.hour()) )
             {
                 Serial.println("seconds went to ZERO!");
-                if (!is_time_ajusted_today)
+                if (!is_time_adjusted_today)
                 {
                     RTC.adjust(DateTime(__DATE__, "12:32:00"));
-                    is_time_ajusted_today = true;
-                    Serial.println("Time ajusted 10 seconds!");
-                    Serial.println("Time ajusted flag dropped!");
+                    is_time_adjusted_today = true;
+                    Serial.println("Time adjusted 10 seconds!");
+                    Serial.println("Time adjusted flag dropped!");
                 }
                 else
                 {
-                    is_time_ajusted_today = false;
-                    Serial.println("Time ajusted flag ready!");
+                    is_time_adjusted_today = false;
+                    Serial.println("Time adjusted flag ready!");
                 }
             }
         }
