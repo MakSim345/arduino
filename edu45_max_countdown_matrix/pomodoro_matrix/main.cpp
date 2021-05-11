@@ -28,11 +28,13 @@ RTC_DS1307 RTC;
   Arduino NANO, pin #XX
 */
 #ifdef NANO_IN_USE
-#define DATA_IN_PIN 5  // (D5)
-#define CLK_PIN     12 // (D9)
-#define LOAD_PIN    13 // (D13)
+#define DATA_IN_PIN     5  //
+#define CLK_PIN         12 //
+#define LOAD_PIN        11 //
+#define LED_TOMATO_PIN  9  //
+#define LED_BREAK_PIN   8  //
+#define LED_MONSTER_PIN 7  //
 #endif
-
 
 const int numDevices = 4;      // number of MAX7219s used
 const long scrollDelay = 75;   // adjust scrolling speed
@@ -46,7 +48,7 @@ const int DIGIT_DELAY = 5; // 2ms optimal
 #else
     const int TOMATO_TIME = 25; // minutes
     const int BREAK_TIME = 5;   // minutes
-    const int MONSTERS_TIME = 20; //counter
+    const int MONSTERS_TIME = 10; //counter
 #endif
 
 enum RUN_FLAG
@@ -60,6 +62,7 @@ enum RUN_FLAG
 };
 
 long nextChange;
+// int ledState = LOW; // ledState used to set the LED
 unsigned long _sec_to_print = 0;
 unsigned long _cur_sec = 0;
 
@@ -73,7 +76,7 @@ RUN_FLAG flag = CLOCK_IN_RUN;
 int timer_min = TOMATO_TIME;
 int timer_sec = 0;
 int invider_show_ctr = MONSTERS_TIME;
-bool is_timer_run = true;
+bool is_timer_run = false;
 bool is_time_ajusted_today = false;
 
 // a variable can change inside an ISR, thus must be volatile:
@@ -99,21 +102,22 @@ void setup_matrix()
 
 void ISR_Button_Press()
 {
-#define USE_TRIGGER
+// uncomment it in case of usage a SCHMITT trigger:   
+// #define USE_TRIGGER
 #ifdef USE_TRIGGER
-    btn_pressed_state = !btn_pressed_state;   // reverse
+    btn_pressed_state = true;
 #else
     static unsigned long millis_prev;
     const int debounce_delay = 10;
 
     if (millis() - debounce_delay > millis_prev)
     {
-        btn_pressed_state = !btn_pressed_state;   // reverse
+        btn_pressed_state = true;
     }
 
     millis_prev = millis();
 #endif
-    
+
 }
 
 void setup()
@@ -121,46 +125,71 @@ void setup()
     setup_matrix();
     Serial.begin(9600);
     Serial.write("APP START!\n");
-    
+
+    // set the digital pin as output:
+    // pinMode(PB5, OUTPUT); // LED_BUILTIN = PB5 = 13 pin
+    // pinMode(PB1, OUTPUT); //PB1 = 9 pin    
+    pinMode(LED_BREAK_PIN, OUTPUT); 
+    pinMode(LED_TOMATO_PIN, OUTPUT); 
+    pinMode(LED_MONSTER_PIN, OUTPUT); 
+
     pinMode(interruptPin, INPUT); // use external resistor to pull-down (GND)
     attachInterrupt(0, ISR_Button_Press, FALLING); //raise ISR every time button pressed
-    // attachInterrupt(0, ISR_Button_Press, RISING);
-    
+    //attachInterrupt(0, ISR_Button_Press, RISING); //raise ISR every time button pressed
+
     _sec_to_print = now();
 
     Wire.begin(); // need for RTC work!
     RTC.begin();
-    ADTnow = RTC.now();
 
     if (!RTC.isrunning())
     {
-        Serial.println("RTC is NOT running!");
+        Serial.println("RTC is NOT running! Time will be ");
+        Serial.println(__DATE__);
+        Serial.println(__TIME__);
+        // RTC.adjust(DateTime(__DATE__, __TIME__));
     }
+    ADTnow = RTC.now();
+    digitalWrite(LED_TOMATO_PIN, LOW); // initial: LED OFF, the led connect to this port and GND.
+    digitalWrite(LED_BREAK_PIN, LOW); // initial: LED OFF, the led connect to this port and GND.
+    digitalWrite(LED_MONSTER_PIN, LOW); 
 
     // following line sets the RTC to the date & time this sketch was compiled:
     // RTC.adjust(DateTime(__DATE__, __TIME__));
-    // RTC.adjust(DateTime(__DATE__, "11:08:00"));
+    // RTC.adjust(DateTime(__DATE__, "10:27:50"));
 }
 
 void loop()
 {
-  long curentMillis = millis();
-  if (curentMillis >= nextChange)
-  {
-    nextChange = curentMillis + DIGIT_DELAY;
-    _cur_sec = now(); // function from "Time.h"
-    if (_sec_to_print < _cur_sec)
+    if (btn_pressed_state)
     {
-        ADTnow = RTC.now();
+        Serial.println("btn_pressed_state: set to TRUE.");
+        btn_pressed_state = false; // reset back
+        Serial.println("btn_pressed_state: Reset back to FALSE.");
+        if (flag == CLOCK_IN_RUN)
+        {
+            Serial.println("btn_pressed_state: flag == CLOCK_IN_RUN. call changeState()");
+            changeState();
+        }
+    }
+  
+    long curentMillis = millis();
+    if (curentMillis >= nextChange)
+    {
+        nextChange = curentMillis + DIGIT_DELAY;
+        _cur_sec = now(); // function from "Time.h"
+        if (_sec_to_print < _cur_sec)
+        {
+            ADTnow = RTC.now();
 
-        /*
-        Serial.print("_cur_sec: ");
-        Serial.print(_cur_sec);
-        Serial.print(" ");
-        Serial.print("_sec_to_print: ");
-        Serial.println(_sec_to_print);
-        */
-
+            /*
+            Serial.print("_cur_sec: ");
+            Serial.print(_cur_sec);
+            Serial.print(" ");
+            Serial.print("_sec_to_print: ");
+            Serial.println(_sec_to_print);
+            */
+    
         decrement_timer();
         _sec_to_print = now();
 
@@ -171,7 +200,15 @@ void loop()
         Serial.print(':');
         Serial.println(ADTnow.second());
 
-        if ( (10 == ADTnow.second()) && (32 == ADTnow.minute()) && (12 == ADTnow.hour()) )
+        Serial.print(ADTnow.day());
+        Serial.print('-');
+        Serial.print(ADTnow.month());
+        Serial.print('-');
+        Serial.println(ADTnow.year());
+
+        const int SECONDS_TO_AJUST= 7; // amount of seconds used for ajust time once per day.
+        // once per day, at 12:32 time it is ajusted because RTC is not perfect:
+        if ( (SECONDS_TO_AJUST == ADTnow.second()) && (32 == ADTnow.minute()) && (12 == ADTnow.hour()) )
         {
             Serial.println("seconds went to ZERO!");
             if (!is_time_ajusted_today)
@@ -187,18 +224,6 @@ void loop()
                 Serial.println("Time ajusted flag ready!");
             }
 
-        }
-
-        if (btn_pressed_state)
-        {            
-            Serial.println("btn_pressed_state: set to TRUE.");
-            btn_pressed_state = false;
-            Serial.println("btn_pressed_state: Reset back to FALSE.");
-            if (flag == CLOCK_IN_RUN)
-            {
-                Serial.println("btn_pressed_state: flag == CLOCK_IN_RUN. call changeState()");
-                changeState();
-            }
         }
     }
 
@@ -234,6 +259,7 @@ void loop()
 
 void showMonsters()
 {
+    digitalWrite(LED_MONSTER_PIN, HIGH);
     // Put #1 frame on both Display
     sinvader1a();
     delay(delayTime);
@@ -245,6 +271,8 @@ void showMonsters()
     delay(delayTime);
     sinvader2b();
     delay(delayTime);
+    
+    digitalWrite(LED_MONSTER_PIN, LOW);
 
     invider_show_ctr = invider_show_ctr - 1;
 
@@ -265,6 +293,7 @@ void changeState()
       prevStatus = TOMATO_IN_RUN;
       timer_min = BREAK_TIME;
       timer_sec = 0;
+      digitalWrite(LED_TOMATO_PIN, LOW); // LED - OFF
       Serial.write("CHANGE from TOMATO_IN_RUN to MONSTERS_IN_RUN \n");
       break;
     case MONSTERS_IN_RUN:
@@ -272,11 +301,13 @@ void changeState()
       {
         flag = BREAK_IN_RUN;
         is_timer_run = true;
+        digitalWrite(LED_BREAK_PIN, HIGH); // LED - ON, to show BREAK in RUN
         Serial.write("CHANGE from MONSTERS_IN_RUN to BREAK_IN_RUN \n");
       }
       else
       {
         flag = CLOCK_IN_RUN;
+        digitalWrite(LED_BREAK_PIN, LOW); // LED - OFF, to show BREAK in OVER
         Serial.write("CHANGE from MONSTERS_IN_RUN to CLOCK_IN_RUN \n");
       }
       break;
@@ -292,6 +323,7 @@ void changeState()
       is_timer_run = true;
       timer_min = TOMATO_TIME;
       timer_sec = 0;
+      digitalWrite(LED_TOMATO_PIN, HIGH); // LED - ON, to show TOMATO in RUN
       Serial.write("CHANGE from CLOCK_IN_RUN to TOMATO_IN_RUN \n");
       break;
     default:
@@ -306,7 +338,7 @@ void decrement_timer()
     static bool isNewTimerStart = false;
     // Serial.println("enter decrement_timer()");
 
-    if (!is_timer_run) 
+    if (!is_timer_run)
     {
         // Serial.println("return from decrement_timer(): is_timer_run is FALSE");
         return;
@@ -510,3 +542,4 @@ void printBufferLong()
     lc.setRow(0, a, y);                     // Send row to relevent MAX7219 chip
   }
 }
+
