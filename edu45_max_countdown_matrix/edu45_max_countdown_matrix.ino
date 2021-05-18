@@ -155,7 +155,7 @@ void setup()
 
     // following line sets the RTC to the date & time this sketch was compiled:
     // RTC.adjust(DateTime(__DATE__, __TIME__));
-    // RTC.adjust(DateTime(__DATE__, "10:27:50"));
+    // RTC.adjust(DateTime(__DATE__, "12:58:45"));
 }
 
 void loop()
@@ -212,6 +212,7 @@ void loop()
                 Serial.println("seconds went to ZERO!");
                 if (!is_time_adjusted_today)
                 {
+                    // #TODO: __DATE__ will be always same, need to find how to get current data.
                     RTC.adjust(DateTime(__DATE__, "12:32:00"));
                     is_time_adjusted_today = true;
                     Serial.println("Time adjusted 10 seconds!");
