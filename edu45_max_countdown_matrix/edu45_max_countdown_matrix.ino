@@ -47,7 +47,7 @@ const int DIGIT_DELAY = 5; // 2ms optimal
     const int MONSTERS_TIME = 10; //counter
 #endif
 
-enum RUN_FLAG
+enum RUN_STATUS
 {
     BREAK_IN_RUN = 0,
     TOMATO_IN_RUN,
@@ -66,8 +66,7 @@ int delayTime = 200; // Delay between Frames
 char v_str[8] = "       ";  //reserve the string space first
 unsigned long bufferLong [14] = {0};
 
-// RUN_FLAG flag = TOMATO_IN_RUN;
-RUN_FLAG flag = CLOCK_IN_RUN;
+RUN_STATUS flag = CLOCK_IN_RUN;
 int timer_min = TOMATO_TIME;
 int timer_sec = 0;
 int invider_show_ctr = MONSTERS_TIME;
@@ -151,7 +150,7 @@ void setup()
 
     // following line sets the RTC to the date & time this sketch was compiled:
     // RTC.adjust(DateTime(__DATE__, __TIME__));
-    // RTC.adjust(DateTime(__DATE__, "12:58:45"));
+    // RTC.adjust(DateTime(__DATE__, "10:27:50"));
 }
 
 void loop()
@@ -280,7 +279,7 @@ void showMonsters()
 
 void changeState()
 {
-    static RUN_FLAG prevStatus = TOMATO_IN_RUN;
+    static RUN_STATUS prevStatus = TOMATO_IN_RUN;
     switch (flag)
     {
     case TOMATO_IN_RUN:
