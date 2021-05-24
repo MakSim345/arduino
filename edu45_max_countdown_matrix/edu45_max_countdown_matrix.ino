@@ -7,34 +7,30 @@
 
 RTC_DS1307 RTC;
 
-#define interruptPin 2 // A button between PIN-2 and GND
 
-#define NANO_IN_USE
-//#define ARDUINO_IN_USE
-/*
-  Now we need a LedControl to work with.
-***** These pin numbers will probably not work with your hardware *****
-  pin 12 is connected to the DataIn, DIN
-  pin 11 is connected to the CLK
-  pin 10 is connected to LOAD
-  We have only a single MAX72XX.
-*/
+//#define NANO_IN_USE
+#define ARDUINO_IN_USE
+
 #ifdef ARDUINO_IN_USE
-#define DATA_IN_PIN 12
-#define CLK_PIN 11
-#define LOAD_PIN 10
+  #define DATA_IN_PIN     5 // D5
+  #define CLK_PIN         6 // D6
+  #define LOAD_PIN        7 // D7 
+  #define INTERRUPT_PIN   2 // A button between PIN-2 and GND
+  #define LED_MONSTER_PIN 4 // D4
 #endif
 /*
   Arduino NANO, pin #XX
 */
 #ifdef NANO_IN_USE
-#define DATA_IN_PIN     5  //
-#define CLK_PIN         12 //
-#define LOAD_PIN        11 //
-#define LED_TOMATO_PIN  9  //
-#define LED_BREAK_PIN   8  //
-#define LED_MONSTER_PIN 7  //
+  #define DATA_IN_PIN     5  //
+  #define CLK_PIN         12 //
+  #define LOAD_PIN        11 //
+  #define INTERRUPT_PIN   2  // A button between PIN and GND
+  #define LED_MONSTER_PIN 7  //
 #endif
+
+#define LED_TOMATO_PIN  9  // D9
+#define LED_BREAK_PIN   8  // D8
 
 const int numDevices = 4;      // number of MAX7219s used
 const long scrollDelay = 75;   // adjust scrolling speed
@@ -132,7 +128,7 @@ void setup()
     pinMode(LED_TOMATO_PIN, OUTPUT);
     pinMode(LED_MONSTER_PIN, OUTPUT);
 
-    pinMode(interruptPin, INPUT); // use external resistor to pull-down (GND)
+    pinMode(INTERRUPT_PIN, INPUT); // use external resistor to pull-down (GND)
     attachInterrupt(0, ISR_Button_Press, FALLING); //raise ISR every time button pressed
     //attachInterrupt(0, ISR_Button_Press, RISING); //raise ISR every time button pressed
 
