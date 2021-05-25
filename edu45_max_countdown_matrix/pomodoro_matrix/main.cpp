@@ -7,34 +7,30 @@
 
 RTC_DS1307 RTC;
 
-#define interruptPin 2 // A button between PIN-2 and GND
 
-#define NANO_IN_USE
-//#define ARDUINO_IN_USE
-/*
-  Now we need a LedControl to work with.
-***** These pin numbers will probably not work with your hardware *****
-  pin 12 is connected to the DataIn, DIN
-  pin 11 is connected to the CLK
-  pin 10 is connected to LOAD
-  We have only a single MAX72XX.
-*/
+//#define NANO_IN_USE
+#define ARDUINO_IN_USE
+
 #ifdef ARDUINO_IN_USE
-#define DATA_IN_PIN 12
-#define CLK_PIN 11
-#define LOAD_PIN 10
+  #define DATA_IN_PIN     5 // D5
+  #define CLK_PIN         6 // D6
+  #define LOAD_PIN        7 // D7 
+  #define INTERRUPT_PIN   2 // A button between PIN-2 and GND
+  #define LED_MONSTER_PIN 4 // D4
 #endif
 /*
   Arduino NANO, pin #XX
 */
 #ifdef NANO_IN_USE
-#define DATA_IN_PIN     5  //
-#define CLK_PIN         12 //
-#define LOAD_PIN        11 //
-#define LED_TOMATO_PIN  9  //
-#define LED_BREAK_PIN   8  //
-#define LED_MONSTER_PIN 7  //
+  #define DATA_IN_PIN     5  //
+  #define CLK_PIN         12 //
+  #define LOAD_PIN        11 //
+  #define INTERRUPT_PIN   2  // A button between PIN and GND
+  #define LED_MONSTER_PIN 7  //
 #endif
+
+#define LED_TOMATO_PIN  9  // D9
+#define LED_BREAK_PIN   8  // D8
 
 const int numDevices = 4;      // number of MAX7219s used
 const long scrollDelay = 75;   // adjust scrolling speed
@@ -51,7 +47,7 @@ const int DIGIT_DELAY = 5; // 2ms optimal
     const int MONSTERS_TIME = 10; //counter
 #endif
 
-enum RUN_FLAG
+enum RUN_STATUS
 {
     BREAK_IN_RUN = 0,
     TOMATO_IN_RUN,
@@ -70,8 +66,7 @@ int delayTime = 200; // Delay between Frames
 char v_str[8] = "       ";  //reserve the string space first
 unsigned long bufferLong [14] = {0};
 
-// RUN_FLAG flag = TOMATO_IN_RUN;
-RUN_FLAG flag = CLOCK_IN_RUN;
+RUN_STATUS flag = CLOCK_IN_RUN;
 int timer_min = TOMATO_TIME;
 int timer_sec = 0;
 int invider_show_ctr = MONSTERS_TIME;
@@ -123,7 +118,8 @@ void setup()
 {
     setup_matrix();
     Serial.begin(9600);
-    Serial.write("APP START!\n");
+    Serial.println("APP START!");
+    // Serial.println(__DATE__);// May 20 2021
 
     // set the digital pin as output:
     // pinMode(PB5, OUTPUT); // LED_BUILTIN = PB5 = 13 pin
@@ -132,7 +128,7 @@ void setup()
     pinMode(LED_TOMATO_PIN, OUTPUT);
     pinMode(LED_MONSTER_PIN, OUTPUT);
 
-    pinMode(interruptPin, INPUT); // use external resistor to pull-down (GND)
+    pinMode(INTERRUPT_PIN, INPUT); // use external resistor to pull-down (GND)
     attachInterrupt(0, ISR_Button_Press, FALLING); //raise ISR every time button pressed
     //attachInterrupt(0, ISR_Button_Press, RISING); //raise ISR every time button pressed
 
@@ -156,6 +152,9 @@ void setup()
     // following line sets the RTC to the date & time this sketch was compiled:
     // RTC.adjust(DateTime(__DATE__, __TIME__));
     // RTC.adjust(DateTime(__DATE__, "10:27:50"));
+    Serial.print(ADTnow.day());
+    Serial.print(ADTnow.month());
+    Serial.println(ADTnow.year());
 }
 
 void loop()
@@ -209,18 +208,21 @@ void loop()
             // once per day, at 12:32 time it is adjusted because RTC is not perfect:
             if ( (SECONDS_TO_ADJUST == ADTnow.second()) && (32 == ADTnow.minute()) && (12 == ADTnow.hour()) )
             {
-                Serial.println("seconds went to ZERO!");
+                Serial.println("It is adjusted TIME!");
                 if (!is_time_adjusted_today)
                 {
+                    // #TODO: __DATE__ will be always same, need to find how to get current data.
+                    char temp [] = __DATE__; // May 20 2021
                     RTC.adjust(DateTime(__DATE__, "12:32:00"));
                     is_time_adjusted_today = true;
-                    Serial.println("Time adjusted 10 seconds!");
-                    Serial.println("Time adjusted flag dropped!");
+                    Serial.print("Time adjusted to: ");
+                    Serial.print(SECONDS_TO_ADJUST);
+                    Serial.println(" seconds.");
                 }
                 else
                 {
                     is_time_adjusted_today = false;
-                    Serial.println("Time adjusted flag ready!");
+                    Serial.println("Time was adjusted few seconds ago. Wait next 24 hours.");
                 }
             }
         }
@@ -283,7 +285,7 @@ void showMonsters()
 
 void changeState()
 {
-    static RUN_FLAG prevStatus = TOMATO_IN_RUN;
+    static RUN_STATUS prevStatus = TOMATO_IN_RUN;
     switch (flag)
     {
     case TOMATO_IN_RUN:
@@ -531,4 +533,3 @@ void printBufferLong()
         lc.setRow(0, a, y);                     // Send row to relevent MAX7219 chip
     }
 }
-
