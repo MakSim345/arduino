@@ -118,7 +118,8 @@ void setup()
 {
     setup_matrix();
     Serial.begin(9600);
-    Serial.write("APP START!\n");
+    Serial.println("APP START!");
+    // Serial.println(__DATE__);// May 20 2021
 
     // set the digital pin as output:
     // pinMode(PB5, OUTPUT); // LED_BUILTIN = PB5 = 13 pin
@@ -151,6 +152,9 @@ void setup()
     // following line sets the RTC to the date & time this sketch was compiled:
     // RTC.adjust(DateTime(__DATE__, __TIME__));
     // RTC.adjust(DateTime(__DATE__, "10:27:50"));
+    Serial.print(ADTnow.day());
+    Serial.print(ADTnow.month());
+    Serial.println(ADTnow.year());
 }
 
 void loop()
@@ -204,19 +208,21 @@ void loop()
             // once per day, at 12:32 time it is adjusted because RTC is not perfect:
             if ( (SECONDS_TO_ADJUST == ADTnow.second()) && (32 == ADTnow.minute()) && (12 == ADTnow.hour()) )
             {
-                Serial.println("seconds went to ZERO!");
+                Serial.println("It is adjusted TIME!");
                 if (!is_time_adjusted_today)
                 {
                     // #TODO: __DATE__ will be always same, need to find how to get current data.
+                    char temp [] = __DATE__; // May 20 2021
                     RTC.adjust(DateTime(__DATE__, "12:32:00"));
                     is_time_adjusted_today = true;
-                    Serial.println("Time adjusted 10 seconds!");
-                    Serial.println("Time adjusted flag dropped!");
+                    Serial.print("Time adjusted to: ");
+                    Serial.print(SECONDS_TO_ADJUST);
+                    Serial.println(" seconds.");
                 }
                 else
                 {
                     is_time_adjusted_today = false;
-                    Serial.println("Time adjusted flag ready!");
+                    Serial.println("Time was adjusted few seconds ago. Wait next 24 hours.");
                 }
             }
         }
