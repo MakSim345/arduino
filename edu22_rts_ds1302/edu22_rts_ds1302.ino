@@ -1,13 +1,13 @@
 #include "virtuabotixRTC.h"
 
-// #define NANO_IN_USE
+#define NANO_IN_USE
 #ifdef NANO_IN_USE
-    #define CE_PIN   4  // RST?
-    #define IO_PIN   3  // DAT?
-    #define SCLK_PIN 2  // CLK
+    #define CE_PIN   4  // use D4 for RST
+    #define IO_PIN   3  // use D3 for DAT
+    #define SCLK_PIN 2  // use D2 for CLK
 #endif
 
-#define UNO_IN_USE
+// #define UNO_IN_USE
 #ifdef UNO_IN_USE
     #define CE_PIN   13  // RST?
     #define IO_PIN   12  // DAT?
@@ -20,15 +20,15 @@ virtuabotixRTC myRTC(SCLK_PIN, IO_PIN, CE_PIN);
 
 char *getDayOfWeek(int dayP);
 
-const char *months[] = {"Jan", "Feb", "Mar", 
-                        "Apr", "May", "Jun", 
-                        "Jul", "Aug", "Sep", 
+const char *months[] = {"Jan", "Feb", "Mar",
+                        "Apr", "May", "Jun",
+                        "Jul", "Aug", "Sep",
                         "Oct", "Nov", "Dec" };
 
 void getdate(int& yearP, int& monthP, int& dayP)
 {
     char temp [] = __DATE__; // "Jan  8 2021"
-    
+
     const int MILLENIUM = 2000;
     unsigned char i;
 
@@ -51,14 +51,14 @@ void getdate(int& yearP, int& monthP, int& dayP)
 void gettime(int& hourP, int& minutesP, int& secondsP)
 {
     char temp [] = __TIME__; //i.e - 12:52:22
-    
+
     secondsP = atoi(temp + 6);
     *(temp + 5) = 0;
-    
+
     minutesP = atoi(temp + 3);
     *(temp + 2) = 0;
 
-    hourP = atoi(temp);    
+    hourP = atoi(temp);
 }
 
 
@@ -74,7 +74,7 @@ void setup()
   //Set date/time variables:
 
 // #define SET_TIME
-#ifdef SET_TIME    
+#ifdef SET_TIME
     int _YEAR = 0;
     int _MONTH = 0;
     int _DAY_M = 0;
@@ -100,7 +100,7 @@ void setup()
     Serial.print("Sec - ");
     Serial.println(_SECON);
     Serial.println("Set Time for DS1302....");
-    myRTC.setDS1302Time(_SECON, _MINUT, _HOUR, _DAY_W, _DAY_M, _MONTH, _YEAR);    
+    myRTC.setDS1302Time(_SECON, _MINUT, _HOUR, _DAY_W, _DAY_M, _MONTH, _YEAR);
     Serial.println("Done.");
     // myRTC.setDS1302Time(0, 15, 13, 8, 8, 1, 2021);
 #endif
