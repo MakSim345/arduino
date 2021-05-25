@@ -17,9 +17,20 @@ http://quadpoint.org/projects/arduino-ds1302
 //uint8_t IO_PIN   = A1; //6; // DAT?
 //uint8_t SCLK_PIN = A0; //7; // CLK
 
-#define CE_PIN   4  // RST?
-#define IO_PIN   3  // DAT?
-#define SCLK_PIN 2  // CLK
+
+#define NANO_IN_USE
+#ifdef NANO_IN_USE
+    #define CE_PIN   4  // use D4 for RST
+    #define IO_PIN   3  // use D3 for DAT
+    #define SCLK_PIN 2  // use D2 for CLK
+#endif
+
+// #define UNO_IN_USE
+#ifdef UNO_IN_USE
+    #define CE_PIN   13  // RST?
+    #define IO_PIN   12  // DAT?
+    #define SCLK_PIN 11  // CLK
+#endif
 
 //#define CE_PIN   7  // RST?
 //#define IO_PIN   6  // DAT?
