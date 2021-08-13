@@ -151,7 +151,7 @@ void setup()
 
     // following line sets the RTC to the date & time this sketch was compiled:
     // RTC.adjust(DateTime(__DATE__, __TIME__));
-    // RTC.adjust(DateTime(__DATE__, "10:27:50"));
+    // RTC.adjust(DateTime(__DATE__, "07:27:30"));
     Serial.print(ADTnow.day());
     Serial.print(ADTnow.month());
     Serial.println(ADTnow.year());
@@ -212,7 +212,7 @@ void loop()
                 if (!is_time_adjusted_today)
                 {
                     // #TODO: __DATE__ will be always same, need to find how to get current data.
-                    char temp [] = __DATE__; // May 20 2021
+                    // char temp [] = __DATE__; // May 20 2021
                     RTC.adjust(DateTime(__DATE__, "12:32:00"));
                     is_time_adjusted_today = true;
                     Serial.print("Time adjusted to: ");
