@@ -4,6 +4,13 @@
 
 RTC_DS1307 RTC;
 
+/*
+For RTC DS1307 in NANO:
+SCL is pin A5 and SDA is pin A4 on the Nano
+SCL = A5
+SDL = A4
+*/
+
 void setup ()
 {
     Serial.begin(9600);
