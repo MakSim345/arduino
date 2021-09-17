@@ -13,6 +13,11 @@
 #define NANO_IN_USE 
 // #define ARDUINO_IN_USE 
 /*
+For RTC DS1307 in NANO:
+SCL is pin A5 and SDA is pin A4 on the Nano
+SCL = A5
+SDL = A4
+
 Now we need a LedControl to work with.
 ***** These pin numbers will probably not work with your hardware *****
 pin 12 is connected to the DataIn, DIN
@@ -20,7 +25,8 @@ pin 11 is connected to the CLK
 pin 10 is connected to LOAD
 We have only a single MAX72XX.
 */
-#ifdef ARDUINO_IN_USE 
+#ifdef ARDUINO_IN_USE
+    // it is LED control!
     #define DATA_IN_PIN 12
     #define CLK_PIN 11
     #define LOAD_PIN 10
@@ -29,6 +35,7 @@ We have only a single MAX72XX.
  Arduino NANO, pin #XX 
  */
 #ifdef NANO_IN_USE 
+    // it is LED control!
     #define DATA_IN_PIN 5  // (D5)
     #define CLK_PIN     12 // (D9)
     #define LOAD_PIN    13 // (D13)
@@ -48,7 +55,13 @@ const int NUM_DIGITS = 1000;
 long nextChange;
  
 unsigned long bufferLong [14] = {0};
- 
+
+const char *months[] = {"Jan", "Feb", "Mar", 
+                        "Apr", "May", "Jun", 
+                        "Jul", "Aug", "Sep", 
+                        "Oct", "Nov", "Dec" };
+
+
 LedControl lc=LedControl(DATA_IN_PIN, CLK_PIN, LOAD_PIN, MATRIX_NUMBER);
 
 byte* nums[] = {number0, number1, number2, number3, number4, number5, number6, number7, number8, number9};
@@ -97,22 +110,22 @@ void loop()
     int _min_to_print = now.minute(); //min(); 
     int _sec_to_print = now.second(); //sec();
     
-    // Serial.write("--\n"); // 
-    char v_str[8] = "       ";  //reserve the string space first
-    itoa(_hour_to_print, v_str, 6);
-    // lcd.printIn(v_str);
-    int bytesSent = Serial.write(v_str); //send the string and return the length of the string.
-    Serial.write(" - Hr\n");
-    itoa(_min_to_print, v_str, 6);
-    // lcd.printIn(v_str);
-    bytesSent = Serial.write(v_str); //send the string and return the length of the string. 
-    Serial.write(" - Min\n");
-    itoa(_sec_to_print, v_str, 6);
-    // lcd.printIn(v_str);
-    bytesSent = Serial.write(v_str); //send the string and return the length of the string.
-    
-    Serial.write(" - Sec\n\n"); 
-    delay (5);
+    Serial.print(now.day());
+    Serial.print('-');
+    // Serial.print(now.month());
+    int mon_num = now.month();
+    Serial.print (months[mon_num-1]);
+
+    Serial.print('-');
+    Serial.println(now.year());
+
+    Serial.print(now.hour());
+    Serial.print(':');
+    Serial.print(now.minute());
+    Serial.print(':');
+    Serial.println(now.second());
+
+    delay (1000);
     // _sec_to_print++;
     //int _hour_to_print = hour();
     //int _min_to_print = minute(); 
@@ -122,6 +135,30 @@ void loop()
     show_min (_min_to_print);
     //show_sec (_sec_to_print);    
   }
+}
+
+
+void getdate(int& yearP, int& monthP, int& dayP)
+{
+    char temp [] = __DATE__; // "Jan  8 2021"
+    
+    const int MILLENIUM = 2000;
+    unsigned char i;
+
+    yearP = atoi(temp + 9) + MILLENIUM;
+    *(temp + 6) = 0;
+
+    dayP = atoi(temp + 4);
+    *(temp + 3) = 0;
+
+    for (i = 0; i < 12; i++)
+    {
+        if (!strcmp(temp, months[i]))
+        {
+            monthP = i + 1;
+            return;
+        }
+    }
 }
  
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
