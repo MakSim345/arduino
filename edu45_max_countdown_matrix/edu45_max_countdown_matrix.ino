@@ -151,7 +151,7 @@ void setup()
 
     // following line sets the RTC to the date & time this sketch was compiled:
     // RTC.adjust(DateTime(__DATE__, __TIME__));
-    // RTC.adjust(DateTime(__DATE__, "07:27:30"));
+    //RTC.adjust(DateTime(__DATE__, "12:00:30"));
     Serial.print(ADTnow.day());
     Serial.print(ADTnow.month());
     Serial.println(ADTnow.year());
@@ -204,7 +204,7 @@ void loop()
             Serial.print('-');
             Serial.println(ADTnow.year());
 
-            const int SECONDS_TO_ADJUST= 7; // amount of seconds used for adjust time once per day.
+            const int SECONDS_TO_ADJUST= 5; // amount of seconds used for adjust time once per day.
             // once per day, at 12:32 time it is adjusted because RTC is not perfect:
             if ( (SECONDS_TO_ADJUST == ADTnow.second()) && (32 == ADTnow.minute()) && (12 == ADTnow.hour()) )
             {
