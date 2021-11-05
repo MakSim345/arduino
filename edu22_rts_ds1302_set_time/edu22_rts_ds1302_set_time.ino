@@ -1,13 +1,13 @@
 #include "virtuabotixRTC.h"
 
-// #define NANO_IN_USE
+#define NANO_IN_USE
 #ifdef NANO_IN_USE
     #define CE_PIN   4  // RST?
     #define IO_PIN   3  // DAT?
     #define SCLK_PIN 2  // CLK
 #endif
 
-#define UNO_IN_USE
+//#define UNO_IN_USE
 #ifdef UNO_IN_USE
     #define CE_PIN   13  // RST?
     #define IO_PIN   12  // DAT?
