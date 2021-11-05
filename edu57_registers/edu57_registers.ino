@@ -27,7 +27,7 @@ void myISR_Blink()
     millis_prev = millis();
 }
 
-// #define ARDUINO_IDE_IN_USE
+#define ARDUINO_IDE_IN_USE
 #ifdef ARDUINO_IDE_IN_USE
 
 void setup()
@@ -39,17 +39,17 @@ void setup()
 void loop()
 {
   D13_WRITE_HIGH; // LED ON
-  _delay_ms(300);
-  // delay(300);
+  //_delay_ms(300);
+  delay(10);
   D13_WRITE_LOW;  // LED OFF
-  _delay_ms(300);
-  // delay(300);
+  //_delay_ms(300);
+  delay(10);
 }
 #endif // ARDUINO_IDE_IN_USE
 
 /******************************************************************/
 
-#define CPP_IN_USE
+// #define CPP_IN_USE
 #ifdef  CPP_IN_USE
 
 // PORTB pin 5 is UNO pin 13, internal LED (and SCK). Also it is 19 leg on the ATMEGA chip
