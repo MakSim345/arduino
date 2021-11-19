@@ -41,7 +41,7 @@
 
 // set pin 10 as the slave select for the digital pot:
 const int slaveSelectPin = 10;
-const int ledGreenPin = 8;
+const int ledGreenPin = 13;
 bool  first_time = true;
 int rand_val_1 = 0;
 int rand_val_2 = 0;
@@ -129,7 +129,7 @@ void loop()
     delay(100);
 }
 
-int max7219_Write(int address, int value) 
+void max7219_Write(int address, int value) 
 {
     // take the SS pin low to select the chip:
     digitalWrite(slaveSelectPin, LOW);
