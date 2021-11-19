@@ -32,7 +32,7 @@ LedControl lc=LedControl(DATA_IN_PIN, CLK_PIN, LOAD_PIN, 1);
 #define DEVICE 0
 
 char dateString[30];
-const int DIGIT_DELAY = 5; // 2ms optimal
+const int DIGIT_DELAY = 500; // 2ms optimal
 const int NUM_DIGITS = 1000;
 long nextChange;
 long oneSecond;
@@ -53,7 +53,7 @@ void setup()
   lc.setIntensity(_device, 10);
   /* and clear the display */
   lc.clearDisplay(_device);
-  setTime(10, 25, 0, 24, 8, 2015); // HH-MM-SS DD-MM-YYYY
+  //setTime(10, 25, 0, 24, 8, 2015); // HH-MM-SS DD-MM-YYYY
 }
 
 
@@ -176,9 +176,15 @@ void loop()
   if (time >= nextChange) 
   {
     nextChange = time + DIGIT_DELAY;
+    writeArduinoOn7Segment();
+    
+    //displayNumber(_ctr);
+    //_ctr = _ctr + 1;
+
     //print_time();
     /* Get the current time and date from the chip */
     //Time t = rtc.time();
+    /*
     int _hour_to_print = hour();
     int _min_to_print = minute(); 
     _sec_to_print = second(); 
@@ -186,6 +192,7 @@ void loop()
     show_hour(_hour_to_print);
     show_min (_min_to_print);
     show_sec (_sec_to_print);
+    */
     // sdl->show_number(_hour_to_print * 100 + _min_to_print);
     // sdl->show_number(_min_to_print * 100 + _sec_to_print);
   }
