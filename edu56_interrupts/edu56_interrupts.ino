@@ -13,6 +13,7 @@ void myISR_Blink()
     if (millis() - debounce_delay > millis_prev)
     {
         state = !state;   // reverse
+        Serial.println("STATE changed!");
     }
 
     millis_prev = millis();
@@ -28,11 +29,14 @@ void setup()
 
   // attachInterrupt(digitalPinToInterrupt(interruptPin), myISR_Blink, RISING);
   // attachInterrupt(0, myISR_Blink, CHANGE); // LED ON when button down and OFF on release
-  attachInterrupt(0, myISR_Blink, RISING); // LED ON/OFF every time button pressed
+  // attachInterrupt(0, myISR_Blink, RISING); // LED ON/OFF every time button pressed
+  // attachInterrupt(1, myISR_Blink, RISING); 
+  attachInterrupt(1, myISR_Blink, CHANGE); 
 }
 
 void loop()
 {
+  /*
   if (state)
   {
     Serial.println("STATE = HIGH");
@@ -41,6 +45,7 @@ void loop()
   {
     Serial.println("STATE = LOW");
   }
+  */
   digitalWrite(ledPin, state);
   // delay(500);
   // digitalWrite(ledPin, HIGH);
