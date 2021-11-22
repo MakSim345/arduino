@@ -2,8 +2,8 @@
 // example sketch for the DateTime library
 // REM: sync required time in UNIX epoch format!!!
 
-#include "DateTime.h"
-#include "DateTimeStrings.h"
+#include <DateTime.h>
+#include <DateTimeStrings.h>
 
 #define TIME_MSG_LEN  11   // time sync to PC is HEADER followed by unix time_t as ten ascii digits
 #define TIME_HEADER  255   // Header tag for serial time sync message
