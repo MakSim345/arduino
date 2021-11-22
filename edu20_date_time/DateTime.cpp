@@ -9,7 +9,7 @@ extern "C"
 
 //#include <string.h> // for memset
 #include "DateTime.h"
-#include <wiring.h>
+// #include <wiring.h>
 
 //extern unsigned long _time;
 

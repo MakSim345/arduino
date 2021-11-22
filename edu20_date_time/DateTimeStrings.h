@@ -11,7 +11,7 @@
 #define DateTimeStrings_h
 
 #include <inttypes.h>
-#include <DateTime.h> 
+#include "DateTime.h"
 
 #define dt_MAX_STRING_LEN 9 // length of longest string (excluding terminating null)
 
