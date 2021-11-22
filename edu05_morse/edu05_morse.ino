@@ -36,12 +36,12 @@ void loop()
   send_three_dash(morse);
   send_three_dots(morse);
   
-  delay(2000);
+  delay(1000);
   
   send_three_dots(morse2);
   send_three_dash(morse2);
   send_three_dots(morse2);
   
-  delay(2000);
+  delay(1000);
 }
 
