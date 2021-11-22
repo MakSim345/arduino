@@ -4,7 +4,7 @@
 
   * The program has a bug. 
   * Can you find it? 
-  * What happens if you input 2 3 5 7 1 2 3 5 7 1 ? Why?
+  * What happens if you input 23571 23571 ? Why?
 */
 
 #include <Keypad.h>
@@ -41,17 +41,21 @@ void setup()
 
 void loop()
 {
-  char key = keypad.getKey();
-  if (key == '*' || key == '#') {
+  // char key = keypad.getKey();
+  
+  if (key == '*' || key == '#') 
+  {
     position = 0;
     setLocked(true);
   }
   
-  if (key == secretCode[position]) {
+  if (key == secretCode[position]) 
+  {
     position++;
   }
   
-  if (position == 6) {
+  if (position == 6) 
+  {
     setLocked(false);
   }
   delay(50);
@@ -59,11 +63,13 @@ void loop()
 
 void setLocked(int locked)
 {
-  if (locked) {
+  if (locked) 
+  {
     digitalWrite(redPin, HIGH);
     digitalWrite(greenPin, LOW);
   }
-  else {
+  else 
+  {
     digitalWrite(redPin, LOW);
     digitalWrite(greenPin, HIGH);
   }
