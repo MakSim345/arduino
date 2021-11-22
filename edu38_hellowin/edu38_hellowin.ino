@@ -9,21 +9,17 @@ Update sketch to use with NANO
 // #define NANO_IN_USE
 #define UNO_IN_USE
 
+// same on UNO and NANO:
+const unsigned int TST_LED_PIN = 13; // not PWM!
+
 #ifdef UNO_IN_USE
-/* Arduino UNO */
-    const unsigned int TST_LED_PIN = 13;
-    
-    const unsigned int PWM_LED_PIN_RED = 9; //PWM pin in use!
-    // const unsigned int PWM_LED_PIN_RED = TST_LED_PIN;
-    
-    const unsigned int PWM_LED_PIN_BLU = TST_LED_PIN;
-    // const unsigned int PWM_LED_PIN_BLU = 6; //PWM pin in use!
+    const unsigned int PWM_LED_PIN_RED = 9; //in this pin PWM pin in use!
+    const unsigned int PWM_LED_PIN_BLU = 6; //in this pin PWM pin in use!
+    // const unsigned int PWM_LED_PIN_BLU = TST_LED_PIN; // 13 is not PWM
 #endif
 
 
 #ifdef NANO_IN_USE
-/* Arduino NANO */
-    const unsigned int TST_LED_PIN = 13;
     const unsigned int PWM_LED_PIN_RED = 9; //PWM pin in use!
     const unsigned int PWM_LED_PIN_BLU = 6; //PWM pin in use!
 #endif
@@ -46,7 +42,6 @@ int brightness = 0;    // LED brightness init
 int fadeAmount = 1;    // step add/decrease brightness
 
 long randOn = 0;
-
 
 void setup()
 {
@@ -75,12 +70,12 @@ void fadeLed()
     }
 }
 
-void fire_simul()
+void fire_simulation()
 {
     //analogWrite(ledPin1, random(120)+135);
     //analogWrite(ledPin2, random(120)+135);
     // analogWrite(ledPin3, random(120)+135);
-    
+
     // analogWrite(PWM_LED_PIN_RED, random(120)+135);
     analogWrite(PWM_LED_PIN_BLU, random(120)+130);
     //delay(random(100));
@@ -88,8 +83,6 @@ void fire_simul()
 
 void loop()
 {
-    // here is where you'd put code that needs to be running all the time.
-
     // check to see if it's time to blink the LED; that is, if the
     // difference between the current time and last time you blinked
     // the LED is bigger than the interval at which you want to
@@ -117,7 +110,7 @@ void loop()
         // save the last time you blinked the LED
         prev_fire_millis = currentMillis;
         // fadeLed();
-        fire_simul();
+        fire_simulation();
         fire_interval = random (100, 1200);
     }
 
@@ -125,7 +118,6 @@ void loop()
     {
         // save the last time you blinked the LED
         prev_fade_millis = currentMillis;
-        fadeLed();       
-        // fire_interval = random (100);
+        fadeLed();
     }
 }
