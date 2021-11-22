@@ -4,7 +4,7 @@ A clock with RTC module, using 8 seven-segment leds.
 
 #include <stdio.h>
 #include <string.h>
-#include <DS1302.h>
+#include "DS1302.h"
 //#include "seven_digit_led.h"
 //#include "print_time.h"
 #include "segment8x7.h"
