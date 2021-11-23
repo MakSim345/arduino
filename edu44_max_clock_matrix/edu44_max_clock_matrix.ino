@@ -4,11 +4,8 @@
 //#include <avr/pgmspace.h>
 #include <LedControl.h>
 #include "char_matrix.h"
-#include <Time.h>
+#include "Time.h"
 
-
-#define NANO_IN_USE 
-//#define ARDUINO_IN_USE 
 /*
 Now we need a LedControl to work with.
 ***** These pin numbers will probably not work with your hardware *****
@@ -17,6 +14,7 @@ pin 11 is connected to the CLK
 pin 10 is connected to LOAD
 We have only a single MAX72XX.
 */
+#define ARDUINO_IN_USE 
 #ifdef ARDUINO_IN_USE 
     #define DATA_IN_PIN 12
     #define CLK_PIN 11
@@ -25,6 +23,7 @@ We have only a single MAX72XX.
 /*
  Arduino NANO, pin #XX 
  */
+// #define NANO_IN_USE 
 #ifdef NANO_IN_USE 
     #define DATA_IN_PIN 5  // (D5)
     #define CLK_PIN     12 // (D9)
@@ -38,7 +37,7 @@ uint8_t IO_PIN   = A1; //6; // DAT?
 uint8_t SCLK_PIN = A0; //7; // CLK
  
 
-const int numDevices = 4;      // number of MAX7219s used
+const int numDevices = 1;      // number of MAX7219s used
 const long scrollDelay = 75;   // adjust scrolling speed
 const int DIGIT_DELAY = 5; // 2ms optimal
 const int NUM_DIGITS = 1000;
@@ -75,9 +74,9 @@ void loop()
     int _min_to_print = minute(); 
     _sec_to_print = second(); 
               
-    show_hour(_hour_to_print);
-    show_min (_min_to_print);
-    // show_sec (_sec_to_print);
+    //show_hour(_hour_to_print);
+    //show_min (_min_to_print);
+    show_sec (_sec_to_print);
     // sdl->show_number(_hour_to_print * 100 + _min_to_print);
     // sdl->show_number(_min_to_print * 100 + _sec_to_print);
   }
@@ -100,9 +99,9 @@ void show_sec(int seconds)
   {
     lc.setRow(1, i, nums[decimal[1]][i]);
   }
-  
-  //lc.setDigit(0, 0, decimal[0], false);
-  //lc.setDigit(0, 1, decimal[1], false);
+    
+  // lc.setDigit(0, 1, decimal[1], false);
+  // lc.setDigit(0, 0, decimal[0], false);
 }
 
 void show_min(int minutes)
