@@ -9,9 +9,8 @@ We have only a single MAX72XX.
 // LedControl lc=LedControl(12, 11, 10, 1);
 
 #include "LedControl.h"
+#include "arrayInvader.h"
  
-#define NANO_IN_USE 
-// #define ARDUINO_IN_USE 
 /*
 Now we need a LedControl to work with.
 ***** These pin numbers will probably not work with your hardware *****
@@ -20,6 +19,8 @@ pin 11 is connected to the CLK
 pin 10 is connected to LOAD
 We have only a single MAX72XX.
 */
+
+#define ARDUINO_IN_USE 
 #ifdef ARDUINO_IN_USE 
     #define DATA_IN_PIN 12
     #define CLK_PIN 11
@@ -28,69 +29,25 @@ We have only a single MAX72XX.
 /*
  Arduino NANO, pin #XX 
  */
+// #define NANO_IN_USE 
 #ifdef NANO_IN_USE 
     #define DATA_IN_PIN 5  // (D5)
     #define CLK_PIN     12 // (D9)
     #define LOAD_PIN    13 // (D13)
 #endif
 
-const int numDevices = 4;      // number of MAX7219s used
+// const int numDevices = 4;      // number of MAX7219s used
+const int numDevices = 1;      // number of MAX7219s used
 const long scrollDelay = 75;   // adjust scrolling speed 
 unsigned long delayTime=200;  // Delay between Frames
 
+void sinvader1a();
+void sinvader1b();
+void sinvader2a();
+void sinvader2b();
 
 LedControl lc=LedControl(DATA_IN_PIN, CLK_PIN, LOAD_PIN, numDevices);
 // LedControl lc=LedControl(12, 11, 10, 2);  // Pins: DIN,CLK,CS, number of Display connected
-
-
-// Put values in arrays
-byte invader1a[] =
-{
-   B00011000,  // First frame of invader #1
-   B00111100,
-   B01111110,
-   B11011011,
-   B11111111,
-   B00100100,
-   B01011010,
-   B10100101
-};
- 
-byte invader1b[] =
-{
-  B00011000, // Second frame of invader #1
-  B00111100,
-  B01111110,
-  B11011011,
-  B11111111,
-  B00100100,
-  B01011010,
-  B01000010
-};
- 
-byte invader2a[] =
-{
-  B00100100, // First frame of invader #2
-  B00100100,
-  B01111110,
-  B11011011,
-  B11111111,
-  B11111111,
-  B10100101,
-  B00100100
-};
- 
-byte invader2b[] =
-{
-  B00100100, // Second frame of invader #2
-  B10100101,
-  B11111111,
-  B11011011,
-  B11111111,
-  B01111110,
-  B00100100,
-  B01000010
-};
  
 void setup()
 {
@@ -100,9 +57,31 @@ void setup()
         lc.setIntensity(x, 4);      // Set the brightness to default value
         lc.clearDisplay(x);         // and clear the display
     }
+    Serial.begin(9600);
+    Serial.println("App started  >------------------>");
+#ifdef ARDUINO_IN_USE 
+    Serial.println("Arduino UNO");
+#endif
+#ifdef NANO_IN_USE 
+    Serial.println("Arduino NANO");
+#endif
 }
- 
- 
+
+void loop()
+{
+// Put #1 frame on both Display
+    sinvader1a();
+    delay(delayTime);
+    sinvader2a();
+    delay(delayTime);
+  
+// Put #2 frame on both Display
+    sinvader1b();
+    delay(delayTime);
+    sinvader2b();
+    delay(delayTime); 
+}
+
 //  Take values in Arrays and Display them
 void sinvader1a()
 {
@@ -134,19 +113,4 @@ void sinvader2b()
   {
     lc.setRow(1, i, invader2b[i]);
   }
-}
- 
-void loop()
-{
-// Put #1 frame on both Display
-    sinvader1a();
-    delay(delayTime);
-    sinvader2a();
-    delay(delayTime);
-  
-// Put #2 frame on both Display
-    sinvader1b();
-    delay(delayTime);
-    sinvader2b();
-    delay(delayTime); 
 }
