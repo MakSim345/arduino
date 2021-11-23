@@ -1,10 +1,8 @@
 //We always have to include the library
 #include "LedControl.h"
-#include <Time.h> 
+#include "Time.h"
 
 
-#define NANO_IN_USE 
-//#define ARDUINO_IN_USE 
 /*
 Now we need a LedControl to work with.
 ***** These pin numbers will probably not work with your hardware *****
@@ -13,6 +11,8 @@ pin 11 is connected to the CLK
 pin 10 is connected to LOAD
 We have only a single MAX72XX.
 */
+
+#define ARDUINO_IN_USE 
 #ifdef ARDUINO_IN_USE 
     #define DATA_IN_PIN 12
     #define CLK_PIN 11
@@ -21,13 +21,19 @@ We have only a single MAX72XX.
 /*
  Arduino NANO, pin #XX 
  */
+// #define NANO_IN_USE 
 #ifdef NANO_IN_USE 
     #define DATA_IN_PIN 5  // (D5)
     #define CLK_PIN     12 // (D9)
     #define LOAD_PIN    13 // (D13)
 #endif
 
-LedControl lc=LedControl(DATA_IN_PIN, CLK_PIN, LOAD_PIN, 1);
+// const int numDevices = 4;      // number of MAX7219s used
+const int numDevices = 1;      // number of MAX7219s used
+
+// Pins: DIN, CLK, CS, number of Display connected
+LedControl lc=LedControl(DATA_IN_PIN, CLK_PIN, LOAD_PIN, numDevices);
+// LedControl lc=LedControl(12, 11, 10, 2);  
 
 #define DEVICE 0
 
@@ -43,17 +49,33 @@ unsigned long _ctr = 0;
 
 void setup()
 {
-  /*
-   The MAX72XX is in power-saving mode on startup,
-   we have to do a wakeup call
-   */
-  int _device = DEVICE;
-  lc.shutdown(_device, false);
-  /* Set the brightness to a medium values */
-  lc.setIntensity(_device, 10);
-  /* and clear the display */
-  lc.clearDisplay(_device);
-  setTime(21, 21, 0, 16, 7, 2015); // HH-MM-SS DD-MM-YYYY
+    /*
+    The MAX72XX is in power-saving mode on startup,
+    we have to do a wakeup call
+    */
+    //int _device = DEVICE;
+    //lc.shutdown(_device, false);
+    /* Set the brightness to a medium values */
+    //lc.setIntensity(_device, 4);
+    /* and clear the display */
+    //lc.clearDisplay(_device);
+
+    for (int x=0; x<numDevices; x++)
+    {
+        lc.shutdown(x, false);      //The MAX72XX is in power-saving mode on startup
+        lc.setIntensity(x, 4);      // Set the brightness to default value
+        lc.clearDisplay(x);         // and clear the display
+    }
+    
+    setTime(12, 0, 0, 23, 11, 2021); // HH-MM-SS DD-MM-YYYY
+    Serial.begin(9600);
+    Serial.println("App started  >------------------>");
+#ifdef ARDUINO_IN_USE 
+    Serial.println("Arduino UNO");
+#endif
+#ifdef NANO_IN_USE 
+    Serial.println("Arduino NANO");
+#endif
 }
 
 
@@ -64,7 +86,7 @@ word "Arduino" one after the other on digit 0.
 void writeArduinoOn7Segment()
 {
   int _device = DEVICE;
-  lc.setChar(_device, 1, 'a', false);
+  lc.setChar(_device, 0, 'a', false);
   delay(delaytime);
   lc.setRow(_device, 0, 0x05);
   delay(delaytime);
@@ -115,7 +137,7 @@ void show_sec(int seconds)
   decimal[0] = seconds % 10;
  
   lc.setDigit(0, 0, decimal[0], false);
-  lc.setDigit(0, 1, decimal[1], false);
+  // lc.setDigit(0, 1, decimal[1], false);
 }
 
 void show_min(int minutes)
@@ -156,10 +178,10 @@ void displayNumber(unsigned long value)
    value = value % 100;
    decimal[1] = value / 10;
    decimal[0] = value % 10;
-   byte zero = 0;
-   int _num = 0;
+   // byte zero = 0;
+   // int _num = 0;
 
-   for(int i=0; i<8; i++)
+   for(int i=0; i<numDevices; i++)
    {
      lc.setDigit(0, i, decimal[i], false);
    }
@@ -167,15 +189,15 @@ void displayNumber(unsigned long value)
 
 void loop()
 {
-  //displayNumber(_ctr);
-  //delay(10);
-  //_ctr = _ctr + 1;
-  //writeArduinoOn7Segment();
   //scrollDigits();
+  // writeArduinoOn7Segment();
   long time = millis();
   if (time >= nextChange) 
   {
-    nextChange = time + DIGIT_DELAY;
+    // nextChange = time + DIGIT_DELAY;
+    nextChange = time + 1000;
+    //displayNumber(_ctr);
+    //_ctr = _ctr + 1;
     //print_time();
     /* Get the current time and date from the chip */
     //Time t = rtc.time();
@@ -183,9 +205,16 @@ void loop()
     int _min_to_print = minute(); 
     _sec_to_print = second(); 
               
-    show_hour(_hour_to_print);
-    show_min (_min_to_print);
-    show_sec (_sec_to_print);
+    //show_hour(_hour_to_print);
+    //show_min (_min_to_print);
+    show_sec(_sec_to_print);
+    // show_sec(1);
+    
+    Serial.print(_hour_to_print);
+    Serial.write(":");
+    Serial.print(_min_to_print);
+    Serial.write(":");
+    Serial.println(_sec_to_print);
     // sdl->show_number(_hour_to_print * 100 + _min_to_print);
     // sdl->show_number(_min_to_print * 100 + _sec_to_print);
   }
