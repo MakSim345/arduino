@@ -3,8 +3,6 @@
  
 typedef unsigned char PROGMEM prog_uchar;
 
-#define NANO_IN_USE 
-// #define ARDUINO_IN_USE 
 /*
 Now we need a LedControl to work with.
 ***** These pin numbers will probably not work with your hardware *****
@@ -13,6 +11,7 @@ pin 11 is connected to the CLK
 pin 10 is connected to LOAD
 We have only a single MAX72XX.
 */
+#define ARDUINO_IN_USE 
 #ifdef ARDUINO_IN_USE 
     #define DATA_IN_PIN 12
     #define CLK_PIN 11
@@ -21,13 +20,15 @@ We have only a single MAX72XX.
 /*
  Arduino NANO, pin #XX 
  */
+// #define NANO_IN_USE 
 #ifdef NANO_IN_USE 
     #define DATA_IN_PIN 5  // (D5)
     #define CLK_PIN     12 // (D9)
     #define LOAD_PIN    13 // (D13)
 #endif
 
-const int numDevices = 4;      // number of MAX7219s used
+// const int numDevices = 4;      // number of MAX7219s used
+const int numDevices = 1;      // number of MAX7219s used
 const long scrollDelay = 75;   // adjust scrolling speed
  
 unsigned long bufferLong [14] = {0};
