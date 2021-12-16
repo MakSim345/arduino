@@ -1,3 +1,9 @@
+/*
+ * 
+ * Port Register Control | Increase speed of Read/Write - Arduino101
+ * https://www.youtube.com/watch?v=UhTRrjYXqPU&list=PLsR1AO4QH1AyR0HEQH9eq53K9RSfzXsbD&index=2
+*/
+
 #include <avr/io.h>
 #include <util/delay.h>
 
@@ -33,17 +39,27 @@ void myISR_Blink()
 void setup()
 {
   Serial.begin(9600);
-  D13_SET_OUTPUT; // Set PIN 13 to OUTPUT
+  // D13_SET_OUTPUT; // Set PIN 13 to OUTPUT
+  pinMode(9, OUTPUT);
 }
 
 void loop()
 {
+  digitalWrite(9, HIGH);
+  // delay(200);
+  digitalWrite(9, LOW);
+  delay(5);
+}
+
+
+void test_loop()
+{
   D13_WRITE_HIGH; // LED ON
   //_delay_ms(300);
-  delay(10);
+  delay(1000);
   D13_WRITE_LOW;  // LED OFF
   //_delay_ms(300);
-  delay(10);
+  delay(1000);
 }
 #endif // ARDUINO_IDE_IN_USE
 
