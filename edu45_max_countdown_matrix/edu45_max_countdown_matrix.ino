@@ -204,9 +204,9 @@ void loop()
             Serial.print('-');
             Serial.println(ADTnow.year());
 
-            const int SECONDS_TO_ADJUST= 3; // amount of seconds used for adjust time once per day.
+            const int SECONDS_TO_SUBTRACT= 3; // amount of seconds used for adjust time once per day.
             // once per day, at 12:32 time it is adjusted because RTC is not perfect:
-            if ( (SECONDS_TO_ADJUST == ADTnow.second()) && (32 == ADTnow.minute()) && (12 == ADTnow.hour()) )
+            if ( (SECONDS_TO_SUBTRACT == ADTnow.second()) && (32 == ADTnow.minute()) && (12 == ADTnow.hour()) )
             {
                 Serial.println("It is adjusted TIME!");
                 if (!is_time_adjusted_today)
@@ -216,7 +216,7 @@ void loop()
                     RTC.adjust(DateTime(__DATE__, "12:32:00"));
                     is_time_adjusted_today = true;
                     Serial.print("Time adjusted to: ");
-                    Serial.print(SECONDS_TO_ADJUST);
+                    Serial.print(SECONDS_TO_SUBTRACT);
                     Serial.println(" seconds.");
                 }
                 else
