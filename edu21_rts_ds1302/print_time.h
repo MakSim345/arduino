@@ -5,6 +5,6 @@
 #include <string.h>
 #include "DS1302.h"
 
-void print_time();
+void print_time(Time t);
 
 #endif

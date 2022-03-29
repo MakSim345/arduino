@@ -59,7 +59,7 @@ void setup()
   rtc.halt(false);
 
 // #define SET_TIME
-#ifdef SET_TIME      
+#ifdef SET_TIME
   /* Initialize a new chip by turning off write protection and clearing the
      clock halt flag. These methods needn't always be called. See the DS1302
      datasheet for details. */
@@ -79,40 +79,41 @@ void setup()
 void loop()
 {
     long time = millis();
-    if (time >= nextChange) 
+    if (time >= nextChange)
     {
         // currentDigit = (millis()/1000) % NUM_DIGITS;
         // sdl->show_number(currentDigit);
         nextChange = time + DIGIT_DELAY;
-        //print_time();
+
         /* Get the current time and date from the chip */
         Time t = rtc.time();
-        int _hour_to_print = t.hr; //hour();
-        int _min_to_print = t.min; //min(); 
-        int _sec_to_print = t.sec; //sec(); 
+        //int _hour_to_print = t.hr; //hour();
+        //int _min_to_print = t.min; //min();
+        //int _sec_to_print = t.sec; //sec();
+        //Serial.println(_sec_to_print);
+        print_time(t);
         // sdl->show_number(_hour_to_print * 100 + _min_to_print);
-        sdl->show_number(_min_to_print * 100 + _sec_to_print);
+        // sdl->show_number(_min_to_print * 100 + _sec_to_print);
     }
-    
+
   //long time = millis();
-  if (time >= oneSecond) 
+  if (time >= oneSecond)
   {
       oneSecond = time + DIGIT_DELAY;
       // currentDigit = (millis()/1000) % NUM_DIGITS;
       // sdl->show_number(currentDigit);
       //oneSecond = time + NUM_DIGITS;
-      print_time();
+      // print_time();
     }
 }
 
-void print_time()
-{  
+void print_time(Time t)
+{
   // Get the current time and date from the chip
-  Time t = rtc.time();
-
+  // t = rtc.time();
   // Name the day of the week
   memset(day, 0, sizeof(day));  // clear day buffer
-  switch (t.day) 
+  switch (t.day)
   {
     case 1:
       strcpy(day, "Sunday");
@@ -144,5 +145,5 @@ void print_time()
            t.hr, t.min, t.sec);
 
   // Print the formatted string to serial so we can see the time
-  Serial.println(buf); 
+  Serial.println(buf);
 }

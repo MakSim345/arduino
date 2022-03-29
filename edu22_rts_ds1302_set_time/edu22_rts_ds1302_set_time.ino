@@ -113,24 +113,30 @@ void loop()
   myRTC.updateTime();
 
   // Start printing elements as individuals
-  Serial.print("Current Date / Time: ");
+  Serial.print("Current TimeStamp: ");
   //Serial.print(getDayOfWeek(myRTC.dayofweek));
   //Serial.print(" - ");
+  if (myRTC.dayofmonth < 10 ) Serial.print("0");
   Serial.print(myRTC.dayofmonth);
-  Serial.print("/");
-  Serial.print(myRTC.month);
-  Serial.print("/");
+  Serial.print("-");
+  // Serial.print(myRTC.month);
+  Serial.print(months[myRTC.month - 1]);
+  Serial.print("-");
   Serial.print(myRTC.year);
-  Serial.print("  ");
+  Serial.print(" ");
+  if (myRTC.hours < 10 ) Serial.print("0");
   Serial.print(myRTC.hours);
   Serial.print(":");
+  if (myRTC.minutes < 10 ) Serial.print("0");
   Serial.print(myRTC.minutes);
   Serial.print(":");
+  if (myRTC.seconds < 10 ) Serial.print("0");
   Serial.println(myRTC.seconds);
 
   // Delay
   delay(2000);
 }
+
 
 char *getDayOfWeek(int dayP)
 {
