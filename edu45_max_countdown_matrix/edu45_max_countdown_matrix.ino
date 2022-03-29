@@ -150,8 +150,9 @@ void setup()
     digitalWrite(LED_MONSTER_PIN, LOW);
 
     // following line sets the RTC to the date & time this sketch was compiled:
+    // DEBUG:
     // RTC.adjust(DateTime(__DATE__, __TIME__));
-    //RTC.adjust(DateTime(__DATE__, "09:49:00"));
+    // RTC.adjust(DateTime(__DATE__, "13:10:00"));
     Serial.print(ADTnow.day());
     Serial.print(ADTnow.month());
     Serial.println(ADTnow.year());
@@ -204,7 +205,7 @@ void loop()
             Serial.print('-');
             Serial.println(ADTnow.year());
 
-            const int SECONDS_TO_SUBTRACT= 3; // amount of seconds used for adjust time once per day.
+            const int SECONDS_TO_SUBTRACT= 20; // amount of seconds used for adjust time once per day.
             // once per day, at 12:32 time it is adjusted because RTC is not perfect:
             if ( (SECONDS_TO_SUBTRACT == ADTnow.second()) && (32 == ADTnow.minute()) && (12 == ADTnow.hour()) )
             {
