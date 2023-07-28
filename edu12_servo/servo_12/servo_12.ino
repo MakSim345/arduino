@@ -23,14 +23,25 @@ boolean flag = false;
  
 void setup() 
 { 
-    myservo.attach(SERVO_PIN, servoMinImp, servoMaxImp);  // attaches the servo on pin 9 to the servo object 
+    // myservo.attach(SERVO_PIN, servoMinImp, servoMaxImp);  // attaches the servo on pin 9 to the servo object 
+    myservo.attach(SERVO_PIN); // attach the servo on pin SERVO_PIN
     randomSeed (analogRead (0));    // randomize 
     pinMode(LED_PIN, OUTPUT); 
-} 
- 
+}  
  
 void loop() 
 { 
+  
+  myservo.write(60);
+  delay(1500); // wait for 1 second
+    
+  myservo.write(160);
+  delay(2000); // wait for 1 second
+  
+  // move the servo to 180 degrees
+  //myservo.write(180);
+  //delay(1000); // wait for 1 second
+/*
     if (flag == false)
     {
         flag = true;
@@ -54,6 +65,6 @@ void loop()
         digitalWrite(LED_PIN, LOW);   // sets the LED off
         delay(randOn);
     }
-
+*/
 } 
 

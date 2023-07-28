@@ -4,7 +4,7 @@
 
 #include <Servo.h> 
 
-#define SERVO_PIN 12
+#define SERVO_PIN 9
 #define MAX_DEGREE 90
 #define LED_PIN 13
 #define MIN_SECONDS_DELAY 2000
@@ -26,8 +26,24 @@ void setup()
     pinMode(LED_PIN, OUTPUT); 
 } 
  
+
+void loop() {
+  // move the servo to 0 degrees
+  myservo.write(0);
+  delay(1000); // wait for 1 second
+  
+  // move the servo to 90 degrees
+  myservo.write(90);
+  delay(1000); // wait for 1 second
+  
+  // move the servo to 180 degrees
+  myservo.write(180);
+  delay(1000); // wait for 1 second
+}
+
+
  
-void loop() 
+void loop_2() 
 { 
     randOn = random (MIN_SECONDS_DELAY, MAX_SECONDS_DELAY); // generate ON time between 1 and 2 seconds
   
