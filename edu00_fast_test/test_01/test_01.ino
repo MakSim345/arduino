@@ -5,13 +5,13 @@ const uint8_t led_pin = 5;
 const uint8_t led_state = LOW;
 const uint8_t btn_prev  = HIGH;
 
-void void setup()
+void setup()
 {
 	pinMode(btn_pin, INPUT_PULLUP);
 	pinMode(led_pin, OUTPUT);
 }
 
-vois void loop()
+void loop()
 {
 	// Poll for button push:
 	uint8_t btn_state = digitalRead(btn_pin);
