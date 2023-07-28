@@ -1,9 +1,3 @@
-/*
- * 
- * Port Register Control | Increase speed of Read/Write - Arduino101
- * https://www.youtube.com/watch?v=UhTRrjYXqPU&list=PLsR1AO4QH1AyR0HEQH9eq53K9RSfzXsbD&index=2
-*/
-
 #include <avr/io.h>
 #include <util/delay.h>
 
@@ -33,39 +27,29 @@ void myISR_Blink()
     millis_prev = millis();
 }
 
-#define ARDUINO_IDE_IN_USE
+// #define ARDUINO_IDE_IN_USE
 #ifdef ARDUINO_IDE_IN_USE
 
 void setup()
 {
   Serial.begin(9600);
-  // D13_SET_OUTPUT; // Set PIN 13 to OUTPUT
-  pinMode(9, OUTPUT);
+  D13_SET_OUTPUT; // Set PIN 13 to OUTPUT
 }
 
 void loop()
 {
-  digitalWrite(9, HIGH);
-  // delay(200);
-  digitalWrite(9, LOW);
-  delay(5);
-}
-
-
-void test_loop()
-{
   D13_WRITE_HIGH; // LED ON
-  //_delay_ms(300);
-  delay(1000);
+  _delay_ms(300);
+  // delay(300);
   D13_WRITE_LOW;  // LED OFF
-  //_delay_ms(300);
-  delay(1000);
+  _delay_ms(300);
+  // delay(300);
 }
 #endif // ARDUINO_IDE_IN_USE
 
 /******************************************************************/
 
-// #define CPP_IN_USE
+#define CPP_IN_USE
 #ifdef  CPP_IN_USE
 
 // PORTB pin 5 is UNO pin 13, internal LED (and SCK). Also it is 19 leg on the ATMEGA chip
