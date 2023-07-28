@@ -1,13 +1,13 @@
 #include "virtuabotixRTC.h"
 
-#define NANO_IN_USE
+// #define NANO_IN_USE
 #ifdef NANO_IN_USE
     #define CE_PIN   4  // RST?
     #define IO_PIN   3  // DAT?
     #define SCLK_PIN 2  // CLK
 #endif
 
-//#define UNO_IN_USE
+#define UNO_IN_USE
 #ifdef UNO_IN_USE
     #define CE_PIN   13  // RST?
     #define IO_PIN   12  // DAT?
@@ -113,30 +113,24 @@ void loop()
   myRTC.updateTime();
 
   // Start printing elements as individuals
-  Serial.print("Current TimeStamp: ");
+  Serial.print("Current Date / Time: ");
   //Serial.print(getDayOfWeek(myRTC.dayofweek));
   //Serial.print(" - ");
-  if (myRTC.dayofmonth < 10 ) Serial.print("0");
   Serial.print(myRTC.dayofmonth);
-  Serial.print("-");
-  // Serial.print(myRTC.month);
-  Serial.print(months[myRTC.month - 1]);
-  Serial.print("-");
+  Serial.print("/");
+  Serial.print(myRTC.month);
+  Serial.print("/");
   Serial.print(myRTC.year);
-  Serial.print(" ");
-  if (myRTC.hours < 10 ) Serial.print("0");
+  Serial.print("  ");
   Serial.print(myRTC.hours);
   Serial.print(":");
-  if (myRTC.minutes < 10 ) Serial.print("0");
   Serial.print(myRTC.minutes);
   Serial.print(":");
-  if (myRTC.seconds < 10 ) Serial.print("0");
   Serial.println(myRTC.seconds);
 
   // Delay
   delay(2000);
 }
-
 
 char *getDayOfWeek(int dayP)
 {
