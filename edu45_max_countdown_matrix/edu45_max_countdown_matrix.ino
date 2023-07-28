@@ -14,7 +14,7 @@ RTC_DS1307 RTC;
 #ifdef ARDUINO_IN_USE
   #define DATA_IN_PIN     5 // D5
   #define CLK_PIN         6 // D6
-  #define LOAD_PIN        7 // D7 
+  #define LOAD_PIN        7 // D7
   #define INTERRUPT_PIN   2 // A button between PIN-2 and GND
   #define LED_MONSTER_PIN 4 // D4
 #endif
@@ -96,11 +96,17 @@ void setup_matrix()
 
 void ISR_Button_Press()
 {
-// uncomment it in case of usage a SCHMITT trigger:
+// The IRQ Handler to a button push.
+// See attachInterrupt() method.
+
+// Note: Uncomment follow line in case of usage a SCHMITT trigger
 // #define USE_TRIGGER
+
 #ifdef USE_TRIGGER
+    // Use SCHMITT trigger:
     btn_pressed_state = true;
 #else
+    // Use debounce with timer:
     static unsigned long millis_prev;
     const int debounce_delay = 10;
 
@@ -149,10 +155,16 @@ void setup()
     digitalWrite(LED_BREAK_PIN, LOW); // initial: LED OFF, the led connect to this port and GND.
     digitalWrite(LED_MONSTER_PIN, LOW);
 
-    // following line sets the RTC to the date & time this sketch was compiled:
-    // DEBUG:
+    /* Uncomment follow to set the RTC to the date & time this sketch was compiled: */
     // RTC.adjust(DateTime(__DATE__, __TIME__));
-    // RTC.adjust(DateTime(__DATE__, "13:10:00"));
+
+    // ******************************************/
+    /* Settime by user and date of compilation: */
+    /* Note: Select "USBasp" programmer in IDE! */
+    /* To set new time - uncomment follow line: */
+    // RTC.adjust(DateTime(__DATE__, "11:16:30"));
+    // ******************************************/
+
     Serial.print(ADTnow.day());
     Serial.print(ADTnow.month());
     Serial.println(ADTnow.year());
@@ -205,9 +217,9 @@ void loop()
             Serial.print('-');
             Serial.println(ADTnow.year());
 
-            const int SECONDS_TO_SUBTRACT= 20; // amount of seconds used for adjust time once per day.
+            const int SECONDS_TO_ADJUST= 7; // amount of seconds used for adjust time once per day.
             // once per day, at 12:32 time it is adjusted because RTC is not perfect:
-            if ( (SECONDS_TO_SUBTRACT == ADTnow.second()) && (32 == ADTnow.minute()) && (12 == ADTnow.hour()) )
+            if ( (SECONDS_TO_ADJUST == ADTnow.second()) && (32 == ADTnow.minute()) && (12 == ADTnow.hour()) )
             {
                 Serial.println("It is adjusted TIME!");
                 if (!is_time_adjusted_today)
@@ -217,7 +229,7 @@ void loop()
                     RTC.adjust(DateTime(__DATE__, "12:32:00"));
                     is_time_adjusted_today = true;
                     Serial.print("Time adjusted to: ");
-                    Serial.print(SECONDS_TO_SUBTRACT);
+                    Serial.print(SECONDS_TO_ADJUST);
                     Serial.println(" seconds.");
                 }
                 else
