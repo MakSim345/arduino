@@ -18,14 +18,12 @@ http://www.arduino.cc/en/Tutorial/BlinkWithoutDelay
 
 #ifdef ARDUINO_IN_USE 
 const unsigned int LED_PIN = 7;
-const unsigned int LED_PIN_13 = 13;
 #endif
 /*
  Arduino NANO, pin #XX 
 */
 #ifdef NANO_IN_USE 
 const unsigned int LED_PIN = 13;
-const unsigned int LED_PIN_13 = 13;
 #endif
 
 
@@ -43,7 +41,6 @@ void setup()
 {
     // set the digital pin as output:
     pinMode(LED_PIN, OUTPUT);
-    pinMode(LED_PIN_13, OUTPUT);
 }
 
 void loop()
@@ -69,6 +66,5 @@ void loop()
 
         // set the LED with the ledState of the variable:
         digitalWrite(LED_PIN, ledState);
-        digitalWrite(LED_PIN_13, ledState);
     }
 }

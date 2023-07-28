@@ -7,8 +7,8 @@
  
 // Pin 13 has an LED connected on most Arduino boards.
 // give it a name:
-int ledPin = 13;// 13;
-int ledGreenPin = 1;
+int ledPin = 13;//
+int ledGreenPin = 2;
 int longWait = 500;
 int shortWait = 200;
 long randOn = 0;                  // Initialize a variable for the ON time
@@ -22,8 +22,8 @@ void setup()
   pinMode(ledPin, OUTPUT); 
   pinMode(ledGreenPin, OUTPUT); 
   randomSeed (analogRead (0));    // randomize 
-  // Serial.begin(9600);   
-  Serial.begin(38400);
+  Serial.begin(9600);   
+  // Serial.begin(38400);
 }
 
 void random_leds()
@@ -36,11 +36,11 @@ void random_leds()
   // Serial.write("--\n"); // 
   itoa(randOff, v_str, 6);
   // lcd.printIn(v_str);
-  int bytesSent = Serial.write(v_str); //send the string and return the length of the string.
-  Serial.write("\n"); 
-  delay (5);
+  //int bytesSent = Serial.write(v_str); //send the string and return the length of the string.
+  //Serial.write("\n"); 
+  //delay (5);
 
-  
+  /*
   for(i=0; i<100; i++)
   {
     // Serial.write("--\n"); // 
@@ -63,14 +63,16 @@ void random_leds()
 
     delay (5);
   }
+
+  */
   
-  //digitalWrite(ledPin, HIGH);   // sets the LED on
-  //digitalWrite(ledGreenPin, LOW);
-  //delay(randOn);                // waits for a random time while ON
+  digitalWrite(ledPin, HIGH);   // sets the LED on
+  digitalWrite(ledGreenPin, LOW);
+  delay(randOn);                // waits for a random time while ON
   
-  //digitalWrite(ledPin, LOW);    // sets the LED off
-  //digitalWrite(ledGreenPin, HIGH);
-  //delay(randOff);               // waits for a random time while OFF
+  digitalWrite(ledPin, LOW);    // sets the LED off
+  digitalWrite(ledGreenPin, HIGH);
+  delay(randOff);               // waits for a random time while OFF
 }
 
 // the loop routine runs over and over again forever:
