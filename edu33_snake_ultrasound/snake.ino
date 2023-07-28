@@ -23,49 +23,49 @@ int total = 0;                  // the running total
 int average = 0;                // the average
 int lastValue = 0;
 
-void setup() 
+void setup()
 {
   // initialize serial communication:
   Serial.begin(9600);
- 
+
   myservo.attach(servoPin);  // attaches the servo on pin 9 to the servo object
- 
+
   //clear the smoothing value buffer:
   for (int thisReading = 0; thisReading < numReadings; thisReading++)
   {
-    readings[thisReading] = 0;    
+    readings[thisReading] = 0;
   }
 
   pinMode(trigPin, OUTPUT);
   pinMode(pingPin, INPUT);
 }
 
-long get_distance() 
-{  
+long get_distance()
+{
     long duration;
     long distance;
 
     digitalWrite(trigPin, LOW);
-    delayMicroseconds(2); // 
+    delayMicroseconds(2); //
     digitalWrite(trigPin, HIGH);
     //  delayMicroseconds(1000); - Removed this line
-    delayMicroseconds(10); 
+    delayMicroseconds(10);
     digitalWrite(trigPin, LOW);
     duration = pulseIn(pingPin, HIGH);
     distance = (duration/2) / 29.1;
-    
+
     return distance;
     /*
-    if (distance < 4) 
-    {  
-      // This is where the LED On/Off happens digitalWrite(led,HIGH); 
-      // When the Red condition is met, the Green LED should turn off digitalWrite(led2,LOW); } 
+    if (distance < 4)
+    {
+      // This is where the LED On/Off happens digitalWrite(led,HIGH);
+      // When the Red condition is met, the Green LED should turn off digitalWrite(led2,LOW); }
       // else { digitalWrite(led,LOW); digitalWrite(led2,HIGH); } if (distance >= 200 || distance <= 0){
       Serial.println("Out of range");
     }
-    else 
+    else
     {
-      Serial.print(distance);    
+      Serial.print(distance);
       Serial.println(" cm");
     }
     */
@@ -82,7 +82,7 @@ void loop()
 
   // The PING))) is triggered by a HIGH pulse of 2 or more microseconds.
   // Give a short LOW pulse beforehand to ensure a clean HIGH pulse:
-  
+
   pinMode(trigPin, OUTPUT);
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
@@ -99,50 +99,50 @@ void loop()
   // convert the time into a distance
   inches = microsecondsToInches(duration);
   cm = microsecondsToCentimeters(duration);
-  
+
   // cm = get_distance();
-  
+
   //smoothing code starts here
   // subtract the last reading:
-  total= total - readings[index];        
-  // read from the sensor: 
+  total= total - readings[index];
+  // read from the sensor:
   readings[index] = cm;//analogRead(inputPin);
   // add the reading to the total:
-  total= total + readings[index];      
-  // advance to the next position in the array: 
-  index = index + 1;                   
+  total= total + readings[index];
+  // advance to the next position in the array:
+  index = index + 1;
 
   // if we're at the end of the array...
-  if (index >= numReadings)             
+  if (index >= numReadings)
   {
     // ...wrap around to the beginning:
-    index = 0;                          
+    index = 0;
   }
 
   // calculate the average:
   average = total / numReadings;
-  //smoothing code ends here 
- 
-  //Serial.print(cm);    
+  //smoothing code ends here
+
+  //Serial.print(cm);
   //Serial.println(" cm\n");
 
   //remap value range and move the servo
   val = average;
   val = map(val, 10, 40, 0, 179);     // scale value to use it with the Tower Pro half turn analog servo (value between 0 and 180)
-  
+
   if(average < 25)
     {
       myservo.write(val);
       // delay(10);  //let the servo cool down, or something
-      //Serial.print(cm);    
+      //Serial.print(cm);
       //Serial.println(" cm");
-    } 
+    }
   else
     {
       myservo.write(100);
-      //Serial.print(cm);    
+      //Serial.print(cm);
       //Serial.println(" cm");
-    }   
+    }
       // sets the servo position according to the scaled value if within a certain distance
   delay(10);  //let the servo cool down, or something
 }
