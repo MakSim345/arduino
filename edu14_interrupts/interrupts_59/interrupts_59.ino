@@ -6,14 +6,14 @@
   - кнопки, подключенные от пин-2 и пин-3 на GND
 
   Код для функции обработки прерываня пишем минимально минимальный.
-    
+
   14.08.2021
 */
 
 #define BUTTON_0 2 // объвляем пин для первой кнопки (прерывание INT0)
 #define BUTTON_1 3 // объвляем пин для второй кнопки (прерывание INT1)
 volatile uint32_t lastDebounce_INTERRUPTING;  // последнее время сигнала с кнопки
-volatile word debounceDelay_INTERRUPTING = 5; //100? время на дребезг контактов кнопки 
+volatile word debounceDelay_INTERRUPTING = 5; //100? время на дребезг контактов кнопки
 volatile word counter_INTERRUPTING;           // переменная для счетчика
 // ----- для кода(действий) по прерыванию
 #define LED 13 // пин для светодиода (он же L на плате ARDUINO)
@@ -22,7 +22,7 @@ const int debounce_delay = 10; //100
 
 volatile byte state = LOW;
 
-void setup() 
+void setup()
 {
   // pinMode(BUTTON_0, INPUT_PULLUP); // настраиваем пин кнопки как вход с подтяжкой
   // pinMode(BUTTON_1, INPUT_PULLUP); // настраиваем пин кнопки как вход с подтяжкой
@@ -43,7 +43,7 @@ void setup()
   Serial.println("\nTRACE output: START");
 
 }
-void loop() 
+void loop()
 {
   // ----- main loop, ruled by interrupt, state volatile variable:
   digitalWrite(LED_BUILTIN, state); // LED on-off from ISR
@@ -63,12 +63,12 @@ void myISR_Blink()
 }
 
 void ButtonINTERRUPTING()
-{  
+{
 
   // функция обработки прерывания кнопок (c фильтрацией дребезга)
-  
+
   if ( lastDebounce_INTERRUPTING < millis() )
-  { 
+  {
     // если это новое прерывание(дребезг)...
     lastDebounce_INTERRUPTING = millis();     // засекаем время
     counter_INTERRUPTING = 0;                // обнуляем счетчик
@@ -80,17 +80,17 @@ void ButtonINTERRUPTING()
 
   // if (true)
   if ( counter_INTERRUPTING > debounceDelay_INTERRUPTING )
-  { 
+  {
     Serial.println("TRUE!");
     // если это не дребезг и...
-    if ( digitalRead(BUTTON_0) ) 
-    { 
+    if ( digitalRead(BUTTON_0) )
+    {
       // если нажата первая кнопка...
       // ----- код(действие) по прерыванию от первой кнопки
       // digitalWrite(LED_BUILTIN, HIGH); // включаем LED
     }
     if ( digitalRead(BUTTON_1) )  // Pin "D3" on NANO
-    { 
+    {
       // если нажата вторая кнопка...
       // ----- код(действие) по прерыванию от второй кнопки
       // digitalWrite(LED_BUILTIN, HIGH); // выключаем LED

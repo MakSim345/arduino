@@ -7,7 +7,7 @@ Error: "'PCMSK1' was not declared in this scope"
 
 Note for PCIE2:
 Any change on any enabled PCINT[23:16] pin will cause an interrupt
-This is unlike attachInterrupt() function, 
+This is unlike attachInterrupt() function,
 where we can choose RISING, FALL etc.
 */
 
@@ -22,8 +22,8 @@ volatile int setpoint = 0;
  * ISR for Port D
 */
 ISR(PCINT2_vect)
-{ 
-  // code that runs when pin change interrupt PORT D is triggered  
+{
+  // code that runs when pin change interrupt PORT D is triggered
   if (PIND & 0b00010000) // D4 is HIGH
   {
     setpoint--;
@@ -42,7 +42,7 @@ void setup()
   //PORTD = 0b11100000; // enable pullup on pins 5,6,7 - Port D
 
   PCICR  |= 0b00000100; // enable PORT D for PCI
-  PCMSK2 |= 0b00110000; // So pin D4 and D5 can triggered interrupt
+  PCMSK2 |= 0b00110000; // So pins D4 and D5 can triggered interrupt
 
   // init pushbuttons:
   pinMode(BUTTON_04, INPUT_PULLUP);
@@ -63,6 +63,6 @@ void loop()
   delay(1000);
   sprintf(out_buf, "setpoint - %d", setpoint);
   Serial.println(out_buf);    // print the info
-  
+
 }
 // Serial.write("press -- \n"); //

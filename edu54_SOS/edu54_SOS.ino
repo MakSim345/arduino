@@ -78,11 +78,14 @@ void loop()
 {
   // Serial.println("Arduino running");
   
+  Serial.println("Flash: S");
   flash(S);
+  Serial.println("Flash: O");
   flash(O);
+  Serial.println("Flash: S");
   flash(S);
 
-  Serial.println("Arduino: Running...");
+  Serial.println("Arduino: Running... SOS");
   delay (STOP_DELAY);
 }
 

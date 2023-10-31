@@ -13,7 +13,7 @@ long MINS = 60;         // 60 Seconds in a Min.
 long HOURS = 60 * MINS; // 60 Mins in an hour.
 long DAYS = 24 * HOURS; // 24 Hours in a day. > Note: change the 24 to a 12 for non millitary time.
 
-long runTime = 0;       
+long runTime = 0;
 
 // Time from when we started:
 long clockHourSet = 12;

@@ -2,7 +2,7 @@
 // Кодировка русских букв UTF-8
 //
 // Скетч примера для статьи Использование прерываний Arduino.
-// http://sites.google.com/site/vanyambauseslinux/electronics/ispolzovanie-preryvanij-arduino 
+// http://sites.google.com/site/vanyambauseslinux/electronics/ispolzovanie-preryvanij-arduino
 //
 // (D) Developed by Andrey Sharoyko <vanyamboe@gmail.com>, 2011.
 
@@ -45,11 +45,11 @@ void setup()
 
 void loop()
 {
-  if(count==0) 
-  {                             
+  if(count==0)
+  {
     digitalWrite(LEDPIN, LOW);        // Выключить светодиод, если счётчик равен 0...
   }
-  else 
+  else
   {
     digitalWrite(LEDPIN, HIGH);       // ... иначе включить светодиод,
      --count;                         // и уменьшить счётчик на 1.

@@ -30,7 +30,7 @@ void setup()
 void loop() {
   // move the servo to 0 degrees
   myservo.write(0);
-  delay(1000); // wait for 1 second
+  delay(1000); // wait for 1 secon
   
   // move the servo to 90 degrees
   myservo.write(90);

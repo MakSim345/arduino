@@ -1,15 +1,20 @@
 An example Arduino script that demonstrates how to write and read data from the EEPROM:
 
 ==============================================================
+1. Gyver
 "https://alexgyver.ru/lessons/eeprom/"
+2. EEPROM Memory - Store Anything - Arduino101
+"https://www.youtube.com/watch?v=Sus96TzvjT4&list=PLsR1AO4QH1AyR0HEQH9eq53K9RSfzXsbD&index=6&pp=iAQB"
 ==============================================================
 #include <EEPROM.h>
 
-void setup() {
+void setup() 
+{
   Serial.begin(9600);
 }
 
-void loop() {
+void loop() 
+{
   // Write data to EEPROM
   int address = 0;
   int data = 123;

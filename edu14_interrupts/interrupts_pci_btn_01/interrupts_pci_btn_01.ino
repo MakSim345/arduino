@@ -29,12 +29,12 @@ void setup()
   // Enable PCI
   PCICR  |= 0b00000001; // enable PORT B for PCI
   PCMSK0 |= 0b00100000; // enable INT5 attached to pin D13 (SW1)
-  
-  PCICR |= 0b00000010; // enable PORT C for PCI
-  PCMSK1 |= 0b00100000; // enable INT5 attached to pin D13 (SW2)
 
-  PCICR |= 0b00000100; // enable PORT D for PCI
-  PCMSK2 |= 0b00010000; // enable INT5 attached to pin D13 (Sensor)
+  PCICR  |= 0b00000010; // enable PORT C for PCI
+  PCMSK1 |= 0b00100000; // enable INT13 attached to pin A5 (SW2)
+
+  PCICR  |= 0b00000100; // enable PORT D for PCI
+  PCMSK2 |= 0b00010000; // enable INT20 attached to pin D4 (Sensor)
 }
 
 void loop()
