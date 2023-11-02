@@ -1,5 +1,7 @@
 /*
-From: "https://www.youtube.com/watch?v=n6a8xbgfq1k&list=PLNAsgvPRQbqjgTS3gGTR-AsnhY3XhfOWa&index=12"
+From:
+"https://www.youtube.com/watch?v=n6a8xbgfq1k&list=PLNAsgvPRQbqjgTS3gGTR-AsnhY3XhfOWa&index=12"
+LabRazum, RUS
 */
 
 // volatile means it can be changed anywhere
@@ -34,16 +36,32 @@ ISR (TIMER0_COMPA_vect)
 }
 
 
+/*
+Short explanation:
+Timer0 call ISR every 1 ms using prescalar of 64.
+Calculation: (for 0.001s)
+    System CLock 16 MHz and prescalar 64;
+    Timer0 speed = 16MHz/64 = 250kHz
+    Pulse time = 0.001/250kHz = 4us (microseconds)
+
+    Count up to 0.001 / 0.000004 = 250-1 (this value the OCR Register must have)
+    1ms is 1000 Hz, so using frequency:
+    (16000000/64*1000) - 1 = 249 (in hex: 0xF9)
+*/
+
 void setup()
 {
     pinMode(13, OUTPUT); // pin 13 as an output
     /* set timer interrupt every 0.001 seconds
      * which will call TIMER0_COMPA_vect()
     */
+    cli(); // disable all interrupts
+
     TCCR0A |= (1 << WGM01); // reset on match
-    OCR0A = 0xF9; // count till overflow (i.e. 249)
-    TIMSK0 |= (1 << OCIE0A); // allow interrups if match Register A
     TCCR0B |= (1 << CS01) | (1 << CS00); // Prescaler to 64
+    TIMSK0 |= (1 << OCIE0A); // allow interrups if match Register A
+
+    OCR0A = 0xF9; // Set compare register to 249 for 1 ms IRQ)
     sei(); // allow interrupts
 
     Serial.begin(9600);

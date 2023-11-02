@@ -1,81 +1,102 @@
-/* 
-* Example Timer1 Interrupt
-https://www.youtube.com/watch?v=rSMp7agdTF4&list=PLKL6KBeCnI3X7cb1sznYuyScUesOxS-kL&index=12
+/*
+* Example Timer1 Overflow Interrupt
+https://www.youtube.com/watch?v=IdL0_ZJ7V2s&list=PLAROrg3NQn7cyu01HpOv5BWo217XWBZu0&index=22
 
-Arduino Timer Interrupts
-
-When you want things to happen at a regular time interval, it can be easy to go for the delay() function. 
-But this just pauses the program for a specific time period which is wasteful especially if you need to 
-do other processing in the meantime.
-This is where timers and interrupts come in to play.
-The Arduino UNO has three timers
-    Timer0 - An 8 bit timer used by Arduino functions delay(), millis() and micros().
-    Timer1 - A 16 bit timer used by the Servo() library
-    Timer2 - An 8 bit timer used by the Tone() library
-The Mega boards have Timers 3,4,5 which may be used instead
-In the example that follows, we shall use Timer1 for our interrupt. Obviously, if you are using the 
-Servo Library there will be a conflict, so you should choose another timer.
-Here is the basics of an interrupt driven program. It is the basic LED flash program, but now instead of 
-using delays it uses an interrupt every half second to turn the LED on and then off, thus making the
-LED flash once per second
+Precise 1 second Overflow Interrupt
 */
 
-#define ledPin 13
+#define ledPinG 13
+#define ledPinR 12
+
 int timer1_counter;
-unsigned int x;
+volatile int i = 0;
+bool LED_STATE = true;
 
-
-int main(void)
-{
-    // setup code that runs only once
-    Serial.begin(9600);
-    TCCR1A = 0b00000000; // TCCR1A = 0;
-    TCCR1B = 0b00000101; // TCCR1B = ;
-
-    while(1)
-    {
-        // code that loops forever
-        Serial.println(TCNT1);
-        // _delay_ms(100);
-        // x = x+100;
-        // Serial.println(x);
-    }
-
-}
-
-
-#ifdef YS_TEST_RUN_CODE_2022_02
 void setup()
 {
-    pinMode(ledPin, OUTPUT);
+    pinMode(ledPinG, OUTPUT);
+    pinMode(ledPinR, OUTPUT);
+    Serial.begin(9600);
 
-    // initialize timer1 
-    noInterrupts();           // disable all interrupts
+    // initialize timer1
+    noInterrupts(); // disable all interrupts
     TCCR1A = 0;
     TCCR1B = 0;
+     /* Note:
+     * 1Hz   - 1000ms(1 s)
+     * 2Hz   - 500ms(0.5s)
+     * 10Hz  - 100ms(0.1s)
+     * 50Hz  - 20ms (0.02s)
+     * 100Hz - 10ms (0.01s)
+     * 1000Hz- 1ms (0.001s)
+    */
+    /* prescaler:
+     * TCCR1B |= (1<<CS11);           // CLK/8
+     * TCCR1B |= (1<<CS10)|(1<<CS11); // CLK/64
+     * TCCR1B |= (1<<CS12);           // CLK/256
+     * TCCR1B |= (1<<CS10)|(1<<CS12); // CLK/1024
+    */
 
-    // Set timer1_counter to the correct value for our interrupt interval
-    //timer1_counter = 64886;   // preload timer 65536-16MHz/256/100Hz
-    //timer1_counter = 64286;   // preload timer 65536-16MHz/256/50Hz
-    timer1_counter = 34286;   // preload timer 65536-16MHz/256/2Hz
-  
-    TCNT1 = timer1_counter;   // preload timer
-    TCCR1B |= (1 << CS12);    // 256 prescaler 
+    // TCCR1B |= (1<<CS10)|(1<<CS12); // 1024 prescaler
+    // Note: prescaler 1024, start from 0;
+    // The IRQ will occure every 4 seconds.
+
+    // TCCR1B |= (1<<CS12); // 256 prescaler
+    // Note: prescaler 256, start from 0;
+    // The IRQ will occure every 1.048 seconds.
+
+    TCCR1B |= (1<<CS12); // 256 prescaler
+     /* Example: We need 1 sec -> 1 Hz.
+     * Timer1 max value: 65536
+     * Prescaler: 256
+     * Preload timer use seconds: 65536-(16MHz*1s)/256 // note 1000ms = 1
+     * Preload timer use Hz:    : 65536-(16MHz/256/1Hz)
+     * By writing 3036 to the TCNTx register, we guarantee that it's going to tick 25000 ticks
+     * to reach the overflow state.
+     * In the timer overflow interrupt ISR handler, we also need to preload the TCNTx register
+     * with the same value and keep repeating over and over again.
+     */
+    timer1_counter = 3036; // preload timer
+    TCNT1 = timer1_counter;// preload timer to init value, so it count to 65536 from it
+
     TIMSK1 |= (1 << TOIE1);   // enable timer overflow interrupt
     interrupts();             // enable all interrupts
 }
 
-ISR(TIMER1_OVF_vect)        // interrupt service routine 
+ISR(TIMER1_OVF_vect)        // interrupt service routine
 {
     TCNT1 = timer1_counter;   // preload timer
-    digitalWrite(ledPin, digitalRead(ledPin) ^ 1);
+    //digitalWrite(ledPinG, digitalRead(ledPinG) ^ 1);
+    //digitalWrite(ledPinR, digitalRead(ledPinR) ^ 1);
+    LED_STATE =!LED_STATE; // invert led state
+
+    digitalWrite(ledPinG, LED_STATE);
+    digitalWrite(ledPinR, !LED_STATE);
+
+    i++;
+    if (i == 100)
+    {
+        i = 0;
+    }
+
+    Serial.println(millis());
 }
 
 void loop()
 {
-  // your program here...
+  static int toShow = 0;
+  if (i != toShow)
+  {
+    toShow = i;
+    Serial.println(toShow);
+    //Serial.print("Time: ");
+    //Serial.println(micros());
+
+  }
+  //unsigned long timeEnd = micros();
+  //unsigned long timeDuration = timeEnd - timeBegin;
+  //double averageDuration = (double)timeDuration / 1000.0;
+
+  delay(100);
 }
-
-#endif // YS_TEST_RUN_CODE_2022_02
-
 
