@@ -46,7 +46,7 @@ void loop()
         aKeyPressed[keyPressCounter] = pressedKey; // save pressed key to an array
         keyPressCounter = keyPressCounter + 1;     // increment pressed keys counter to remember
 
-        if (keyPressCounter == NUM_KEYS) // pressed keys are same as the code lenght
+        if (keyPressCounter == NUM_KEYS) // pressed keys are same as the code length
         {
             for (uint8_t i = 0; i < NUM_KEYS; i++) // scan over the array of input codes
             {
