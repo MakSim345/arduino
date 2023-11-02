@@ -5,36 +5,13 @@ LabRazum, RUS
 */
 
 // volatile means it can be changed anywhere
-volatile unsigned long int timerLED1;
-volatile unsigned long int timerLED1Sec;
+volatile unsigned long int timerLED1 = 0;
+volatile unsigned long int timerLED1Sec = 0;
 
 #define MILLISECONDS_DELAY 500
 
 unsigned long int timePreview =0; // counter?
-bool LEDOn = 0; // keep the LED state
-
-ISR (TIMER0_COMPA_vect)
-{
-    // method called by timer-conuter T0.
-    timerLED1++; // incrementing every millisecond
-    if(timerLED1 >= MILLISECONDS_DELAY)
-    {
-        timerLED1Sec++;
-        timerLED1 = 0; //reset millisecond counter
-        // Serial.write(timerLED1);
-    }
-
-    // if(timerLED1 - timePreview >= 1000)  //check if 1000 millisecond passed.
-    if(timerLED1Sec - timePreview >= 1)  //check if 1 second passed.
-    {
-        LEDOn = !LEDOn;
-        // timePreview = timerLED1; // update to current time
-        timePreview = timerLED1Sec; // update to current time
-        /*** here we can make any action, like det the Flag ***/
-        digitalWrite(13, LEDOn);
-    }
-}
-
+bool LED_STATE = true; // keep the LED state
 
 /*
 Short explanation:
@@ -45,29 +22,66 @@ Calculation: (for 0.001s)
     Pulse time = 0.001/250kHz = 4us (microseconds)
 
     Count up to 0.001 / 0.000004 = 250-1 (this value the OCR Register must have)
-    1ms is 1000 Hz, so using frequency:
+    (16000000*0.001)/64 - 1 =  249 (in hex: 0xF9)
+    1 ms is 1000 Hz, so using frequency:
     (16000000/64*1000) - 1 = 249 (in hex: 0xF9)
 */
 
 void setup()
 {
+    Serial.begin(9600);
     pinMode(13, OUTPUT); // pin 13 as an output
     /* set timer interrupt every 0.001 seconds
      * which will call TIMER0_COMPA_vect()
     */
     cli(); // disable all interrupts
 
-    TCCR0A |= (1 << WGM01); // reset on match
-    TCCR0B |= (1 << CS01) | (1 << CS00); // Prescaler to 64
-    TIMSK0 |= (1 << OCIE0A); // allow interrups if match Register A
+    //TCCR0A = 0; // Reset entire TCCR0A to 0
+    //TCCR0B = 0; // Reset entire TCCR0B to 0
 
-    OCR0A = 0xF9; // Set compare register to 249 for 1 ms IRQ)
+    TCCR0A |= (1 << WGM01); // reset on match
+    OCR0A = 0xF9; // Set compare register to 249 for 1 ms IRQ
+    // OCR0A = 62499; // Set compare register to this value for 1s ISR
+
+    TCCR0B |= (1 << CS01) | (1 << CS00); // 64 prescalar
+    // TCCR0B |= 0b00000100;     // 256 prescaler
+
+    TIMSK0 |= (1 << OCIE0A); // allow interrups if match Register A
+    // TIMSK0 |= (1 << TOIE0);   // enable timer overflow interrupt
+
     sei(); // allow interrupts
 
-    Serial.begin(9600);
     Serial.println("Arduino: Setup OK. Running...");
 }
 
+ISR (TIMER0_COMPA_vect)
+{
+    // method called by timer-conuter T0.
+    timerLED1++; // incrementing every millisecond
+
+    /*
+    if(timerLED1 >= MILLISECONDS_DELAY)
+    {
+        timerLED1Sec++;
+        timerLED1 = 0; //reset millisecond counter
+        // Serial.write(timerLED1);
+    } */
+
+    // if(timerLED1Sec - timePreview >= 1)  //check if 1 second passed.
+    if(timerLED1 - timePreview >= 1000)  //check if 1000 millisecond passed.
+    {
+        timePreview = timerLED1; // update to current time
+        // timePreview = timerLED1Sec; // update to current time
+
+        /*** here we can make any action, like det the Flag ***/
+        LED_STATE = !LED_STATE;
+        digitalWrite(13, LED_STATE);
+
+        // ERROR: millis() not working if Timer0 IRQ in use!
+        // Serial.println(millis());
+        Serial.println("----");
+    }
+}
 
 void loop()
 {
