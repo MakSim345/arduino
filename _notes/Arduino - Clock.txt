@@ -6,7 +6,7 @@ JUN-2013
 JUL-2013
 Заказал кучу светодиодных матриц на aliexpress. Пришли в августе.
 
-Инфо: 
+Инфо:
 
 http://playground.arduino.cc/Main/DS1302
 http://we.easyelectronics.ru/antonluba/samye-prostye-chasy-na-avr.html#cut

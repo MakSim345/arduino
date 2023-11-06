@@ -1,8 +1,8 @@
 NOV-2013
 Заказал сдвиговых регистров на aliexpress.
 
-Инфо: 
-"8 digit 7 segment display with shift registers 74hc595" 
+Инфо:
+"8 digit 7 segment display with shift registers 74hc595"
 http://girshwin.com/led_shift.php
 
 http://www.instructables.com/id/Arduino-powered-7-seg-LED-display-using-Shift-Regi/?ALLSTEPS

@@ -28,4 +28,4 @@ Distance measure.
 - ultrasound device:
 - infrared device;
 
-Теги: #Ардуино, #arduino, #ардуина, 
+Теги: #Ардуино, #arduino, #ардуина,
