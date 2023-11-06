@@ -1,10 +1,10 @@
 /*
-* An Arduino program that locks a safe using a keypad. 
-* It saves the password to EEPROM, enables password change 
-* after entering the current password, and prevents 
-* debouncing for keypresses. 
-* 
-* It also implements a lockout feature if the password is 
+* An Arduino program that locks a safe using a keypad.
+* It saves the password to EEPROM, enables password change
+* after entering the current password, and prevents
+* debouncing for keypresses.
+*
+* It also implements a lockout feature if the password is
 * entered incorrectly three times within a certain time frame
 */
 
@@ -40,7 +40,7 @@ bool changePasswordMode = false;
 
 Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 
-void setup() 
+void setup()
 {
   pinMode(RED_LED, OUTPUT);
   pinMode(GREEN_LED, OUTPUT);
@@ -48,62 +48,62 @@ void setup()
   digitalWrite(RELAY, HIGH); // relay has inverted input, set it ON
 }
 
-void loop() 
+void loop()
 {
   char key = keypad.getKey();
 
-  if (key != NO_KEY) 
+  if (key != NO_KEY)
   {
     handleKeyPress(key);
   }
 }
 
-void handleKeyPress(char key) 
+void handleKeyPress(char key)
 {
-  if (changePasswordMode) 
+  if (changePasswordMode)
   {
     handlePasswordChange(key);
-  } 
-  else if (lockoutStartTime != 0 && millis() - lockoutStartTime < LOCKOUT_TIME) 
+  }
+  else if (lockoutStartTime != 0 && millis() - lockoutStartTime < LOCKOUT_TIME)
   {
     // Locked out, do nothing
   }
-  else 
+  else
   {
     handleSafeLock(key);
   }
 }
 
-void handlePasswordChange(char key) 
+void handlePasswordChange(char key)
 {
-  if (key == '#') 
+  if (key == '#')
   {
     EEPROM.put(0, password);
     EEPROM.commit();
     changePasswordMode = false;
   }
-  else if (key == '*') 
+  else if (key == '*')
   {
     resetEnteredPassword();
   }
-  else 
+  else
   {
     appendEnteredPassword(key);
   }
 }
 
-void handleSafeLock(char key) 
+void handleSafeLock(char key)
 {
-  if (key == '#') 
+  if (key == '#')
   {
-    if (strncmp(enteredPassword, password, MAX_PASSWORD_LENGTH) == 0) 
+    if (strncmp(enteredPassword, password, MAX_PASSWORD_LENGTH) == 0)
     {
       unlockSafe();
     }
-    else 
+    else
     {
       attempts++;
-      if (attempts >= MAX_ATTEMPTS) 
+      if (attempts >= MAX_ATTEMPTS)
       {
         lockoutStartTime = millis();
         attempts = 0;
@@ -111,25 +111,25 @@ void handleSafeLock(char key)
       }
     }
     resetEnteredPassword();
-  } 
-  else if (key == '*') 
+  }
+  else if (key == '*')
   {
     if (strncmp(enteredPassword, CHANGE_PASSWORD_TRIGGER, MAX_PASSWORD_LENGTH) == 0) {
       changePasswordMode = true;
       resetEnteredPassword();
     }
-    else 
+    else
     {
       resetEnteredPassword();
     }
   }
-  else 
+  else
   {
     appendEnteredPassword(key);
   }
 }
 
-void unlockSafe() 
+void unlockSafe()
 {
   digitalWrite(RELAY, LOW); // open the lock
   digitalWrite(GREEN_LED, HIGH); // green led - ON (pass OK)
@@ -139,21 +139,21 @@ void unlockSafe()
   attempts = 0; // reset attempts counter
 }
 
-void lockSafe() 
+void lockSafe()
 {
   digitalWrite(RED_LED, HIGH); // red led - ON
   delay(5000); // wait for 5 seconds
   digitalWrite(RED_LED, LOW); // red led - OFF
 }
 
-void resetEnteredPassword() 
+void resetEnteredPassword()
 {
   memset(enteredPassword, 0, sizeof(enteredPassword));
 }
 
-void appendEnteredPassword(char key) 
+void appendEnteredPassword(char key)
 {
-  if (strlen(enteredPassword) < MAX_PASSWORD_LENGTH) 
+  if (strlen(enteredPassword) < MAX_PASSWORD_LENGTH)
   {
     strncat(enteredPassword, &key, 1);
   }
