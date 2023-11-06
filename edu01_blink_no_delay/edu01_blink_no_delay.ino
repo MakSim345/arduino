@@ -13,16 +13,16 @@
 http://www.arduino.cc/en/Tutorial/BlinkWithoutDelay
  */
 
-// #define NANO_IN_USE 
-#define ARDUINO_IN_USE 
+// #define NANO_IN_USE
+#define ARDUINO_IN_USE
 
-#ifdef ARDUINO_IN_USE 
+#ifdef ARDUINO_IN_USE
 const unsigned int LED_PIN = 7;
 #endif
 /*
- Arduino NANO, pin #XX 
+ Arduino NANO, pin #XX
 */
-#ifdef NANO_IN_USE 
+#ifdef NANO_IN_USE
 const unsigned int LED_PIN = 13;
 #endif
 
@@ -37,7 +37,7 @@ long previousMillis = 0;        // will store last time LED was updated
 
 long interval = 1000;           // interval at which to blink (milliseconds)
 
-void setup() 
+void setup()
 {
     // set the digital pin as output:
     pinMode(LED_PIN, OUTPUT);
@@ -53,7 +53,7 @@ void loop()
     // blink the LED.
     unsigned long currentMillis = millis();
 
-    if(currentMillis - previousMillis > interval) 
+    if(currentMillis - previousMillis > interval)
     {
         // save the last time you blinked the LED
         previousMillis = currentMillis;
