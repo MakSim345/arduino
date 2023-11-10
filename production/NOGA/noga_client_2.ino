@@ -163,21 +163,21 @@ void setup()
   //wdt_enable(WDTO_8S); //enable it, and set it to 8s
   time = millis();
   wdt_update = time + WDT_DELAY_MS;
-}
+} 
 
 
 void loop()
 {
   //displayNumber(ping_ctr);
   time = millis();
-
+  
   char out_buf[255];  //reserve the string space first
 
   if (Serial.available())
   {
     // byteRead = Serial.read();
     char recieved = Serial.read();
-    inData += recieved;
+    inData += recieved; 
 
     // Process message when new line character is recieved
     if (recieved == '\n')
@@ -185,7 +185,7 @@ void loop()
       //Serial.print("Arduino Received: ");
       //Serial.print(inData);
       inData = ""; // Clear recieved buffer
-
+      
     // if (byteRead)
       // ECHO the value that was read, back to the serial port:
       sprintf(out_buf, "INFO. Arduino report: watchdog got PING - %d", ping_ctr);
@@ -238,91 +238,3 @@ void send_info_to_host(float DHT, float DALLAS)
     Serial.println(" *C");
     disp_left_lcd(int(DALLAS));
 }
-
-void display_info_on_led(float DHT, float DALLAS)
-{
-    disp_right_lcd(int(DHT));
-    disp_left_lcd(int(DALLAS));
-}
-
-void disp_right_lcd(int val_to_show)
-{
-  int ones, tens;
-  int tmp_val;
-  int minus_pos = 0;
-
-  if (val_to_show < 0)
-    tmp_val = val_to_show*(-1); // make positive to show
-  else
-    tmp_val = val_to_show;
-
-  ones = tmp_val%10;
-  tens = (tmp_val/10)%10;
-
-  if (0 == tens)
-  {
-    lc.setDigit(0, 2,  ' ', DECIMAL_NO);
-    minus_pos = 2;
-  }
-  else
-  {
-    lc.setDigit(0, 2, (byte)tens, DECIMAL_NO);
-    minus_pos = 3;
-  }
-
-  if (val_to_show < 0)
-  {
-    lc.setChar(0,  minus_pos, '-', DECIMAL_NO);
-  }
-  else
-  {
-    lc.setChar(0,  minus_pos, ' ', DECIMAL_NO);
-  }
-
-  lc.setDigit(0, 1, (byte)ones, DECIMAL_NO);
-
-  // show last char as degree
-  lc.setChar(0,  0, 'C', DECIMAL_NO);
-}
-
-void disp_left_lcd(int val_to_show)
-{
-  int ones, tens;
-  int tmp_val;
-  int minus_pos = 0;
-
-  if (val_to_show < 0)
-    tmp_val = val_to_show*(-1); // make positive to show
-  else
-    tmp_val = val_to_show;
-
-  ones = tmp_val%10;
-  tens = (tmp_val/10)%10;
-
-  if (0 == tens)
-  {
-    lc.setDigit(0, 2+4,  ' ', DECIMAL_NO);
-    minus_pos = 2+4;
-  }
-  else
-  {
-    lc.setDigit(0, 2+4, (byte)tens, DECIMAL_NO);
-    minus_pos = 3+4;
-  }
-
-  if (val_to_show < 0)
-  {
-    lc.setChar(0,  minus_pos, '-', DECIMAL_NO);
-  }
-  else
-  {
-    lc.setChar(0,  minus_pos, ' ', DECIMAL_NO);
-  }
-
-  lc.setDigit(0, 1+4, (byte)ones, DECIMAL_NO);
-
-  // show last char as degree
-  lc.setChar(0,  0+4, 'C', DECIMAL_NO);
-}
-
-
