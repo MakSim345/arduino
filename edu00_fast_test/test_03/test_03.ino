@@ -1,8 +1,8 @@
-/*  
+/*
  *  How I2C Communication Protocol Works - Arduino I2C Tutorial
- *  
- *   by Dejan, www.HowToMechatronics.com 
- *   
+ *
+ *   by Dejan, www.HowToMechatronics.com
+ *
  */
 #include <Wire.h>
 int ADXLAddress = 0x53; // Device address in which is also included the 8th bit for selecting the mode, read in this case.
@@ -11,7 +11,7 @@ int ADXLAddress = 0x53; // Device address in which is also included the 8th bit 
 #define Power_Register 0x2D // Power Control Register
 int X0,X1,X_out;
 
-void setup() 
+void setup()
 {
   Wire.begin(); // Initiate the Wire library
   Serial.begin(9600);
@@ -20,26 +20,26 @@ void setup()
   Wire.beginTransmission(ADXLAddress);
   Wire.write(Power_Register);
   // Bit D3 High for measuring enable (0000 1000)
-  Wire.write(8);  
+  Wire.write(8);
   Wire.endTransmission();
 }
 
-void loop() 
+void loop()
 {
-  Wire.beginTransmission(ADXLAddress); // Begin transmission to the Sensor 
+  Wire.beginTransmission(ADXLAddress); // Begin transmission to the Sensor
   //Ask the particular registers for data
   Wire.write(X_Axis_Register_DATAX0);
   Wire.write(X_Axis_Register_DATAX1);
-  
+
   Wire.endTransmission(); // Ends the transmission and transmits the data from the two registers
-  
+
   Wire.requestFrom(ADXLAddress,2); // Request the transmitted two bytes from the two registers
-  
-  if(Wire.available()<=2) {  // 
+
+  if(Wire.available()<=2) {  //
     X0 = Wire.read(); // Reads the data from the register
-    X1 = Wire.read();   
+    X1 = Wire.read();
   }
-  
+
   Serial.print("X0= ");
   Serial.print(X0);
   Serial.print("   X1= ");

@@ -1,6 +1,6 @@
 /*
  * LED with button
- * the led on PIN 13 will change it's state 
+ * the led on PIN 13 will change it's state
  * after state of digital pin 2 has been changed
  */
 
@@ -11,11 +11,11 @@ int interruptPin = 0;           // Interrupt 0 is on DIGITAL PIN 2!
 
 volatile int state = LOW;
 
-void setup()                     
+void setup()
 {
   pinMode(ledPin, OUTPUT);      // set led to output
-  // pinMode(btnPin, INPUT);       // set button to input  
-  
+  // pinMode(btnPin, INPUT);       // set button to input
+
   //attachInterrupt(interruptPin, blink, CHANGE); // link interrupt 0 to function blink().
   attachInterrupt(interruptPin, stateChange, CHANGE); // link interrupt 0 to function blink().
   Serial.begin(9600);           // init serial
@@ -24,7 +24,7 @@ void setup()
 void loop()
 {
   // do main loop here.
-  digitalWrite(ledPin, state);          // show state  
+  digitalWrite(ledPin, state);          // show state
 }
 
 // ISR function
@@ -32,8 +32,8 @@ void stateChange()
 {
   //noInterrupts();           // disable all interrupts
   state = !state;
-  // Serial.write("press -- \n"); // 
-  //digitalWrite(ledPin, state); 
+  // Serial.write("press -- \n"); //
+  //digitalWrite(ledPin, state);
   //interrupts();
 }
 
@@ -41,14 +41,14 @@ void stateChange()
 void blink()
 {
     static unsigned long millis_prev;
-    if(millis() - 100 > millis_prev) 
+    if(millis() - 100 > millis_prev)
         state = !state;   // reverse
-    
-    millis_prev = millis();        
+
+    millis_prev = millis();
 }
 
 /*
-void loop()                      
+void loop()
 {
   val = digitalRead(btnPin);    // got a button state
   if(val==HIGH)                 // it is pressed

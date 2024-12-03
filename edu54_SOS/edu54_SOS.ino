@@ -16,12 +16,12 @@ void dot()
   for(int j=0; j<MAX_PIN_NUMBER; j++)
      {
         digitalWrite(j, HIGH);
-     }     
+     }
     delay(DOT_DELAY); //
   for(int j=0; j<MAX_PIN_NUMBER; j++)
      {
         digitalWrite(j, LOW);
-     }     
+     }
     delay(DOT_DELAY); //
 }
 
@@ -30,19 +30,19 @@ void dash()
   for(int j=0; j<MAX_PIN_NUMBER; j++)
      {
         digitalWrite(j, HIGH);
-     }     
+     }
     delay(DASH_DELAY); //
 
   for(int j=0; j<MAX_PIN_NUMBER; j++)
      {
         digitalWrite(j, LOW);
-     }     
+     }
     delay(DASH_DELAY); //
 }
 
 void flash(int pLetter)
 {
-  switch (pLetter) 
+  switch (pLetter)
   {
     case 1: // the letter 'S'
         dot();
@@ -63,21 +63,21 @@ void flash(int pLetter)
 
 
 // the setup routine runs once when you press reset:
-void setup() 
+void setup()
 {
     for(int i=0; i<MAX_PIN_NUMBER; i++)
      {
         pinMode(i, OUTPUT);
-     }     
-    Serial.begin(9600); 
+     }
+    Serial.begin(9600);
     Serial.println("Arduino: Setup OK. Running...");
 }
 
 // the loop routine runs over and over again forever:
-void loop() 
+void loop()
 {
   // Serial.println("Arduino running");
-  
+
   Serial.println("Flash: S");
   flash(S);
   Serial.println("Flash: O");
@@ -95,7 +95,7 @@ void loop()
   digitalWrite(resetPIN, HIGH);
   pinMode(resetPIN, OUTPUT);
 
-  Serial.begin(9600);   
+  Serial.begin(9600);
   Serial.println("");
   Serial.println("------- Arduino Rebooted");
   Serial.println("");

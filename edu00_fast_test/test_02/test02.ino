@@ -2,7 +2,7 @@
 /*
   Blink
   Turns on an LED on for one second, then off for one second, repeatedly.
- 
+
   This example code is in the public domain.
  */
 
@@ -24,44 +24,44 @@ void dispBitsToArr(unsigned Val, char* _array);
 char _array_bit[9] = {'0','0','0','0','0','0','0','0','\0'};
 
 // the setup routine runs once when you press reset:
-void setup() 
+void setup()
 {
   // initialize the digital pin as an output.
-  pinMode(ledPin, OUTPUT); 
-  pinMode(ledGreenPin, OUTPUT); 
-  randomSeed (analogRead (0));    // randomize 
-  Serial.begin(9600);   
+  pinMode(ledPin, OUTPUT);
+  pinMode(ledGreenPin, OUTPUT);
+  randomSeed (analogRead (0));    // randomize
+  Serial.begin(9600);
 }
 
 void random_leds()
 {
-  
+
   randOn = random (100, 1200);    // generate ON time between 0.1 and 1.2 seconds
   randOff = random (200, 900);    // generate OFF time between 0.2 and 0.9 seconds
-  
+
   bitWrite(bitsToSend, 4, 1);
-  dispBitsToArr(bitsToSend, _array_bit);    
+  dispBitsToArr(bitsToSend, _array_bit);
   TRACE_LINE("status bits:");
   TRACE_LINE(_array_bit);
-  
-  Serial.write("--\n"); // 
+
+  Serial.write("--\n"); //
   char v_str[8] = "       ";  //reserve the string space first
   itoa(randOn, v_str, 6);
   // lcd.printIn(v_str);
   int bytesSent = Serial.write(v_str); //send the string and return the length of the string.
-  Serial.write("--\n"); 
+  Serial.write("--\n");
 
   digitalWrite(ledPin, HIGH);   // sets the LED on
   digitalWrite(ledGreenPin, LOW);
   delay(randOn);                // waits for a random time while ON
-  
+
   digitalWrite(ledPin, LOW);    // sets the LED off
   digitalWrite(ledGreenPin, HIGH);
   delay(randOff);               // waits for a random time while OFF
 }
 
 // the loop routine runs over and over again forever:
-void loop() 
+void loop()
 {
   // Serial.write("App start.\n");
   random_leds();
@@ -73,15 +73,15 @@ void loop()
   */
 
   /*
-  digitalWrite(led, HIGH);   
-  delay(longWait);               
-  
-  digitalWrite(led, LOW); 
-  delay(longWait);               
-  digitalWrite(led, HIGH);   
-  delay(longWait);               
-  digitalWrite(led, LOW); 
-  delay(longWait);               
+  digitalWrite(led, HIGH);
+  delay(longWait);
+
+  digitalWrite(led, LOW);
+  delay(longWait);
+  digitalWrite(led, HIGH);
+  delay(longWait);
+  digitalWrite(led, LOW);
+  delay(longWait);
   digitalWrite(led, HIGH);
   delay(shortWait);
   digitalWrite(led, LOW);
@@ -93,7 +93,7 @@ void loop()
   digitalWrite(led, HIGH);
   delay(shortWait);
   digitalWrite(led, LOW);
-  delay(longWait); 
+  delay(longWait);
   */
 }
 void dispBitsToArr(unsigned Val, char* _array)
