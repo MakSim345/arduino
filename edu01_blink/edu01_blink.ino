@@ -8,6 +8,7 @@
 // Pin 13 has an LED connected on most Arduino boards.
 // give it a name:
 int ledPin = 13;//
+int testPin = 10;//
 int ledGreenPin = 2;
 int longWait = 500;
 int shortWait = 200;
@@ -21,6 +22,7 @@ void setup()
   // initialize the digital pin as an output.
   pinMode(ledPin, OUTPUT);
   pinMode(ledGreenPin, OUTPUT);
+  pinMode(testPin, OUTPUT);
   randomSeed (analogRead (0));    // randomize
   Serial.begin(9600);
   // Serial.begin(38400);
@@ -79,7 +81,14 @@ void random_leds()
 void loop()
 {
   // Serial.write("App start.\n");
-  random_leds();
+  // random_leds();
+
+  digitalWrite(testPin, HIGH);
+  delay(1000);               // wait for a second
+  digitalWrite(testPin, LOW);
+  delay(1000);               // wait for a second:w
+  
+ 
 /*
   digitalWrite(led, HIGH);   // turn the LED on (HIGH is the voltage level)
   delay(longWait);               // wait for a second
