@@ -8,12 +8,15 @@
 
 #define ledPin 13      // internal LED pin
 #define interruptPin 2 // A button between PIN-2 and GND
-#define TEST_PIN 8
+#define TEST_PIN 9
 
 // a variable can change inside an ISR, thus must be volatile:
 volatile byte state = LOW;
 
 byte pin13mask = (1 << 5);
+
+// Define the bitmask for pin 9 (PB1)
+byte pin09mask = (1 << 1); // This sets the 1st bit (pin 9)
 
 #define D13_SET_OUTPUT      DDRB  |=  pin13mask // Set PIN D13 to OUTPUT
 #define D13_SET_INPUT       DDRB  &= ~pin13mask // Set PIN D13 to INPUT
@@ -41,8 +44,12 @@ void setup()
 
     unsigned long timeBegin = micros();
 
-// #define USE_DIGITAL_WRITE
-#define USE_REGISTER_WRITE
+// #define TEST_IN_SETUP
+#define USE_DIGITAL_WRITE
+//#define USE_REGISTER_WRITE
+
+
+#ifdef TEST_IN_SETUP
 
 #ifdef USE_DIGITAL_WRITE
     for(int i = 0; i < 500; i++)
@@ -91,18 +98,25 @@ void setup()
     Serial.print("Duration for one digitalWrite: ");
     Serial.print(oneTimeDuration);
     Serial.println(" µs (microseconds)");
+#endif
+    Serial.println("--------------------");
 }
 
 
 void loop()
 {
     /*
-    D13_WRITE_HIGH; // LED ON
-    _delay_ms(300);
-    // delay(300);
-    D13_WRITE_LOW;  // LED OFF
-    _delay_ms(300);
-    // delay(300);
+    digitalWrite(TEST_PIN, HIGH);
+    digitalWrite(TEST_PIN, LOW);
+    delay (3);
     */
-}
 
+
+    //PORTB |= B00000010; // Set the second bit of PORTB to HIGH
+    //PORTB = B00000010;
+    //PORTB = B00000000;
+    PORTB |=  (1 << 1); // Set bit related to PIN D09 to HIGH.
+    PORTB &= ~(1 << 1); // Set bit related to PIN D09 to LOW.
+
+    delay(3);
+}
