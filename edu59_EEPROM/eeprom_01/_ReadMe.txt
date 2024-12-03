@@ -8,12 +8,12 @@ An example Arduino script that demonstrates how to write and read data from the 
 ==============================================================
 #include <EEPROM.h>
 
-void setup() 
+void setup()
 {
   Serial.begin(9600);
 }
 
-void loop() 
+void loop()
 {
   // Write data to EEPROM
   int address = 0;
@@ -44,7 +44,7 @@ Finally, we add a delay of 1 second to give us time to read the output on the se
 ==============================================================
 #include <EEPROM.h>
 
-void setup() 
+void setup()
 {
   Serial.begin(9600);
   //EEPROM.begin(100);   // для esp8266/esp32

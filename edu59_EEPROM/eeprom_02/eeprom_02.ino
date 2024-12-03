@@ -37,10 +37,9 @@ void readFromEeprom(int addressP)
 {
     // Read data from EEPROM by given address:
     int readData = EEPROM.read(addressP);
-    Serial.print("Read ");
-    Serial.print(readData);
-    Serial.println(" from EEPROM");
-    Serial.println("");
+    Serial.print("Read from EEPROM:");
+    Serial.println(readData);
+    // Serial.println("");
 }
 
 void setup()
@@ -51,12 +50,24 @@ void setup()
     for (int i = 0; i < EEPROM.length(); ++i)
     {
         // Reset EEPROM - all to ZERO.
-        EEPROM.update(i, 255);
-    }
-    Serial.println("EEPROM fingerprint (CRC):");
-    Serial.println(eeprom_crc(), HEX);
-    Serial.println(eeprom_crc(), DEC);
+        // EEPROM.update(i, 255);
+    }    
 }
+
+void printEEPROM(void)
+{
+    // Print the EEPROM values in a table format
+    Serial.println("EEPROM Values:");
+    Serial.println("Address\tValue");
+    
+    // Read and print EEPROM values from address 0 to 255
+    for (int i = 0; i < 256; i++) {
+        byte value = EEPROM.read(i); // Read the value from EEPROM
+        Serial.print(i);              // Print the address
+        Serial.print("\t");           // Print a tab for formatting
+        Serial.println(value);        // Print the value
+    }
+}   
 
 void loop()
 {
@@ -64,18 +75,18 @@ void loop()
     int address = 0;
     int dataToWrite = 201;
 
-    /*
+    Serial.println("EEPROM fingerprint (CRC):");
+    Serial.println(eeprom_crc(), HEX);
+    Serial.println(eeprom_crc(), DEC);
 
-    if (isEepromEmpty)
+    /*if (isEepromEmpty)
     {
         writeToEeprom(0, dataToWrite);
         isEepromEmpty = false;
-    }
-
-    readFromEeprom(address);
-
-    delay(1000);
-    */
+    }*/
+    // readFromEeprom(address);
+    printEEPROM();
+    delay(10000);
 }
 
 unsigned long eeprom_crc(void)
