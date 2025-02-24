@@ -794,7 +794,7 @@ void loop()
         if (false == engageWsKeyPressed)
         {
             engageWsKeyPressed = true;
-            Keyboard.press(KEY_LEFT_CTRL);
+            //Keyboard.press(KEY_LEFT_CTRL);
             Keyboard.press(KEY_KP_PLUS);
             //delay(keyPressDelay);
         }
@@ -805,7 +805,7 @@ void loop()
         if (true == engageWsKeyPressed)
         {
             engageWsKeyPressed = false;
-            Keyboard.release(KEY_LEFT_CTRL);
+            //Keyboard.release(KEY_LEFT_CTRL);
             Keyboard.release(KEY_KP_PLUS);
         }
     }
