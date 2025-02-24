@@ -1,5 +1,6 @@
-// const int analogPin = A0;
+//const int analogPin = A0;
 const int analogPin = A1;
+//const int analogPin = A2;
 
 // Measured values for each button
 /*
@@ -13,16 +14,16 @@ const int noPressValue = 940;
 */
 
 const int btn6Value = 860;
-const int btn5Value = 829;
+const int btn5Value = 810;
 const int btn4Value = 780;
 const int btn3Value = 701;
-const int btn2Value = 541;
-const int btn1Value = 65;
-const int noPressValue = 1010;
+const int btn2Value = 533;
+const int btn1Value = 50;
+const int noPressValue = 1020;
 
 const int delayValue = 100;
 
-const int resRange = 15;
+const int resRange = 20;
 
 void setup()
 {
@@ -49,8 +50,7 @@ void main_loop()
   if (analogValue >= btn1Value - resRange && analogValue <= btn1Value + resRange)
   {
     Serial.println(analogValue);
-    Serial.println("press('a')");  // Button 1
-    delay(delayValue);
+    Serial.println("press('a')");  // Button 1§
     Serial.println("release('a')");
   }
   else if (analogValue >= btn2Value - resRange && analogValue <= btn2Value + resRange)
@@ -94,11 +94,11 @@ void main_loop()
     // No button pressed
   }
 
-  delay(50);  // Debounce delay
+  delay(100);  // Debounce delay
 }
 
 void loop()
 {
-    printMeasuredValues();
-    //main_loop();
+    //printMeasuredValues();
+    main_loop();
 }
