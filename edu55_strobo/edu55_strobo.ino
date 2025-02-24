@@ -68,14 +68,14 @@ long previousStrobMillis = 0;        // will store last time LED was updated
 #define STROB_ON_INTERVAL 350
 #define STROB_OFF_INTERVAL 250
 */
-//#define LED_ON_INTERVAL 20
-//#define LED_OFF_INTERVAL 25
+#define LED_ON_INTERVAL 10
+#define LED_OFF_INTERVAL 45
 
-#define LED_ON_INTERVAL 15
-#define LED_OFF_INTERVAL 80
+//#define LED_ON_INTERVAL 15
+//#define LED_OFF_INTERVAL 80
 
-#define STROB_ON_INTERVAL (LED_ON_INTERVAL+LED_OFF_INTERVAL)*5
-#define STROB_OFF_INTERVAL 190
+#define STROB_ON_INTERVAL (LED_ON_INTERVAL+LED_OFF_INTERVAL)*6
+#define STROB_OFF_INTERVAL 180
 
 long blinkInterval = LED_ON_INTERVAL;    // interval at which to blink (milliseconds)
 long strobInterval = STROB_ON_INTERVAL;
