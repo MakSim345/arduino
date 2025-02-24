@@ -1,18 +1,55 @@
 #include <Keyboard.h>
 
-const int buttonPin1 = 1; // Button connected to pin 1
-const int buttonPin2 = 2; // Button connected to pin 2
+// Define raw HID keycodes for numeric keypad digits
 
+const int analogPinA0 = A0;
+const int analogPinA1 = A1;
+const int analogPinA2 = A2;
+const int analogPinA3 = A3;
+
+const int buttonPin1 = 1;
+const int buttonPin2 = 2;
+const int buttonPin3 = 3;
+const int buttonPin4 = 4;
+const int buttonPin5 = 5;
+const int buttonPin6 = 6;
+const int buttonPin7 = 7;
 const int buttonPin8 = 8;
 const int buttonPin9 = 9;
+const int buttonPin14 = 14;
+const int buttonPin15 = 15;
+
+// Measured values for each button in A0
+const int btn6ValueA0 = 860;
+const int btn5ValueA0 = 829;
+const int btn4ValueA0 = 780;
+const int btn3ValueA0 = 701;
+const int btn2ValueA0 = 541;
+const int btn1ValueA0 = 65;
+const int noPressValueA0 = 1023;
+
+// Measured values for each button in A1
+const int btn6ValueA1 = 860;
+const int btn5ValueA1 = 830;
+const int btn4ValueA1 = 780;
+const int btn3ValueA1 = 720;
+const int btn2ValueA1 = 539;
+const int btn1ValueA1 = 60;
+const int noPressValueA1 = 1023;
 
 volatile bool button1Pressed = false;
-volatile bool button2Pressed = false;
 volatile bool button1Released = false;
 
+const int delayKeyPress = 40;
+const int delayDebounce = 20;
+const int resRange = 20; // range for resistors bridge
+
+bool reverserON = false;
+bool reverserOFF = true;
+
 unsigned long button1PressTime = 0;
-// const unsigned long holdDuration = 3000; // 3 seconds
 const unsigned long holdDuration = 2000; // 2 seconds
+
 bool eKeyHeld = false; // Flag to track if 'e' key is being held
 bool BackspaceWasPressed = false;
 bool waitForRelease = false; // Flag for ignore fixed button release
@@ -25,10 +62,17 @@ const unsigned long debounceDelay = 50; // Debounce delay in milliseconds
 void setup()
 {
   // Set pin modes
-  pinMode(buttonPin1, INPUT_PULLUP);
-  pinMode(buttonPin2, INPUT_PULLUP);
-  pinMode(buttonPin8, INPUT_PULLUP);  // Use internal pull-up resistor
-  pinMode(buttonPin9, INPUT_PULLUP);  // Use internal pull-up resistor
+  pinMode(buttonPin1, INPUT_PULLUP); // TX - Pin 1
+  pinMode(buttonPin2, INPUT_PULLUP); // Pin 2
+  pinMode(buttonPin3, INPUT_PULLUP); // Pin 3
+  pinMode(buttonPin4, INPUT_PULLUP); // Pin 4
+  pinMode(buttonPin5, INPUT_PULLUP); // Pin 5
+  pinMode(buttonPin6, INPUT_PULLUP); // Pin 6
+  pinMode(buttonPin7, INPUT_PULLUP); // Pin 7
+  pinMode(buttonPin8, INPUT_PULLUP); // Pin 8
+  pinMode(buttonPin9, INPUT_PULLUP); // Pin 9
+  pinMode(buttonPin14, INPUT_PULLUP); // Pin 14
+  pinMode(buttonPin15, INPUT_PULLUP); // Pin 15
 
   // attachInterrupt(digitalPinToInterrupt(buttonPin1), button2ISR, FALLING);
   //attachInterrupt(digitalPinToInterrupt(buttonPin2), button1ISR, FALLING);
@@ -38,33 +82,275 @@ void setup()
   // Serial.println("Arduino: Setup OK. Running...");
 }
 
+int readAnalogPortA0()
+{
+  int analogValue = analogRead(analogPinA0);  // Read the analog value from A0
+  delay(delayDebounce);  // Debounce delay
+  int retVal = 0;
+  // Serial.println(analogValue);
+
+   /* Checks the analog value against the measured values for each button.
+    * If a match is found within a small range (+-resRange), it sends
+    * the corresponding keystroke
+    */
+  if (analogValue >= btn1ValueA0 - resRange && analogValue <= btn1ValueA0 + resRange)
+  {
+    retVal = 1;
+  }
+  else if (analogValue >= btn2ValueA0 - resRange && analogValue <= btn2ValueA0 + resRange)
+  {
+    retVal = 2;
+  }
+  else if (analogValue >= btn3ValueA0 - resRange && analogValue <= btn3ValueA0 + resRange)
+  {
+    retVal = 3;
+  }
+  else if (analogValue >= btn4ValueA0 - resRange && analogValue <= btn4ValueA0 + resRange)
+  {
+    retVal = 4;
+  }
+  else if (analogValue >= btn5ValueA0 - resRange && analogValue <= btn5ValueA0 + resRange)
+  {
+    retVal = 5;
+  }
+  else if (analogValue >= btn6ValueA0 - resRange && analogValue <= btn6ValueA0 + resRange)
+  {
+    retVal = 6;
+  }
+  else if (analogValue >= noPressValueA0 - resRange && analogValue <= noPressValueA0 + resRange)
+  {
+    retVal = 0;
+  }
+  return retVal;
+}
+
+
+int readAnalogPortA1()
+{
+  int analogValue = analogRead(analogPinA1);  // Read the analog value from A0
+  delay(delayDebounce);  // Debounce delay
+  int retVal = 0;
+
+  if (analogValue >= btn1ValueA1 - resRange && analogValue <= btn1ValueA1 + resRange)
+  {
+    retVal = 11;
+  }
+  else if (analogValue >= btn2ValueA1 - resRange && analogValue <= btn2ValueA1 + resRange)
+  {
+    retVal = 12;
+  }
+  else if (analogValue >= btn3ValueA1 - resRange && analogValue <= btn3ValueA1 + resRange)
+  {
+    retVal = 13;
+  }
+  else if (analogValue >= btn4ValueA1 - resRange && analogValue <= btn4ValueA1 + resRange)
+  {
+    retVal = 14;
+  }
+  else if (analogValue >= btn5ValueA1 - resRange && analogValue <= btn5ValueA1 + resRange)
+  {
+    retVal = 15;
+  }
+  else if (analogValue >= btn6ValueA1 - resRange && analogValue <= btn6ValueA1 + resRange)
+  {
+    retVal = 16;
+  }
+  else if (analogValue >= noPressValueA1 - resRange && analogValue <= noPressValueA1 + resRange)
+  {
+    retVal = 0;
+  }
+
+  return retVal;
+}
+
+
+
 void loop()
 {
-    // Check if pin 8 is pressed
-    if (digitalRead(buttonPin8) == LOW)
+    int buttonNum = readAnalogPortA0();
+
+    int buttonNumA1 = readAnalogPortA1();
+
+    // Ind BRAKE: BACK
+    if (1 == buttonNum)
     {
-        Keyboard.press('n');  // Simulate pressing "N"
-        delay(50);           // Hold the key for a short duration
-        Keyboard.release('n'); // Release the key
+        // Keyboard.press('o');   // Simulate pressing "o"
+        // delay(delayKeyPress); // Hold the key for a short duration
+        // Keyboard.release('o'); // Release the key
+
+        Keyboard.press('5');   // Simulate pressing "5"
+        delay(delayKeyPress);  // Hold the key for a short duration
+        Keyboard.release('5'); // Release the key
     }
 
-    // Check if pin 9 is pressed
-    if (digitalRead(buttonPin9) == LOW)
+    // Ind BRAKE: FORWARD
+    if (2 == buttonNum)
     {
-        Keyboard.press(' ');  // Simulate pressing "SPACE"
-        delay(50);                 // Hold the key for a short duration
-        Keyboard.release(' '); // Release the key
+        // Keyboard.press(KEY_LEFT_SHIFT);
+        // Keyboard.press('o');  // Simulate
+        // delay(delayKeyPress); // Hold the key for a short duration
+        // Keyboard.release(KEY_LEFT_SHIFT);
+        // Keyboard.release('o'); // Release the key
+
+        Keyboard.press(KEY_LEFT_SHIFT);
+        Keyboard.press('5');  // Simulate "5"
+        delay(delayKeyPress); // Hold the key for a short duration
+        Keyboard.release(KEY_LEFT_SHIFT);
+        Keyboard.release('5'); // Release the key
     }
 
-    // Check if button 2 was pressed
-    if (digitalRead(buttonPin2) == LOW)
+    // Check Ind BRAKE BACK:
+    if (3 == buttonNum)
+    {
+        Keyboard.press(KEY_LEFT_SHIFT);
+        Keyboard.press('6');  // Simulate "6"
+        delay(delayKeyPress);           // Hold the key for a short duration
+        Keyboard.release(KEY_LEFT_SHIFT);
+        Keyboard.release('6'); // Release the key
+
+        //Keyboard.press(KEY_LEFT_SHIFT);
+        //Keyboard.press('i');  // Simulate
+        //delay(delayKeyPress);           // Hold the key for a short duration
+        //Keyboard.release(KEY_LEFT_SHIFT);
+        //Keyboard.release('i'); // Release the key
+    }
+
+    // Check Ind BRAKE FORWARD:
+    if (4 == buttonNum)
+    {
+        Keyboard.press('6');   // Simulate pressing "6"
+        delay(delayKeyPress);  // Hold the key for a short duration
+        Keyboard.release('6'); // Release the key
+
+        //Keyboard.press('i');  // Simulate pressing "I"
+        //delay(delayKeyPress); // Hold the key for a short duration
+        //Keyboard.release('i'); // Release the key
+    }
+
+    // Check Throttle: FORWARD
+    if (5 == buttonNum)
+    {
+        Keyboard.press('a');   // Simulate pressing "A"
+        delay(delayKeyPress);             // Hold the key for a short duration
+        Keyboard.release('a'); // Release the key
+    }
+
+    // Check Throttle: BACK
+    if (6 == buttonNum)
+    {
+        Keyboard.press('d');   // Simulate pressing "D"
+        delay(delayKeyPress);             // Hold the key for a short duration
+        Keyboard.release('d'); // Release the key
+    }
+
+    // Check Pantograph: LEFT
+    if (11 == buttonNumA1)
+    {
+        Keyboard.press(KEY_LEFT_SHIFT);
+        Keyboard.press('p');  // Simulate
+        delay(delayKeyPress);           // Hold the key for a short duration
+        Keyboard.release(KEY_LEFT_SHIFT);
+        Keyboard.release('p'); // Release the key
+    }
+
+    // Check Pantograph: RIGHT
+    if (12 == buttonNumA1)
+    {
+        Keyboard.press('p');   // Simulate pressing
+        delay(delayKeyPress);             // Hold the key for a short duration
+        Keyboard.release('p'); // Release the key
+    }
+
+    // Check Sand: LEFT
+    if (13 == buttonNumA1)
+    {
+        Keyboard.press(KEY_LEFT_SHIFT);
+        Keyboard.press('x');  // Simulate
+        delay(delayKeyPress);           // Hold the key for a short duration
+        Keyboard.release(KEY_LEFT_SHIFT);
+        Keyboard.release('x'); // Release the key
+    }
+
+    // Check Sand: RIGHT
+    if (14 == buttonNumA1)
+    {
+        Keyboard.press('x');   // Simulate pressing
+        delay(delayKeyPress);             // Hold the key for a short duration
+        Keyboard.release('x'); // Release the key
+    }
+
+    // Check Wipes: LEFT
+    if (15 == buttonNumA1)
+    {
+        Keyboard.press(KEY_LEFT_SHIFT);
+        Keyboard.press('v');  // Simulate
+        delay(delayKeyPress); // Hold the key for a short duration
+        Keyboard.release(KEY_LEFT_SHIFT);
+        Keyboard.release('v'); // Release the key
+    }
+    // Check Wipes: RIGHT
+    if (16 == buttonNumA1)
+    {
+        Keyboard.press('v');   // Simulate pressing
+        delay(delayKeyPress); // Hold the key for a short duration
+        Keyboard.release('v'); // Release the key
+    }
+
+    // Check if button AWS was pressed
+    if (21 == buttonNumA1)
     {
         Keyboard.press('q');  // Simulate pressing "Q"
-        delay(50);           // Hold the key for a short duration
+        delay(delayKeyPress); // Hold the key for a short duration
         Keyboard.release('q'); // Release the key
     }
 
-    // Check if button 1 was pressed
+    // Reverser: Key
+    if (digitalRead(buttonPin2) == LOW)
+    {
+        if (!reverserON)
+        {
+            reverserON = true;
+            reverserOFF = false;
+            // Key turn right
+            Keyboard.press(KEY_LEFT_CTRL);
+            Keyboard.press('W');  // Simulate press
+            delay(delayKeyPress); // Hold the key for a short duration
+            Keyboard.release(KEY_LEFT_CTRL);
+            Keyboard.release('W'); // Release
+        }
+    }
+    if (digitalRead(buttonPin2) == HIGH)
+    {
+        if (!reverserOFF)
+        {
+            reverserON = false;
+            reverserOFF = true;
+            // Key turn left
+            Keyboard.press(KEY_LEFT_CTRL);
+            Keyboard.press('W');  // Simulate press
+            delay(delayKeyPress); // Hold the key for a short duration
+            Keyboard.release(KEY_LEFT_CTRL);
+            Keyboard.release('W'); // Release
+        }
+    }
+
+    // Warning Horn: BACK
+    if (digitalRead(buttonPin14) == LOW)
+    {
+        Keyboard.press('n');   // Simulate pressing "N"
+        delay(delayKeyPress);  // Hold the key for a short duration
+        Keyboard.release('n'); // Release the key
+    }
+
+    // Warning Horn: FORWARD
+    if (digitalRead(buttonPin15) == LOW)
+    {
+        Keyboard.press(' ');   // Simulate pressing "SPACE"
+        delay(delayKeyPress);  // Hold the key for a short duration
+        Keyboard.release(' '); // Release the key
+    }
+
+    // Check if Emergency Break button pressed
     // Note: #define KEY_BACKSPACE   0xB2
     if (digitalRead(buttonPin1) == LOW)
     {
@@ -75,13 +361,13 @@ void loop()
             BackspaceWasPressed = true;
 
             Keyboard.press(KEY_BACKSPACE);  // Simulate pressing BACKSPACE
-            delay(50);           // Hold the key for a short duration
+            delay(delayKeyPress);  // Hold the key for a short duration
             Keyboard.release(KEY_BACKSPACE); // Release the key
             //Serial.println("Arduino: eKeyHeld == false");
         }
     }
 
-    // Check if button 1 was released
+    // Check if Emergency Break button released
     if (digitalRead(buttonPin1) == HIGH )
     {
         // Serial.println("Arduino: buttonPin1 == HIGH");
@@ -91,12 +377,11 @@ void loop()
             BackspaceWasPressed = false;
 
             Keyboard.press(KEY_BACKSPACE);  // Simulate pressing BACKSPACE
-            delay(50);           // Hold the key for a short duration
+            delay(delayKeyPress);  // Hold the key for a short duration
             Keyboard.release(KEY_BACKSPACE); // Release the key
 
             // Serial.println("Arduino: BackspaceWasPressed == true");
         }
-
     }
 }
 
@@ -121,21 +406,6 @@ void button1ISR()
     }
   }
 }
-
-// Interrupt service routine for button 2 (q)
-void button2ISR()
-{
-  unsigned long currentTime = millis();
-  // Check if debounce delay has passed
-  if ((currentTime - lastDebounceTime2) > debounceDelay)
-  {
-    button2Pressed = true;
-    lastDebounceTime2 = currentTime; // Update the last debounce time
-  }
-}
-
-
-
 
 /*
 
