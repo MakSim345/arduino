@@ -4,23 +4,20 @@
 #define SLAVE_ADDRESS 0x08
 #define BTN_RELEASE 255
 
-// Define raw HID keycodes for numeric keypad digits
-
 const int analogPinA0 = A0;
 const int analogPinA1 = A1;
 const int analogPinA2 = A2;
-// const int analogPinA3 = A3; // not in use
 
-const int buttonPin0 = 0;
-const int buttonPin1 = 1;
-const int buttonPin2 = 2;
-const int buttonPin3 = 3;
+const int buttonPin00 = 0;
+const int buttonPin01 = 1;
+const int buttonPin02 = 2;
+const int buttonPin03 = 3;
 const int buttonPin04 = 4;
 const int buttonPin05 = 5;
 const int buttonPin06 = 6;
 const int buttonPin07 = 7;
-const int buttonPin8 = 8;
-const int buttonPin9 = 9;
+const int buttonPin08 = 8;
+const int buttonPin09 = 9;
 const int buttonPin10 = 10;
 const int buttonPin14 = 14;
 const int buttonPin15 = 15;
@@ -52,9 +49,6 @@ const int btn3ValueA2 = 701;
 const int btn2ValueA2 = 533;
 const int btn1ValueA2 = 60;
 const int noPressValueA2 = 1020;
-
-volatile bool button1Pressed = false;
-volatile bool button1Released = false;
 
 const int delayDebounce = 20;
 const int resRange = 20; // range for resistors bridge
@@ -96,23 +90,15 @@ bool sandRigthKeyPressed = false;
 bool wipersLeftKeyPressed = false;
 bool wipersRigthKeyPressed = false;
 
-unsigned long button1PressTime = 0;
 const unsigned long longKeyPressDelay = 500;
-const unsigned long sKeyPressDelay = 700;
-const unsigned long keyPressDelay = 200; //ms
-const int delayKeyPress = 250;
-const int delayKeyPress50 = 50;
+const unsigned long keyPressDelay = 200;
+const unsigned long shortPressDelay = 50;
 
-unsigned long holdDuration = 500; // this changes based on analogPinA1 state.
+//Note: this variable changes based on read of analogPinA1 state.
+unsigned long reverserKnobHoldDuration = 500;
 
 bool eKeyHeld = false; // Flag to track if 'e' key is being held
 bool BackspaceWasPressed = false;
-bool waitForRelease = false; // Flag for ignore fixed button release
-
-// Debounce variables
-unsigned long lastDebounceTime1 = 0; // Last debounce time for button 1
-unsigned long lastDebounceTime2 = 0; // Last debounce time for button 2
-const unsigned long debounceDelay = 50; // Debounce delay in milliseconds
 
 enum REVERSER_STATUS
 {
@@ -123,29 +109,30 @@ enum REVERSER_STATUS
 };
 
 REVERSER_STATUS Reverser_Current = STATUS_O;
+
 bool Reverser_O_Set_Flag = false;
 bool Reverser_F_Set_Flag = false;
 bool Reverser_N_Set_Flag = false;
 bool Reverser_R_Set_Flag = false;
 
-int btnFromI2cMaster = 255;
+int btnFromI2cMaster = BTN_RELEASE;
 
 void setup()
 {
   // Set pin modes
-  pinMode(buttonPin0, INPUT_PULLUP); // Pin 0
-  pinMode(buttonPin1, INPUT_PULLUP); // TX - Pin 1
+  pinMode(buttonPin00, INPUT_PULLUP); // Pin 0
+  pinMode(buttonPin01, INPUT_PULLUP); // TX - Pin 1
 
   // Note: Pin2 and Pin3 are SDA and SCL for I2C
-  //pinMode(buttonPin2, INPUT_PULLUP); // Pin 2
+  // pinMode(buttonPin2, INPUT_PULLUP); // Pin 2
   // pinMode(buttonPin3, INPUT_PULLUP); // Pin 3
 
   pinMode(buttonPin04, INPUT_PULLUP); // Pin 4
   pinMode(buttonPin05, INPUT_PULLUP); // Pin 5
   pinMode(buttonPin06, INPUT_PULLUP); // Pin 6
   pinMode(buttonPin07, INPUT_PULLUP); // Pin 7
-  pinMode(buttonPin8, INPUT_PULLUP); // Pin 8
-  pinMode(buttonPin9, INPUT_PULLUP); // Pin 9
+  pinMode(buttonPin08, INPUT_PULLUP); // Pin 8
+  pinMode(buttonPin09, INPUT_PULLUP); // Pin 9
   pinMode(buttonPin10, INPUT_PULLUP); // Pin 10
   pinMode(buttonPin14, INPUT_PULLUP); // Pin 14
   pinMode(buttonPin15, INPUT_PULLUP); // Pin 15
@@ -159,14 +146,14 @@ void setup()
 
   Keyboard.begin();
   Wire.begin(SLAVE_ADDRESS); // Join the I2C bus as slave with address 0x08
-  Wire.onReceive(receiveEvent); // Register the receive event
+  Wire.onReceive(receiveEvent_I2c); // Register the receive event
 
   // Serial.begin(9600);
   // Serial.println("Arduino: Setup OK. Running...");
   // Serial.println("Slave start to listen...");
 }
 
-void receiveEvent(int howMany)
+void receiveEvent_I2c(int howMany)
 {
   while (Wire.available())
   {
@@ -312,7 +299,7 @@ void loop()
             Keyboard.press('5');   // Simulate pressing "5"
         }
     }
-    else if (1 != btnFromI2cMaster)
+    else if (2 != btnFromI2cMaster)
     {
         if (true == autoBrakeKeyBBPressed)
         {
@@ -331,7 +318,7 @@ void loop()
             Keyboard.press('5');  // Simulate "5"
         }
     }
-    else if (2 != btnFromI2cMaster)
+    else if (1 != btnFromI2cMaster)
     {
         if (true == autoBrakeKeyFFPressed)
         {
@@ -406,7 +393,7 @@ void loop()
             Keyboard.press('d');
         }
     }
-    else if (5 != btnFromI2cMaster)
+    else if (6 != btnFromI2cMaster)
     {
         if (true == throttleKeyBBPressed)
         {
@@ -499,7 +486,7 @@ void loop()
             wipersLeftKeyPressed = true;
             //Keyboard.press(KEY_LEFT_SHIFT);
             Keyboard.press('V');
-            delay(delayKeyPress50);
+            delay(shortPressDelay);
         }
     }
     else if (15 != btnFromI2cMaster)
@@ -518,7 +505,7 @@ void loop()
         {
             wipersRigthKeyPressed = true;
             Keyboard.press('v');
-            delay(delayKeyPress50);
+            delay(shortPressDelay);
         }
     }
     else if (16 != btnFromI2cMaster)
@@ -574,7 +561,7 @@ void loop()
             engineOffKeyPressed = true;
             Keyboard.press(KEY_LEFT_SHIFT);
             Keyboard.press('z');
-            delay(delayKeyPress50);
+            delay(shortPressDelay);
         }
     }
     else if (23 != btnFromI2cMaster)
@@ -599,11 +586,13 @@ void loop()
     if (26 == btnFromI2cMaster)
     {
         Keyboard.press(KEY_TAB);
-        delay(delayKeyPress50);
+        delay(shortPressDelay);
         Keyboard.press(KEY_KP_ENTER);
+
         delay(keyPressDelay);
+
         Keyboard.release(KEY_TAB);
-        delay(delayKeyPress50);
+        delay(shortPressDelay);
         Keyboard.release(KEY_KP_ENTER);
     }
 
@@ -617,19 +606,19 @@ void loop()
 
 /* Digital Pins Read */
 /*************************************************************************/
-    // Set the Reverser knob delay:
+    // Set the Reverser knob delay: long or short.
+    // It is based on position of a button connected to pin A1.
     if (digitalRead(analogPinA1) == LOW)
     {
-       holdDuration = longKeyPressDelay;
+       reverserKnobHoldDuration = longKeyPressDelay;
     }
-    // else if (digitalRead(analogPinA1) == HIGH)
-    else
+    else  //else if (digitalRead(analogPinA1) == HIGH)
     {
-       holdDuration = keyPressDelay;
+       reverserKnobHoldDuration = keyPressDelay;
     }
 
-    // Reverser: Key
-    if (digitalRead(buttonPin0) == LOW)
+    // Reverser: Main Key
+    if (digitalRead(buttonPin00) == LOW)
     {
         if (!reverserON)
         {
@@ -651,7 +640,7 @@ void loop()
             */
         }
     }
-    if (digitalRead(buttonPin0) == HIGH)
+    if (digitalRead(buttonPin00) == HIGH)
     {
         if (!reverserOFF)
         {
@@ -681,8 +670,7 @@ void loop()
         if (false == Reverser_O_Set_Flag)
         {
             Keyboard.press('w');
-            // delay(keyPressDelay);
-            delay(holdDuration);
+            delay(reverserKnobHoldDuration);
             Keyboard.release('w');
 
             Reverser_Current = STATUS_O;
@@ -700,29 +688,25 @@ void loop()
             if (STATUS_O == Reverser_Current)
             {
                 Keyboard.press('s');
-                delay(holdDuration);
-                // delay(keyPressDelay);
+                delay(reverserKnobHoldDuration);
                 Keyboard.release('s');
             }
             if (STATUS_R == Reverser_Current)
             {
                 Keyboard.press('w');
-                delay(holdDuration);
-                // delay(keyPressDelay);
+                delay(reverserKnobHoldDuration);
                 Keyboard.release('w');
 
                 delay(keyPressDelay);
 
                 Keyboard.press('w');
-                delay(holdDuration);
-                // delay(keyPressDelay);
+                delay(reverserKnobHoldDuration);
                 Keyboard.release('w');
             }
             if (STATUS_N == Reverser_Current)
             {
                 Keyboard.press('w');
-                delay(holdDuration);
-                // delay(keyPressDelay);
+                delay(reverserKnobHoldDuration);
                 Keyboard.release('w');
             }
             Reverser_Current = STATUS_F;
@@ -740,29 +724,25 @@ void loop()
             if (STATUS_F == Reverser_Current)
             {
                 Keyboard.press('s');
-                delay(holdDuration);
-                // delay(keyPressDelay);
+                delay(reverserKnobHoldDuration);
                 Keyboard.release('s');
             }
             if (STATUS_O == Reverser_Current)
             {
                 Keyboard.press('s');
-                delay(holdDuration);
-                // delay(keyPressDelay);
+                delay(reverserKnobHoldDuration);
                 Keyboard.release('s');
 
                 delay(keyPressDelay);
 
                 Keyboard.press('s');
-                delay(holdDuration);
-                // delay(keyPressDelay);
+                delay(reverserKnobHoldDuration);
                 Keyboard.release('s');
             }
             if (STATUS_R == Reverser_Current)
             {
                 Keyboard.press('w');
-                delay(holdDuration);
-                // delay(keyPressDelay);
+                delay(reverserKnobHoldDuration);
                 Keyboard.release('w');
             }
 
@@ -779,8 +759,7 @@ void loop()
         if (false == Reverser_R_Set_Flag)
         {
             Keyboard.press('s');
-            delay(holdDuration);
-            // delay(keyPressDelay);
+            delay(reverserKnobHoldDuration);
             Keyboard.release('s');
 
             Reverser_Current = STATUS_R;
@@ -793,7 +772,7 @@ void loop()
 //------------------------------------------------------
 
     // Cabin LIGHTS: LEFT
-    if (digitalRead(buttonPin8) == LOW)
+    if (digitalRead(buttonPin08) == LOW)
     {
         if (!CabLightsON)
         {
@@ -805,7 +784,7 @@ void loop()
         }
     }
     // Cabin LIGHTS: RIGHT
-    if (digitalRead(buttonPin8) == HIGH)
+    if (digitalRead(buttonPin08) == HIGH)
     {
         if (!CabLightsOFF)
         {
@@ -837,7 +816,7 @@ void loop()
         if (true == headLightKeyFFPressed)
         {
             headLightKeyFFPressed = false;
-            // Release the key
+            // Release keys
             Keyboard.release(KEY_LEFT_SHIFT);
             Keyboard.release('h');
         }
@@ -862,11 +841,11 @@ void loop()
         }
     }
 
-    /* Engage Warning System: Uses 1 pin, i.e. pin9
-     * The button has 3 state, but two are connected together
+    /* Engage Warning System: Use only one pin, i.e. Pin9
+     * The button has 3 state, but two states are connected together
      */
     // Engage Warning System: PRESS
-    if (digitalRead(buttonPin9) == LOW)
+    if (digitalRead(buttonPin09) == LOW)
     {
 
         if (false == engageWsKeyPressed)
@@ -874,16 +853,16 @@ void loop()
             engageWsKeyPressed = true;
             //Keyboard.press(KEY_LEFT_CTRL);
             Keyboard.press(KEY_KP_PLUS);
+            // Note: key counts as pressed until the button released!
             //delay(keyPressDelay);
         }
     }
     // Engage Warning System: RELEASE
-    if (digitalRead(buttonPin9) == HIGH)
+    if (digitalRead(buttonPin09) == HIGH)
     {
         if (true == engageWsKeyPressed)
         {
             engageWsKeyPressed = false;
-            //Keyboard.release(KEY_LEFT_CTRL);
             Keyboard.release(KEY_KP_PLUS);
         }
     }
@@ -898,7 +877,7 @@ void loop()
         if (false == hornKeyFFPressed)
         {
             hornKeyFFPressed = true;
-            // Simulate pressing "N"
+            // Simulate pressing "N":
             Keyboard.press('n');
         }
     }
@@ -935,7 +914,7 @@ void loop()
 
     // Check if Emergency Break button pressed
     // Note: #define KEY_BACKSPACE   0xB2
-    if (digitalRead(buttonPin1) == LOW)
+    if (digitalRead(buttonPin01) == LOW)
     {
         // Serial.println("Arduino: buttonPin1 == LOW");
         if (false == eKeyHeld)
@@ -951,7 +930,7 @@ void loop()
     }
 
     // Check if Emergency Break button released
-    if (digitalRead(buttonPin1) == HIGH )
+    if (digitalRead(buttonPin01) == HIGH )
     {
         // Serial.println("Arduino: buttonPin1 == HIGH");
         if (true == BackspaceWasPressed)
@@ -966,6 +945,27 @@ void loop()
             // Serial.println("Arduino: BackspaceWasPressed == true");
         }
     }
+}
+
+/*
+#include <Keyboard.h>
+
+const int buttonPin = 2;  // Pin where the button is connected
+int buttonState = 0;       // Variable to hold the button state
+
+volatile bool button1Pressed = false;
+volatile bool button1Released = false;
+
+unsigned long lastDebounceTime1 = 0; // Last debounce time for button 1
+const unsigned long debounceDelay = 50; // Debounce delay in milliseconds
+
+unsigned long button1PressTime = 0;
+bool waitForRelease = false; // Flag for ignore fixed button release
+
+void setup()
+{
+  pinMode(buttonPin, INPUT_PULLUP);  // Set button pin as input with internal pull-up
+  Keyboard.begin();                   // Start the Keyboard library
 }
 
 // Interrupt service routine for button 1 (e)
@@ -990,19 +990,6 @@ void button1ISR()
   }
 }
 
-/*
-
-#include <Keyboard.h>
-
-const int buttonPin = 2;  // Pin where the button is connected
-int buttonState = 0;       // Variable to hold the button state
-
-void setup()
-{
-  pinMode(buttonPin, INPUT_PULLUP);  // Set button pin as input with internal pull-up
-  Keyboard.begin();                   // Start the Keyboard library
-}
-
 void loop()
 {
   buttonState = digitalRead(buttonPin); // Read the state of the button
@@ -1018,4 +1005,3 @@ void loop()
 }
 
 */
-
