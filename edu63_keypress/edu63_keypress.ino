@@ -11,6 +11,7 @@ const int analogPinA1 = A1;
 const int analogPinA2 = A2;
 // const int analogPinA3 = A3; // not in use
 
+const int buttonPin0 = 0;
 const int buttonPin1 = 1;
 const int buttonPin2 = 2;
 const int buttonPin3 = 3;
@@ -96,10 +97,13 @@ bool wipersLeftKeyPressed = false;
 bool wipersRigthKeyPressed = false;
 
 unsigned long button1PressTime = 0;
-const unsigned long holdDuration = 2000; // 2 seconds
+const unsigned long longKeyPressDelay = 500;
+const unsigned long sKeyPressDelay = 700;
 const unsigned long keyPressDelay = 200; //ms
 const int delayKeyPress = 250;
 const int delayKeyPress50 = 50;
+
+unsigned long holdDuration = 500; // this changes based on analogPinA1 state.
 
 bool eKeyHeld = false; // Flag to track if 'e' key is being held
 bool BackspaceWasPressed = false;
@@ -129,6 +133,7 @@ int btnFromI2cMaster = 255;
 void setup()
 {
   // Set pin modes
+  pinMode(buttonPin0, INPUT_PULLUP); // Pin 0
   pinMode(buttonPin1, INPUT_PULLUP); // TX - Pin 1
 
   // Note: Pin2 and Pin3 are SDA and SCL for I2C
@@ -146,6 +151,7 @@ void setup()
   pinMode(buttonPin15, INPUT_PULLUP); // Pin 15
   pinMode(buttonPin16, INPUT_PULLUP); // Pin 16
 
+  pinMode(analogPinA1, INPUT_PULLUP); // Pin A1
   pinMode(analogPinA2, INPUT_PULLUP); // Pin A2
 
   // attachInterrupt(digitalPinToInterrupt(buttonPin1), button2ISR, FALLING);
@@ -611,8 +617,19 @@ void loop()
 
 /* Digital Pins Read */
 /*************************************************************************/
+    // Set the Reverser knob delay:
+    if (digitalRead(analogPinA1) == LOW)
+    {
+       holdDuration = longKeyPressDelay;
+    }
+    // else if (digitalRead(analogPinA1) == HIGH)
+    else
+    {
+       holdDuration = keyPressDelay;
+    }
+
     // Reverser: Key
-    if (digitalRead(analogPinA2) == LOW)
+    if (digitalRead(buttonPin0) == LOW)
     {
         if (!reverserON)
         {
@@ -621,10 +638,20 @@ void loop()
             // Key turn right
             Keyboard.press(KEY_KP_MINUS);
             delay(keyPressDelay);
-            Keyboard.release(KEY_KP_MINUS);
+             Keyboard.release(KEY_KP_MINUS);
+            /*
+            Keyboard.press(KEY_LEFT_CTRL);
+            delay(keyPressDelay);
+            //delay(longKeyPressDelay);
+            Keyboard.press('w');
+            delay(2*longKeyPressDelay);
+            //delay(keyPressDelay);
+            Keyboard.release('w');
+            Keyboard.release(KEY_LEFT_CTRL);
+            */
         }
     }
-    if (digitalRead(analogPinA2) == HIGH)
+    if (digitalRead(buttonPin0) == HIGH)
     {
         if (!reverserOFF)
         {
@@ -634,6 +661,16 @@ void loop()
             Keyboard.press(KEY_KP_MINUS);
             delay(keyPressDelay);
             Keyboard.release(KEY_KP_MINUS);
+            /*
+            Keyboard.press(KEY_LEFT_CTRL);
+            //delay(longKeyPressDelay);
+            delay(keyPressDelay);
+            Keyboard.press('w');
+            delay(2*longKeyPressDelay);
+            //delay(keyPressDelay);
+            Keyboard.release('w');
+            Keyboard.release(KEY_LEFT_CTRL);
+            */
         }
     }
 
@@ -644,7 +681,8 @@ void loop()
         if (false == Reverser_O_Set_Flag)
         {
             Keyboard.press('w');
-            delay(keyPressDelay);
+            // delay(keyPressDelay);
+            delay(holdDuration);
             Keyboard.release('w');
 
             Reverser_Current = STATUS_O;
@@ -662,25 +700,29 @@ void loop()
             if (STATUS_O == Reverser_Current)
             {
                 Keyboard.press('s');
-                delay(keyPressDelay);
+                delay(holdDuration);
+                // delay(keyPressDelay);
                 Keyboard.release('s');
             }
             if (STATUS_R == Reverser_Current)
             {
                 Keyboard.press('w');
-                delay(keyPressDelay);
+                delay(holdDuration);
+                // delay(keyPressDelay);
                 Keyboard.release('w');
 
                 delay(keyPressDelay);
 
                 Keyboard.press('w');
-                delay(keyPressDelay);
+                delay(holdDuration);
+                // delay(keyPressDelay);
                 Keyboard.release('w');
             }
             if (STATUS_N == Reverser_Current)
             {
                 Keyboard.press('w');
-                delay(keyPressDelay);
+                delay(holdDuration);
+                // delay(keyPressDelay);
                 Keyboard.release('w');
             }
             Reverser_Current = STATUS_F;
@@ -698,25 +740,29 @@ void loop()
             if (STATUS_F == Reverser_Current)
             {
                 Keyboard.press('s');
-                delay(keyPressDelay);
+                delay(holdDuration);
+                // delay(keyPressDelay);
                 Keyboard.release('s');
             }
             if (STATUS_O == Reverser_Current)
             {
                 Keyboard.press('s');
-                delay(keyPressDelay);
+                delay(holdDuration);
+                // delay(keyPressDelay);
                 Keyboard.release('s');
 
                 delay(keyPressDelay);
 
                 Keyboard.press('s');
-                delay(keyPressDelay);
+                delay(holdDuration);
+                // delay(keyPressDelay);
                 Keyboard.release('s');
             }
             if (STATUS_R == Reverser_Current)
             {
                 Keyboard.press('w');
-                delay(keyPressDelay);
+                delay(holdDuration);
+                // delay(keyPressDelay);
                 Keyboard.release('w');
             }
 
@@ -733,7 +779,8 @@ void loop()
         if (false == Reverser_R_Set_Flag)
         {
             Keyboard.press('s');
-            delay(keyPressDelay);
+            delay(holdDuration);
+            // delay(keyPressDelay);
             Keyboard.release('s');
 
             Reverser_Current = STATUS_R;
