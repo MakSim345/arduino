@@ -1,4 +1,8 @@
 #include <Keyboard.h>
+#include <Wire.h>
+
+#define SLAVE_ADDRESS 0x08
+#define BTN_RELEASE 255
 
 // Define raw HID keycodes for numeric keypad digits
 
@@ -10,10 +14,10 @@ const int analogPinA2 = A2;
 const int buttonPin1 = 1;
 const int buttonPin2 = 2;
 const int buttonPin3 = 3;
-const int buttonPin4 = 4;
-const int buttonPin5 = 5;
-const int buttonPin6 = 6;
-const int buttonPin7 = 7;
+const int buttonPin04 = 4;
+const int buttonPin05 = 5;
+const int buttonPin06 = 6;
+const int buttonPin07 = 7;
 const int buttonPin8 = 8;
 const int buttonPin9 = 9;
 const int buttonPin10 = 10;
@@ -120,16 +124,21 @@ bool Reverser_F_Set_Flag = false;
 bool Reverser_N_Set_Flag = false;
 bool Reverser_R_Set_Flag = false;
 
+int btnFromI2cMaster = 255;
+
 void setup()
 {
   // Set pin modes
   pinMode(buttonPin1, INPUT_PULLUP); // TX - Pin 1
-  pinMode(buttonPin2, INPUT_PULLUP); // Pin 2
-  pinMode(buttonPin3, INPUT_PULLUP); // Pin 3
-  pinMode(buttonPin4, INPUT_PULLUP); // Pin 4
-  pinMode(buttonPin5, INPUT_PULLUP); // Pin 5
-  pinMode(buttonPin6, INPUT_PULLUP); // Pin 6
-  pinMode(buttonPin7, INPUT_PULLUP); // Pin 7
+
+  // Note: Pin2 and Pin3 are SDA and SCL for I2C
+  //pinMode(buttonPin2, INPUT_PULLUP); // Pin 2
+  // pinMode(buttonPin3, INPUT_PULLUP); // Pin 3
+
+  pinMode(buttonPin04, INPUT_PULLUP); // Pin 4
+  pinMode(buttonPin05, INPUT_PULLUP); // Pin 5
+  pinMode(buttonPin06, INPUT_PULLUP); // Pin 6
+  pinMode(buttonPin07, INPUT_PULLUP); // Pin 7
   pinMode(buttonPin8, INPUT_PULLUP); // Pin 8
   pinMode(buttonPin9, INPUT_PULLUP); // Pin 9
   pinMode(buttonPin10, INPUT_PULLUP); // Pin 10
@@ -137,13 +146,36 @@ void setup()
   pinMode(buttonPin15, INPUT_PULLUP); // Pin 15
   pinMode(buttonPin16, INPUT_PULLUP); // Pin 16
 
+  pinMode(analogPinA2, INPUT_PULLUP); // Pin A2
+
   // attachInterrupt(digitalPinToInterrupt(buttonPin1), button2ISR, FALLING);
   //attachInterrupt(digitalPinToInterrupt(buttonPin2), button1ISR, FALLING);
 
   Keyboard.begin();
+  Wire.begin(SLAVE_ADDRESS); // Join the I2C bus as slave with address 0x08
+  Wire.onReceive(receiveEvent); // Register the receive event
+
   // Serial.begin(9600);
   // Serial.println("Arduino: Setup OK. Running...");
+  // Serial.println("Slave start to listen...");
 }
+
+void receiveEvent(int howMany)
+{
+  while (Wire.available())
+  {
+    int command = Wire.read(); // Receive the command from the master
+    //Serial.println("Button pressed on master!");
+    //Serial.println(command);
+    btnFromI2cMaster = command;
+
+    //if (command == 21)
+    //{
+      //Serial.println("Button 21 pressed on master!");
+    //}
+  }
+}
+
 
 int readAnalogPortA0()
 {
@@ -265,12 +297,8 @@ int readAnalogPortA2()
 
 void loop()
 {
-    int buttonNumA0 = readAnalogPortA0();
-    int buttonNumA1 = readAnalogPortA1();
-    int buttonNumA2 = readAnalogPortA2();
-
     // Automatic BRAKE: BACK
-    if (1 == buttonNumA0)
+    if (2 == btnFromI2cMaster)
     {
         if (false == autoBrakeKeyBBPressed)
         {
@@ -278,7 +306,7 @@ void loop()
             Keyboard.press('5');   // Simulate pressing "5"
         }
     }
-    else if (1 != buttonNumA0)
+    else if (1 != btnFromI2cMaster)
     {
         if (true == autoBrakeKeyBBPressed)
         {
@@ -288,7 +316,7 @@ void loop()
     }
 
     // Automatic BRAKE: FORWARD
-    if (2 == buttonNumA0)
+    if (1 == btnFromI2cMaster)
     {
         if (false == autoBrakeKeyFFPressed)
         {
@@ -297,7 +325,7 @@ void loop()
             Keyboard.press('5');  // Simulate "5"
         }
     }
-    else if (2 != buttonNumA0)
+    else if (2 != btnFromI2cMaster)
     {
         if (true == autoBrakeKeyFFPressed)
         {
@@ -308,7 +336,7 @@ void loop()
     }
 
     // Check Ind BRAKE BACK:
-    if (4 == buttonNumA0)
+    if (4 == btnFromI2cMaster)
     {
         if (false == indBrakeKeyBBPressed)
         {
@@ -317,7 +345,7 @@ void loop()
             Keyboard.press('6');
         }
     }
-    else if (4 != buttonNumA0)
+    else if (4 != btnFromI2cMaster)
     {
         if (true == indBrakeKeyBBPressed)
         {
@@ -328,7 +356,7 @@ void loop()
     }
 
     // Check Ind BRAKE FORWARD:
-    if (3 == buttonNumA0)
+    if (3 == btnFromI2cMaster)
     {
         if (false == indBrakeKeyFFPressed)
         {
@@ -336,7 +364,7 @@ void loop()
             Keyboard.press('6');
         }
     }
-    else if (3 != buttonNumA0)
+    else if (3 != btnFromI2cMaster)
     {
         if (true == indBrakeKeyFFPressed)
         {
@@ -346,7 +374,7 @@ void loop()
     }
 
     // Throttle: FORWARD PRESS
-    if (5 == buttonNumA0)
+    if (5 == btnFromI2cMaster)
     {
         if (false == throttleKeyFFPressed)
         {
@@ -354,7 +382,7 @@ void loop()
             Keyboard.press('a');
         }
     }
-    else if (5 != buttonNumA0)
+    else if (5 != btnFromI2cMaster)
     {
         if (true == throttleKeyFFPressed)
         {
@@ -364,7 +392,7 @@ void loop()
     }
 
     // Throttle: BACK PRESS
-    if (6 == buttonNumA0)
+    if (6 == btnFromI2cMaster)
     {
         if (false == throttleKeyBBPressed)
         {
@@ -372,7 +400,7 @@ void loop()
             Keyboard.press('d');
         }
     }
-    else if (5 != buttonNumA0)
+    else if (5 != btnFromI2cMaster)
     {
         if (true == throttleKeyBBPressed)
         {
@@ -382,7 +410,7 @@ void loop()
     }
 
     // Check Pantograph: LEFT
-    if (11 == buttonNumA1)
+    if (11 == btnFromI2cMaster)
     {
         if (false == pantographLeftKeyPressed)
         {
@@ -391,7 +419,7 @@ void loop()
             Keyboard.press('p');
         }
     }
-    else if (11 != buttonNumA1)
+    else if (11 != btnFromI2cMaster)
     {
         if (true == pantographLeftKeyPressed)
         {
@@ -402,7 +430,7 @@ void loop()
     }
 
     // Check Pantograph: RIGHT
-    if (12 == buttonNumA1)
+    if (12 == btnFromI2cMaster)
     {
         if (false == pantographRigthKeyPressed)
         {
@@ -410,7 +438,7 @@ void loop()
             Keyboard.press('p');
         }
     }
-    else if (12 != buttonNumA1)
+    else if (12 != btnFromI2cMaster)
     {
         if (true == pantographRigthKeyPressed)
         {
@@ -420,7 +448,7 @@ void loop()
     }
 
     // Check Sand: LEFT
-    if (13 == buttonNumA1)
+    if (13 == btnFromI2cMaster)
     {
         if (false == sandLeftKeyPressed)
         {
@@ -429,7 +457,7 @@ void loop()
             Keyboard.press('x');
         }
     }
-    else if (13 != buttonNumA1)
+    else if (13 != btnFromI2cMaster)
     {
         if (true == sandLeftKeyPressed)
         {
@@ -440,7 +468,7 @@ void loop()
     }
 
     // Check Sand: RIGHT
-    if (14 == buttonNumA1)
+    if (14 == btnFromI2cMaster)
     {
         if (false == sandRigthKeyPressed)
         {
@@ -448,7 +476,7 @@ void loop()
             Keyboard.press('x');
         }
     }
-    else if (14 != buttonNumA1)
+    else if (14 != btnFromI2cMaster)
     {
         if (true == sandRigthKeyPressed)
         {
@@ -458,7 +486,7 @@ void loop()
     }
 
     // Check Wipes: LEFT
-    if (15 == buttonNumA1)
+    if (15 == btnFromI2cMaster)
     {
         if (false == wipersLeftKeyPressed)
         {
@@ -468,7 +496,7 @@ void loop()
             delay(delayKeyPress50);
         }
     }
-    else if (15 != buttonNumA1)
+    else if (15 != btnFromI2cMaster)
     {
         if (true == wipersLeftKeyPressed)
         {
@@ -478,7 +506,7 @@ void loop()
         }
     }
     // Check Wipes: RIGHT
-    if (16 == buttonNumA1)
+    if (16 == btnFromI2cMaster)
     {
         if (false == wipersRigthKeyPressed)
         {
@@ -487,7 +515,7 @@ void loop()
             delay(delayKeyPress50);
         }
     }
-    else if (16 != buttonNumA1)
+    else if (16 != btnFromI2cMaster)
     {
         if (true == wipersRigthKeyPressed)
         {
@@ -497,7 +525,7 @@ void loop()
     }
 
     // Check if button AWS was pressed
-    if (21 == buttonNumA2)
+    if (21 == btnFromI2cMaster)
     {
         if (false == awsKeyPressed)
         {
@@ -505,7 +533,7 @@ void loop()
             Keyboard.press('q');
         }
     }
-    else if (21 != buttonNumA2)
+    else if (21 != btnFromI2cMaster)
     {
         if (true == awsKeyPressed)
         {
@@ -515,7 +543,7 @@ void loop()
     }
 
     // Check if button Engine_ON was pressed
-    if (22 == buttonNumA2)
+    if (22 == btnFromI2cMaster)
     {
         if (false == engineOnKeyPressed)
         {
@@ -523,7 +551,7 @@ void loop()
             Keyboard.press('z');
         }
     }
-    else if (22 != buttonNumA2)
+    else if (22 != btnFromI2cMaster)
     {
         if (true == engineOnKeyPressed)
         {
@@ -533,7 +561,7 @@ void loop()
     }
 
     // Check if button Engine_OFF was pressed
-    if (23 == buttonNumA2)
+    if (23 == btnFromI2cMaster)
     {
         if (false == engineOffKeyPressed)
         {
@@ -543,7 +571,7 @@ void loop()
             delay(delayKeyPress50);
         }
     }
-    else if (23 != buttonNumA2)
+    else if (23 != btnFromI2cMaster)
     {
         if (true == engineOffKeyPressed)
         {
@@ -554,7 +582,7 @@ void loop()
       }
 
     // Check if button Left Doors was pressed
-    if (24 == buttonNumA2)
+    if (24 == btnFromI2cMaster)
     {
         Keyboard.press('y');
         delay(keyPressDelay);
@@ -562,7 +590,7 @@ void loop()
     }
 
     // Check if button All Doors was pressed
-    if (26 == buttonNumA2)
+    if (26 == btnFromI2cMaster)
     {
         Keyboard.press(KEY_TAB);
         delay(delayKeyPress50);
@@ -574,7 +602,7 @@ void loop()
     }
 
     // Check if button RIGHT Doors was pressed
-    if (25 == buttonNumA2)
+    if (25 == btnFromI2cMaster)
     {
         Keyboard.press('u');
         delay(keyPressDelay);
@@ -584,7 +612,7 @@ void loop()
 /* Digital Pins Read */
 /*************************************************************************/
     // Reverser: Key
-    if (digitalRead(buttonPin2) == LOW)
+    if (digitalRead(analogPinA2) == LOW)
     {
         if (!reverserON)
         {
@@ -596,7 +624,7 @@ void loop()
             Keyboard.release(KEY_KP_MINUS);
         }
     }
-    if (digitalRead(buttonPin2) == HIGH)
+    if (digitalRead(analogPinA2) == HIGH)
     {
         if (!reverserOFF)
         {
@@ -609,8 +637,9 @@ void loop()
         }
     }
 
+//------------------------------------------------------
     // Reverser O:
-    if (digitalRead(buttonPin3) == LOW)
+    if (digitalRead(buttonPin07) == LOW)
     {
         if (false == Reverser_O_Set_Flag)
         {
@@ -626,7 +655,7 @@ void loop()
         }
     }
     // Reverser F:
-    if (digitalRead(buttonPin4) == LOW)
+    if (digitalRead(buttonPin04) == LOW)
     {
         if (false == Reverser_F_Set_Flag)
         {
@@ -662,7 +691,7 @@ void loop()
         }
     }
     // Reverser N:
-    if (digitalRead(buttonPin5) == LOW)
+    if (digitalRead(buttonPin05) == LOW)
     {
         if (false == Reverser_N_Set_Flag)
         {
@@ -699,7 +728,7 @@ void loop()
         }
     }
     // Reverser R:
-    if (digitalRead(buttonPin6) == LOW)
+    if (digitalRead(buttonPin06) == LOW)
     {
         if (false == Reverser_R_Set_Flag)
         {
@@ -714,6 +743,8 @@ void loop()
             Reverser_R_Set_Flag = true;
         }
     }
+//------------------------------------------------------
+
     // Cabin LIGHTS: LEFT
     if (digitalRead(buttonPin8) == LOW)
     {
