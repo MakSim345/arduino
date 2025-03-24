@@ -99,6 +99,7 @@ unsigned long reverserKnobHoldDuration = 500;
 
 bool eKeyHeld = false; // Flag to track if 'e' key is being held
 bool BackspaceWasPressed = false;
+bool PedalWasPressed = false;
 
 enum REVERSER_STATUS
 {
@@ -138,6 +139,7 @@ void setup()
   pinMode(buttonPin15, INPUT_PULLUP); // Pin 15
   pinMode(buttonPin16, INPUT_PULLUP); // Pin 16
 
+  pinMode(analogPinA0, INPUT_PULLUP); // Pin A0
   pinMode(analogPinA1, INPUT_PULLUP); // Pin A1
   pinMode(analogPinA2, INPUT_PULLUP); // Pin A2
 
@@ -617,7 +619,7 @@ void loop()
        reverserKnobHoldDuration = keyPressDelay;
     }
 
-    // Reverser: Main Key
+    // Reverser: Master Key
     if (digitalRead(buttonPin00) == LOW)
     {
         if (!reverserON)
@@ -943,6 +945,31 @@ void loop()
             Keyboard.release(KEY_BACKSPACE); // Release the key
 
             // Serial.println("Arduino: BackspaceWasPressed == true");
+        }
+    }
+
+    // Check Pedal on A0:
+    if (digitalRead(analogPinA0) == LOW )
+    {
+        if (true == PedalWasPressed)
+        {
+            PedalWasPressed = false;
+
+            Keyboard.press('q');
+            delay(keyPressDelay);
+            Keyboard.release('q');
+        }
+    }
+    // Check Pedal on A0:
+    if (digitalRead(analogPinA0) == HIGH ) // PRESSED
+    {
+        if (false == PedalWasPressed)
+        {
+            PedalWasPressed = true;
+
+            //Keyboard.press('q');
+            //delay(keyPressDelay);
+            //Keyboard.release('q');
         }
     }
 }
