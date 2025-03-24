@@ -36,8 +36,8 @@ int val;
 
 #ifdef USE_EXTERNAL_LED
     // const unsigned int LED_PIN = A0;
-    // #define RED_PIN A0
-    #define RED_PIN 13 // used to be 11, but change to embedded
+    #define RED_PIN 8
+    // #define RED_PIN 13 // used to be 11, but change to embedded
     // #define LED_STROBO_01 7
     #define LED_STROBO_01 12
 #endif
