@@ -206,135 +206,183 @@ void loop()
   }
 }
 
-/** Interrupt service routine for pin changes on SDA and SCL */
+
+/** Interrupt service routine for pin changes on SDA and SCL
+ *  This ISR triggers whenever there’s a change on SDA (PD4) or SCL (PD5).
+ *  It implements an I2C slave state machine to detect start/stop conditions,
+ *  match the slave address, receive data from the master, and send data back.
+ */
 ISR(PCINT2_vect)
 {
-  uint8_t current_pins = PIND;           // Read current pin states
-  uint8_t changed = current_pins ^ prev_pins; // Detect changes
+  // Read the current state of all pins on Port D (where SDA and SCL reside)
+  uint8_t current_pins = PIND;
 
-  // Handle SCL changes
+  // XOR current and previous pin states to detect which pins changed
+  // 'changed' will have 1s where pins toggled (e.g., bit 5 for SCL, bit 4 for SDA)
+  uint8_t changed = current_pins ^ prev_pins;
+
+  // --- Handle SCL Changes ---
+  // Check if SCL (pin 5) changed state
   if (changed & (1 << SCL_PIN))
   {
+    // SCL Rising Edge (SCL goes from LOW to HIGH)
     if (current_pins & (1 << SCL_PIN))
-    { // SCL rising edge
+    {
+      // If in ADDR or WRITE state, we're receiving bits from the master
       if (state == ADDR || state == WRITE)
       {
-        // Read SDA bit
+        // Read the current SDA value (1 if HIGH, 0 if LOW) when SCL rises
         uint8_t sda = (current_pins & (1 << SDA_PIN)) ? 1 : 0;
+
+        // Shift the current byte left and add the new SDA bit
+        // This builds the byte bit-by-bit (MSB first)
         current_byte = (current_byte << 1) | sda;
+
+        // Increment the bit counter (0 to 7 for an 8-bit byte)
         bit_count++;
+
+        // When 8 bits are received, process the completed byte
         if (bit_count == 8)
         {
+          // ADDR State: First byte after START is the address + R/W bit
           if (state == ADDR)
           {
+            // Extract the 7-bit address (shift out the R/W bit)
             uint8_t address = current_byte >> 1;
+
+            // Check if the address matches this slave’s address (0x08)
             if (address == SLAVE_ADDRESS)
             {
+              // Address matches; set flag
               address_match = true;
+
+              // Check the R/W bit (LSB of current_byte)
               if (current_byte & 1)
-              { // R/W = 1 (read)
-                state = READ;
-                send_index = 0;
-                bit_count = 0;
+              {
+                // R/W = 1: Master wants to read from slave
+                state = READ;      // Switch to READ state
+                send_index = 0;    // Start at beginning of send_buffer
+                bit_count = 0;     // Reset bit counter for sending
               }
               else
-              {                // R/W = 0 (write)
-                state = WRITE;
-                receive_index = 0;
+              {
+                // R/W = 0: Master wants to write to slave
+                state = WRITE;     // Switch to WRITE state
+                receive_index = 0; // Reset buffer for receiving data
               }
             }
             else
             {
-              state = IDLE;         // Address mismatch
+              // Address doesn’t match; ignore this transaction
+              state = IDLE;
             }
           }
+          // WRITE State: Receiving data bytes from master
           else if (state == WRITE)
           {
+            // Store the received byte in the buffer
             receive_buffer[receive_index++] = current_byte;
-            if (receive_index >= 32) receive_index = 0; // Prevent overflow
+
+            // Prevent buffer overflow by wrapping around
+            if (receive_index >= 32) receive_index = 0;
           }
+
+          // Reset for the next byte
           bit_count = 0;
           current_byte = 0;
         }
       }
+      // READ State: Master is reading from slave
       else if (state == READ)
       {
-        // Master is reading; increment bit_count after bit is read
+        // Master has clocked SCL to read a bit; we increment after each bit
         if (bit_count < 8)
         {
-          bit_count++;
+          bit_count++; // Count bits sent (0 to 7)
         }
         else
         {
-          // After 8 bits, check ACK from master
+          // After 8 bits, master sends ACK/NACK
           if (digitalRead(SDA_PIN) == LOW)
-          { // ACK received
-            send_index++;
-            bit_count = 0;
+          {
+            // ACK (LOW): Master wants more data
+            send_index++;       // Move to next byte in send_buffer
+            bit_count = 0;      // Reset for next byte
             if (send_index >= strlen(send_buffer))
             {
+              // All data sent; return to IDLE
               state = IDLE;
             }
           }
           else
-          {                         // NACK received
+          {
+            // NACK (HIGH): Master is done reading
             state = IDLE;
           }
         }
       }
     }
+    // SCL Falling Edge (SCL goes from HIGH to LOW)
     else
-    { // SCL falling edge
+    {
+      // In READ state, set SDA before SCL falls for the next bit
       if (state == READ && send_index < strlen(send_buffer))
       {
         if (bit_count < 8)
         {
-          // Set SDA for the next bit
+          // Get the current bit to send (MSB first)
           uint8_t bit = (send_buffer[send_index] >> (7 - bit_count)) & 1;
+
+          // Set SDA based on the bit value
           if (bit)
           {
-            pinMode(SDA_PIN, INPUT);       // SDA high
+            pinMode(SDA_PIN, INPUT);       // SDA HIGH (via pull-up)
           }
           else
           {
             pinMode(SDA_PIN, OUTPUT);
-            digitalWrite(SDA_PIN, LOW);    // SDA low
+            digitalWrite(SDA_PIN, LOW);    // SDA LOW
           }
         }
         else
         {
-          pinMode(SDA_PIN, INPUT);         // Release SDA for ACK
+          // After 8 bits, release SDA for master’s ACK/NACK
+          pinMode(SDA_PIN, INPUT);
         }
       }
     }
   }
 
-  // Handle SDA changes (start/stop conditions)
+  // --- Handle SDA Changes (Start/Stop Conditions) ---
+  // Check if SDA (pin 4) changed state
   if (changed & (1 << SDA_PIN))
   {
+    // SDA changes are only significant when SCL is HIGH
     if (current_pins & (1 << SCL_PIN))
-    { // SCL is high
+    {
+      // Stop Condition: SDA rises (LOW to HIGH) while SCL is HIGH
       if (!(prev_pins & (1 << SDA_PIN)) && (current_pins & (1 << SDA_PIN)))
       {
-        // Stop condition: SDA rises while SCL is high
+        // If in WRITE state, signal that data was fully received
         if (state == WRITE)
         {
-          data_received = true;          // Data received to print
+          data_received = true; // Flag for loop() to print data
         }
-        state = IDLE;
+        state = IDLE;           // Reset to IDLE state
       }
+      // Start Condition: SDA falls (HIGH to LOW) while SCL is HIGH
       else if ((prev_pins & (1 << SDA_PIN)) && !(current_pins & (1 << SDA_PIN)))
       {
-        // Start condition: SDA falls while SCL is high
-        state = ADDR;
-        bit_count = 0;
-        current_byte = 0;
-        address_match = false;
+        state = ADDR;           // Expect address byte next
+        bit_count = 0;          // Reset bit counter
+        current_byte = 0;       // Clear current byte
+        address_match = false;  // Reset address match flag
       }
     }
   }
 
-  prev_pins = current_pins; // Update previous pin states
+  // Update previous pin states for the next interrupt
+  prev_pins = current_pins;
 }
 
 #endif // SLAVE
