@@ -7,6 +7,7 @@
 const int analogPinA0 = A0;
 const int analogPinA1 = A1;
 const int analogPinA2 = A2;
+const int analogPinA3 = A3;
 
 const int buttonPin00 = 0;
 const int buttonPin01 = 1;
@@ -23,33 +24,6 @@ const int buttonPin14 = 14;
 const int buttonPin15 = 15;
 const int buttonPin16 = 16;
 
-// Measured values for each button in A0
-const int btn6ValueA0 = 860;
-const int btn5ValueA0 = 829;
-const int btn4ValueA0 = 780;
-const int btn3ValueA0 = 701;
-const int btn2ValueA0 = 541;
-const int btn1ValueA0 = 50;
-const int noPressValueA0 = 1023;
-
-// Measured values for each button in A1
-const int btn6ValueA1 = 860;
-const int btn5ValueA1 = 820;
-const int btn4ValueA1 = 780;
-const int btn3ValueA1 = 720;
-const int btn2ValueA1 = 539;
-const int btn1ValueA1 = 50;
-const int noPressValueA1 = 1023;
-
-// Measured values for each button in A2
-const int btn6ValueA2 = 860;
-const int btn5ValueA2 = 829;
-const int btn4ValueA2 = 780;
-const int btn3ValueA2 = 701;
-const int btn2ValueA2 = 533;
-const int btn1ValueA2 = 60;
-const int noPressValueA2 = 1020;
-
 const int delayDebounce = 20;
 const int resRange = 20; // range for resistors bridge
 
@@ -60,6 +34,9 @@ bool CabLightsON = false;
 bool CabLightsOFF = true;
 
 bool engageWsKeyPressed = false;
+
+bool circuitBreakerLeftPressed = false;
+bool circuitBreakerRightPressed = false;
 
 bool headLightKeyFFPressed = false;
 bool headLightKeyBKPressed = false;
@@ -116,6 +93,7 @@ bool Reverser_F_Set_Flag = false;
 bool Reverser_N_Set_Flag = false;
 bool Reverser_R_Set_Flag = false;
 
+// Entrance point for inpit from II2C Master (Arduino-MEGA)
 int btnFromI2cMaster = BTN_RELEASE;
 
 void setup()
@@ -141,7 +119,9 @@ void setup()
 
   pinMode(analogPinA0, INPUT_PULLUP); // Pin A0
   pinMode(analogPinA1, INPUT_PULLUP); // Pin A1
+
   pinMode(analogPinA2, INPUT_PULLUP); // Pin A2
+  pinMode(analogPinA3, INPUT_PULLUP); // Pin A3
 
   // attachInterrupt(digitalPinToInterrupt(buttonPin1), button2ISR, FALLING);
   //attachInterrupt(digitalPinToInterrupt(buttonPin2), button1ISR, FALLING);
@@ -171,127 +151,12 @@ void receiveEvent_I2c(int howMany)
   }
 }
 
-
-int readAnalogPortA0()
-{
-  int analogValue = analogRead(analogPinA0);  // Read the analog value from A0
-  delay(delayDebounce);  // Debounce delay
-  int retVal = 0;
-  // Serial.println(analogValue);
-
-   /* Checks the analog value against the measured values for each button.
-    * If a match is found within a small range (+-resRange), it sends
-    * the corresponding keystroke
-    */
-  if (analogValue >= btn1ValueA0 - resRange && analogValue <= btn1ValueA0 + resRange)
-  {
-    retVal = 1;
-  }
-  else if (analogValue >= btn2ValueA0 - resRange && analogValue <= btn2ValueA0 + resRange)
-  {
-    retVal = 2;
-  }
-  else if (analogValue >= btn3ValueA0 - resRange && analogValue <= btn3ValueA0 + resRange)
-  {
-    retVal = 3;
-  }
-  else if (analogValue >= btn4ValueA0 - resRange && analogValue <= btn4ValueA0 + resRange)
-  {
-    retVal = 4;
-  }
-  else if (analogValue >= btn5ValueA0 - resRange && analogValue <= btn5ValueA0 + resRange)
-  {
-    retVal = 5;
-  }
-  else if (analogValue >= btn6ValueA0 - resRange && analogValue <= btn6ValueA0 + resRange)
-  {
-    retVal = 6;
-  }
-  else if (analogValue >= noPressValueA0 - resRange && analogValue <= noPressValueA0 + resRange)
-  {
-    retVal = 0;
-  }
-  return retVal;
-}
-
-int readAnalogPortA1()
-{
-  int analogValue = analogRead(analogPinA1);  // Read the analog value from A0
-  delay(delayDebounce);  // Debounce delay
-  int retVal = 0;
-
-  if (analogValue >= btn1ValueA1 - resRange && analogValue <= btn1ValueA1 + resRange)
-  {
-    retVal = 11;
-  }
-  else if (analogValue >= btn2ValueA1 - resRange && analogValue <= btn2ValueA1 + resRange)
-  {
-    retVal = 12;
-  }
-  else if (analogValue >= btn3ValueA1 - resRange && analogValue <= btn3ValueA1 + resRange)
-  {
-    retVal = 13;
-  }
-  else if (analogValue >= btn4ValueA1 - resRange && analogValue <= btn4ValueA1 + resRange)
-  {
-    retVal = 14;
-  }
-  else if (analogValue >= btn5ValueA1 - resRange && analogValue <= btn5ValueA1 + resRange)
-  {
-    retVal = 15;
-  }
-  else if (analogValue >= btn6ValueA1 - resRange && analogValue <= btn6ValueA1 + resRange)
-  {
-    retVal = 16;
-  }
-  else if (analogValue >= noPressValueA1 - resRange && analogValue <= noPressValueA1 + resRange)
-  {
-    retVal = 0;
-  }
-
-  return retVal;
-}
-
-int readAnalogPortA2()
-{
-  int analogValue = analogRead(analogPinA2);  // Read the analog value from A0
-  delay(delayDebounce);  // Debounce delay
-  int retVal = 0;
-
-  if (analogValue >= btn1ValueA2 - resRange && analogValue <= btn1ValueA2 + resRange)
-  {
-    retVal = 21;
-  }
-  else if (analogValue >= btn2ValueA2 - resRange && analogValue <= btn2ValueA2 + resRange)
-  {
-    retVal = 22;
-  }
-  else if (analogValue >= btn3ValueA2 - resRange && analogValue <= btn3ValueA2 + resRange)
-  {
-    retVal = 23;
-  }
-  else if (analogValue >= btn4ValueA2 - resRange && analogValue <= btn4ValueA2 + resRange)
-  {
-    retVal = 24;
-  }
-  else if (analogValue >= btn5ValueA2 - resRange && analogValue <= btn5ValueA2 + resRange)
-  {
-    retVal = 25;
-  }
-  else if (analogValue >= btn6ValueA2 - resRange && analogValue <= btn6ValueA2 + resRange)
-  {
-    retVal = 26;
-  }
-  else if (analogValue >= noPressValueA2 - resRange && analogValue <= noPressValueA2 + resRange)
-  {
-    retVal = 0;
-  }
-
-  return retVal;
-}
-
 void loop()
 {
+    /* Receive data from I2C Master */
+    /******************************************************************/
+    /* TODO: remove magic numbers, create some interface file */
+
     // Automatic BRAKE: BACK
     if (2 == btnFromI2cMaster)
     {
@@ -317,7 +182,7 @@ void loop()
         {
             autoBrakeKeyFFPressed = true;
             Keyboard.press(KEY_LEFT_SHIFT);
-            Keyboard.press('5');  // Simulate "5"
+            Keyboard.press('5');
         }
     }
     else if (1 != btnFromI2cMaster)
@@ -326,7 +191,7 @@ void loop()
         {
             autoBrakeKeyFFPressed = false;
             Keyboard.release(KEY_LEFT_SHIFT);
-            Keyboard.release('5'); // Release the key
+            Keyboard.release('5');
         }
     }
 
@@ -584,7 +449,15 @@ void loop()
         Keyboard.release('y');
     }
 
-    // Check if button All Doors was pressed
+    // Check if button RIGHT Doors was pressed
+    if (25 == btnFromI2cMaster)
+    {
+        Keyboard.press('u');
+        delay(keyPressDelay);
+        Keyboard.release('u');
+    }
+
+    // Check if button Door Interlock was pressed
     if (26 == btnFromI2cMaster)
     {
         Keyboard.press(KEY_TAB);
@@ -598,12 +471,87 @@ void loop()
         Keyboard.release(KEY_KP_ENTER);
     }
 
-    // Check if button RIGHT Doors was pressed
-    if (25 == btnFromI2cMaster)
+    // Check if button BELL pressed:
+    if (27 == btnFromI2cMaster)
     {
-        Keyboard.press('u');
+        Keyboard.press('b');
+        delay(longKeyPressDelay);
+        Keyboard.release('b');
+    }
+
+    // Check if button OVERRIDE pressed:
+    if (28 == btnFromI2cMaster)
+    {
+        Keyboard.press(KEY_DELETE);
         delay(keyPressDelay);
-        Keyboard.release('u');
+        Keyboard.release(KEY_DELETE);
+    }
+
+    // Check if button ACKNOWLEDGE pressed:
+    if (29 == btnFromI2cMaster)
+    {
+        Keyboard.press(KEY_PAGE_DOWN);
+        delay(keyPressDelay);
+        Keyboard.release(KEY_PAGE_DOWN);
+    }
+
+    // Check if button RELEASE pressed:
+    if (30 == btnFromI2cMaster)
+    {
+        Keyboard.press(KEY_END);
+        delay(keyPressDelay);
+        Keyboard.release(KEY_END);
+    }
+
+  //------------------------------------------------------
+  /* Circuit Breaker
+   */
+  // Circuit Breaker: LEFT
+    if (31 == btnFromI2cMaster)
+    {
+        if (false == circuitBreakerLeftPressed)
+        {
+            circuitBreakerLeftPressed = true;
+            // Simulate pressing "Ctrl+Shift+p"
+            // Keyboard.press(KEY_LEFT_CTRL);
+            // Keyboard.press(KEY_LEFT_SHIFT);
+            // Note: changed to '4'
+            Keyboard.press('4');
+        }
+    }
+    else if (31 != btnFromI2cMaster)
+    {
+        if (true == circuitBreakerLeftPressed)
+        {
+            circuitBreakerLeftPressed = false;
+            // Release keys
+            //Keyboard.release(KEY_LEFT_CTRL);
+            //Keyboard.release(KEY_LEFT_SHIFT);
+            Keyboard.release('4');
+        }
+    }
+    // Circuit Breaker: RIGHT
+    if (32 == btnFromI2cMaster)
+    {
+        if (false == circuitBreakerRightPressed)
+        {
+            circuitBreakerRightPressed = true;
+            // Simulate pressing "Ctrl+p"
+            // Keyboard.press(KEY_LEFT_CTRL);
+            // Note: changed to '7'
+            Keyboard.press('7');
+        }
+    }
+    else if (32 != btnFromI2cMaster)
+    {
+        if (true == circuitBreakerRightPressed)
+        {
+            circuitBreakerRightPressed = false;
+            // Release the key
+            // Keyboard.release(KEY_LEFT_CTRL);
+            //delay(shortPressDelay);
+            Keyboard.release('7');
+        }
     }
 
 /* Digital Pins Read */
@@ -629,7 +577,7 @@ void loop()
             // Key turn right
             Keyboard.press(KEY_KP_MINUS);
             delay(keyPressDelay);
-             Keyboard.release(KEY_KP_MINUS);
+            Keyboard.release(KEY_KP_MINUS);
             /*
             Keyboard.press(KEY_LEFT_CTRL);
             delay(keyPressDelay);
@@ -849,11 +797,9 @@ void loop()
     // Engage Warning System: PRESS
     if (digitalRead(buttonPin09) == LOW)
     {
-
         if (false == engageWsKeyPressed)
         {
             engageWsKeyPressed = true;
-            //Keyboard.press(KEY_LEFT_CTRL);
             Keyboard.press(KEY_KP_PLUS);
             // Note: key counts as pressed until the button released!
             //delay(keyPressDelay);
@@ -973,62 +919,3 @@ void loop()
         }
     }
 }
-
-/*
-#include <Keyboard.h>
-
-const int buttonPin = 2;  // Pin where the button is connected
-int buttonState = 0;       // Variable to hold the button state
-
-volatile bool button1Pressed = false;
-volatile bool button1Released = false;
-
-unsigned long lastDebounceTime1 = 0; // Last debounce time for button 1
-const unsigned long debounceDelay = 50; // Debounce delay in milliseconds
-
-unsigned long button1PressTime = 0;
-bool waitForRelease = false; // Flag for ignore fixed button release
-
-void setup()
-{
-  pinMode(buttonPin, INPUT_PULLUP);  // Set button pin as input with internal pull-up
-  Keyboard.begin();                   // Start the Keyboard library
-}
-
-// Interrupt service routine for button 1 (e)
-void button1ISR()
-{
-  unsigned long currentTime = millis();
-  // Check if debounce delay has passed
-  if ((currentTime - lastDebounceTime1) > debounceDelay)
-  {
-    lastDebounceTime1 = currentTime; // Update the last debounce time
-
-    if (waitForRelease)
-    {
-        button1Released = true;
-        waitForRelease = false;
-    }
-    else if (!eKeyHeld) // Ignore if 'e' key is already being held
-    {
-      button1Pressed = true;
-      button1PressTime = millis(); // Record the time when button 1 was pressed
-    }
-  }
-}
-
-void loop()
-{
-  buttonState = digitalRead(buttonPin); // Read the state of the button
-
-  // Check if the button is pressed
-  if (buttonState == LOW)
-  { // Button is pressed (active low)
-    Keyboard.press('e');    // Simulate pressing the 'E' key
-    delay(2000);             // Wait for a short period to ensure the key press is registered
-    Keyboard.release('e');  // Release the 'E' key
-    delay(500);             // Debounce delay
-  }
-}
-
-*/
