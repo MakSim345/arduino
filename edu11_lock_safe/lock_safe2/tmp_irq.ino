@@ -10,7 +10,7 @@ const int PASSWORD_ADDRESS = 0;
 const byte ROWS = 4;
 const byte COLS = 4;
 
-char keys[ROWS][COLS] = 
+char keys[ROWS][COLS] =
 {
   {'1','2','3','A'},
   {'4','5','6','B'},
@@ -26,22 +26,22 @@ Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 volatile bool keyEntered = false;
 volatile char enteredKey;
 
-void setup() 
+void setup()
 {
   Serial.begin(9600);
   initializePassword();
   attachInterrupt(digitalPinToInterrupt(2), readKey, FALLING);
 }
 
-void loop() 
+void loop()
 {
-  if (keyEntered) 
+  if (keyEntered)
   {
-    if (enteredKey == '#') 
+    if (enteredKey == '#')
     {
       unlockSafe();
     }
-    else 
+    else
     {
       enterPassword(enteredKey);
     }
@@ -49,53 +49,53 @@ void loop()
   }
 }
 
-void initializePassword() 
+void initializePassword()
 {
   char password[PASSWORD_LENGTH + 1];
   EEPROM.get(PASSWORD_ADDRESS, password);
 
-  if (password[0] == '\0') 
+  if (password[0] == '\0')
   {
     Serial.println("Please enter a new password:");
 
-    while (true) 
+    while (true)
     {
-      if (keyEntered && enteredKey != '#') 
+      if (keyEntered && enteredKey != '#')
       {
         int passwordLength = strlen(password);
-        if (passwordLength < PASSWORD_LENGTH) 
+        if (passwordLength < PASSWORD_LENGTH)
         {
           password[passwordLength] = enteredKey;
           password[passwordLength + 1] = '\0';
         }
         keyEntered = false;
-      } 
-      else if (enteredKey == '#') 
+      }
+      else if (enteredKey == '#')
       {
         EEPROM.put(PASSWORD_ADDRESS, password);
         Serial.println("Password saved.");
         break;
       }
     }
-  } 
-  else 
+  }
+  else
   {
     Serial.println("Password already set.");
   }
 }
 
-void enterPassword(char key) 
+void enterPassword(char key)
 {
   static char enteredPassword[PASSWORD_LENGTH + 1];
   static int passwordIndex = 0;
 
-  if (passwordIndex < PASSWORD_LENGTH) 
+  if (passwordIndex < PASSWORD_LENGTH)
   {
     enteredPassword[passwordIndex++] = key;
     Serial.print("*");
   }
 
-  if (passwordIndex == PASSWORD_LENGTH) 
+  if (passwordIndex == PASSWORD_LENGTH)
   {
     enteredPassword[passwordIndex] = '\0';
     Serial.println();
@@ -103,12 +103,12 @@ void enterPassword(char key)
     char password[PASSWORD_LENGTH + 1];
     EEPROM.get(PASSWORD_ADDRESS, password);
 
-    if (strcmp(enteredPassword, password) == 0) 
+    if (strcmp(enteredPassword, password) == 0)
     {
       Serial.println("Safe unlocked.");
       // Add your code for unlocking the safe here
     }
-    else 
+    else
     {
       Serial.println("Wrong password. Try again.");
     }
@@ -118,15 +118,15 @@ void enterPassword(char key)
   }
 }
 
-void unlockSafe() 
+void unlockSafe()
 {
   // Add your code for unlocking the safe here
 }
 
-void readKey() 
+void readKey()
 {
   char key = keypad.getKey();
-  if (key) 
+  if (key)
   {
     keyEntered = true;
     enteredKey = key;
