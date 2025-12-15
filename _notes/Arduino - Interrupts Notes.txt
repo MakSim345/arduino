@@ -1,0 +1,151 @@
+In arduino attachinterrupt what is a vector?
+
+In the context of Arduino 'attachInterrupt' function, a "vector" refers to an "interrupt vector", which is essentially a pointer or reference to a specific interrupt service routine (ISR) in the microcontroller’s memory.
+
+However, you don’t directly deal with vectors as a programmer when using 'attachInterrupt'—the Arduino framework abstracts this concept for simplicity.
+
+To break it down:
+
+1. What 'attachInterrupt' Does
+
+The 'attachInterrupt' function is used to specify a function (the ISR) that will be called when a specific interrupt occurs, such as a pin changing state (e.g., from HIGH to LOW). The syntax is:
+
+    attachInterrupt(digitalPinToInterrupt(pin), ISR_function, mode);
+
+
+- 'pin': The pin number where the interrupt is triggered.
+- 'ISR_function': The function (ISR) you write that executes when the interrupt occurs.
+- 'mode': The condition that triggers the interrupt (e.g., 'RISING', 'FALLING', 'CHANGE').
+
+2. The "Vector" Under the Hood
+
+In microcontroller programming (like the AVR chips used in many Arduino boards), an **interrupt vector** is a predefined memory address that points to the code to execute when an interrupt is triggered. Each type of interrupt (e.g., external interrupt on a specific pin, timer overflow) has its own vector stored in a table called the **interrupt vector table**.
+
+When you use 'attachInterrupt', the Arduino library:
+    2.1. Maps the specified pin to the corresponding hardware interrupt (e.g., INT0 or INT1 on an ATmega328P).
+    2.2. Associates your ISR function with that interrupt’s vector in the background.
+    2.3. Configures the interrupt system to jump to your function when the interrupt condition is met.
+
+So, while you don’t explicitly define or manipulate the vector yourself, it’s the mechanism that connects the hardware interrupt to your code.
+
+3. Why It Matters
+Understanding the vector concept becomes more relevant if you dive into low-level programming without the Arduino abstraction (e.g., using raw AVR-GCC). In that case, you’d manually set up the interrupt vector table and write ISRs directly tied to specific vectors (like 'ISR(INT0_vect)' for external interrupt 0).
+
+4. Example
+Here’s a simple Arduino example:
+
+====================================================================================================
+volatile int count = 0;
+
+void setup()
+{
+  pinMode(2, INPUT); // Pin 2 supports interrupts on most Arduino boards
+  attachInterrupt(digitalPinToInterrupt(2), increment, RISING); // Call "increment" on rising edge
+  Serial.begin(9600);
+}
+
+void loop()
+{
+  Serial.println(count);
+  delay(1000);
+}
+
+void increment()
+{
+  count++; // ISR increments the counter
+}
+====================================================================================================
+
+In this case, the interrupt vector for pin 2 (e.g., 'INT0_vect' on an Uno) is implicitly managed by 'attachInterrupt', linking the hardware event to the 'increment' function.
+
+5. Summary
+In Arduino’s 'attachInterrupt', the "vector" is the behind-the-scenes link between the interrupt hardware and your ISR. You don’t need to define it explicitly—Arduino handles it—but it’s rooted in the microcontroller’s interrupt vector system. If you’re just using Arduino, think of it as the magic that makes your ISR work!
+
+
+6. Example of usage "int0_vect"
+
+Using 'INT0_vect' directly is a lower-level approach that bypasses the Arduino 'attachInterrupt' abstraction and works with the raw interrupt vector system of the AVR microcontroller (e.g., ATmega328P on an Arduino Uno). This is typically done in AVR-GCC programming rather than the standard Arduino framework, but you can still use it within an Arduino sketch if you want more control.
+
+Here’s an example of how to use 'INT0_vect' to handle an interrupt on pin 2 (which corresponds to the INT0 external interrupt on an Arduino Uno):
+
+6.1 Example C++ Code
+====================================================================================================
+#include <avr/io.h>      // AVR-specific I/O definitions
+#include <avr/interrupt.h> // AVR interrupt handling
+
+volatile int count = 0; // Variable to increment on interrupt (must be volatile)
+
+// Interrupt Service Routine (ISR) for INT0
+ISR(INT0_vect)
+{
+  count++; // Increment counter when interrupt occurs
+}
+
+void setup()
+{
+    // Configure pin 2 (The "PD2" on "ATmega328P") as input
+    DDRD &= ~(1 << DDD2); // Clear bit 2 in DDRD to set PD2 as input
+    PORTD |= (1 << PORTD2); // Enable pull-up resistor on PD2 (pin 2)
+
+    // Configure INT0 interrupt
+    EICRA |= (1 << ISC01); // Trigger on falling edge (ISC01 = 1, ISC00 = 0)
+    EICRA &= ~(1 << ISC00);
+    EIMSK |= (1 << INT0);  // Enable INT0 interrupt
+
+    // Enable global interrupts
+    sei();
+
+    // Start serial communication
+    Serial.begin(9600);
+}
+
+void loop()
+{
+    Serial.println(count); // Print the counter value
+    delay(1000);          // Delay for readability
+}
+
+void loop()
+{
+    // Note: loop is empty!
+}
+====================================================================================================
+
+6.3 Explanation
+**Headers**:
+   - '#include <avr/io.h>': Provides access to AVR I/O registers (e.g., 'DDRD', 'PORTD').
+   - '#include <avr/interrupt.h>': Defines the 'ISR' macro and interrupt vectors like 'INT0_vect'.
+
+**ISR Definition**:
+   - 'ISR(INT0_vect)' defines the interrupt service routine for the INT0 interrupt, which is tied to pin 2 on an Arduino Uno. When the interrupt triggers, 'count' increments.
+   - 'volatile' is used for 'count' because it’s modified in the ISR and accessed in the main program.
+
+**Setup**:
+    - 'DDRD &= ~(1 << DDD2)': Sets pin 2 (PD2) as an input.
+    - 'PORTD |= (1 << PORTD2)': Enables the internal pull-up resistor on pin 2.
+    - 'EICRA': Configures the interrupt to trigger on a falling edge (e.g., when pin 2 goes from HIGH to LOW).
+    - 'ISC01 = 1', 'ISC00 = 0' sets falling edge detection.
+    - 'EIMSK |= (1 << INT0)': Enables the INT0 interrupt.
+    - 'sei()': Enables global interrupts.
+
+**Loop**:
+   - Simply prints the 'count' value every second to monitor interrupt triggers.
+
+**Triggering the Interrupt**:
+   - Connect a button or switch between pin 2 and ground. When pressed, the pin goes LOW (falling edge), triggering the ISR.
+
+6.4 Notes
+**Pin Mapping**:
+    On an Arduino Uno, INT0 is tied to digital pin 2, and INT1 is tied to pin 3. Check your board’s datasheet for other models (e.g., Mega, Leonardo).
+
+**Differences from 'attachInterrupt'**:
+    With 'attachInterrupt', you’d use 'attachInterrupt(digitalPinToInterrupt(2), someFunction, FALLING)' instead of manually configuring registers and defining 'ISR(INT0_vect)'.
+
+**Limitations**:
+    In this raw approach, you’re directly tied to INT0 vector, so you can’t dynamically reassign it like with 'attachInterrupt'.
+
+6.5 Testing
+    - Upload this code to an Arduino Uno.
+    - Wire a pushbutton: one side to pin 2, the other to GND.
+    - Open the Serial Monitor (9600 baud) and press the button. You’ll see 'count' increment each time the button is pressed.
+
