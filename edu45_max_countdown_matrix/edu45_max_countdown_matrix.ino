@@ -71,7 +71,15 @@ int timer_min = TOMATO_TIME;
 int timer_sec = 0;
 int invider_show_ctr = MONSTERS_TIME;
 bool is_timer_run = false;
-bool is_time_adjusted_today = false;
+
+// Daily RTC drift correction settings
+const int DRIFT_CORRECTION_SEC = 7;   // +7 sec/day (use negative if RTC runs fast)
+const uint8_t ADJUST_HOUR = 12;
+const uint8_t ADJUST_MINUTE = 32;
+const uint8_t ADJUST_SECOND = 0;
+
+long last_adjust_date_key = -1; // YYYYMMDD of last correction
+
 
 // a variable can change inside an ISR, thus must be volatile:
 volatile byte btn_pressed_state = false;
@@ -217,27 +225,23 @@ void loop()
             Serial.print('-');
             Serial.println(ADTnow.year());
 
-            const int SECONDS_TO_ADJUST= 7; // amount of seconds used for adjust time once per day.
+
             // once per day, at 12:32 time it is adjusted because RTC is not perfect:
-            if ( (SECONDS_TO_ADJUST == ADTnow.second()) && (32 == ADTnow.minute()) && (12 == ADTnow.hour()) )
-            {
-                Serial.println("It is adjusted TIME!");
-                if (!is_time_adjusted_today)
+            long date_key = (long)ADTnow.year() * 10000L + (long)ADTnow.month() * 100L + ADTnow.day();
+
+            if (ADTnow.hour() == ADJUST_HOUR &&
+                ADTnow.minute() == ADJUST_MINUTE &&
+                ADTnow.second() == ADJUST_SECOND &&
+                last_adjust_date_key != date_key)
                 {
-                    // #TODO: __DATE__ will be always same, need to find how to get current data.
-                    // char temp [] = __DATE__; // May 20 2021
-                    RTC.adjust(DateTime(__DATE__, "12:32:00"));
-                    is_time_adjusted_today = true;
-                    Serial.print("Time adjusted to: ");
-                    Serial.print(SECONDS_TO_ADJUST);
-                    Serial.println(" seconds.");
+                    DateTime corrected_time(ADTnow.unixtime() + DRIFT_CORRECTION_SEC);
+                    RTC.adjust(corrected_time);
+                    last_adjust_date_key = date_key;
+
+                    Serial.print("RTC corrected by ");
+                    Serial.print(DRIFT_CORRECTION_SEC);
+                    Serial.println(" sec");
                 }
-                else
-                {
-                    is_time_adjusted_today = false;
-                    Serial.println("Time was adjusted few seconds ago. Wait next 24 hours.");
-                }
-            }
         }
 
     switch (flag)
