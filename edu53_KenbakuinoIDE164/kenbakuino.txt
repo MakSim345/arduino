@@ -71,7 +71,9 @@ operation is a "write" otherwise it is a "read".  The remaining 7 bits provide
 the Index of the item.  The argument for a write comes from the B register.
 The result of a read is placed in the B register.
 Note that some writes actually perform an *action* and the corresponding 
-reads do nothing.  Executing the SysInfo instruction resets the CPU speed.
+reads do nothing.  Operation 027 (EEPROM Page) read requires a value in B!
+Executing the SysInfo instruction resets the CPU speed.
+The SysInfo instruction is often referred to as SYSX (system extension op-code)
 
 The first 8 values for the Index read/write the DS1307 RTC registers 
 (see http://datasheets.maxim-ic.com/en/ds/DS1307.pdf).  Numbers are BCD.
@@ -86,7 +88,7 @@ The first 8 values for the Index read/write the DS1307 RTC registers
 No validation is performed.  
 
 The next 8 values read/write bytes to the subsequent 8 bytes of "user" RAM in
-the DS1307:
+the DS1307 (or a different RTC, or EEPROM, see the constants in Clock.h):
   010: Flags controlling the Kenbak-uino. 
 Currently only 1, if b0 is set, pressing one of the Data switches *toggles* 
 the bit, otherwise it only sets it (as per the KENBAK-1).
@@ -106,10 +108,16 @@ Thus for example, a Map of 012 creates the following page sizes:
   014: User #3
   015: User #4
   016: User #5
-  017: User #6
-These 6 bytes are available for reading and writing non-volatile values.
+These 5 bytes are available for reading and writing non-volatile values.
 
-The final 6 Index values act as follows:
+The final 7 Index values act as follows:
+
+  017: Auto-run (New)
+This byte configures auto-running a program at startup (See Extension #9).  
+It's binary form is 0b00XX0NNN where 
+XX: 00 = off, 01 = built-in, 10 = EEPROM
+NNN: built-in program number or EEPROM slot
+
   020: Control LEDs
 Reading does nothing.  Writing sets the control LEDs as follows:
    b0:INP
@@ -130,6 +138,14 @@ This is separate from the "CPU Speed" (Extension #7 below.)
 
   023: Serial
 Reads or writes a byte from the Serial port (@38400baud)
+
+  024: EEPROM Offset
+  025: RAM Offset
+  026: EEPROM Size
+  028: EEPROM Overlay
+  030: EEPROM Page
+These five commands control copying bytes between program RAM and EEPROM.  
+You can, for example, use it to overlay code. See memcopy.txt
 
  0177: Reading this special value simply returns 0 in Register A, indicating 
 that extensions are enabled.  Writing does nothing.
@@ -199,9 +215,26 @@ some make more sense that others (for example Delay from the front panel).
 Extension #7 CPU Speed -------------------------------------------------------
 Pressing BitN+STOP sets the "CPU speed".  It sets the delay in milliseconds 
 added after each CPU cycle, equal to 2^N ms.  Thus b0+STOP sets the
-delay to 1ms.  b7+STOP sets it to 128ms.  The delay is set to 1 at power on
-and on CLR+STOR (Extension #3 Erase above) of if a program executes the 
+delay to 1ms.  b7+STOP sets it to 128ms.  The delay is set to 0 at power on
+and on CLR+STOR (Extension #3 Erase above) or if a program executes the 
 SysInfo instruction, 0360.
+
+Extension #8 Send/Receive Memory ---------------------------------------------
+Pressing BitN+DISP writes program memory as 16 lines of 16 bytes of octal data
+to the serial port.
+Pressing BitN+SET read program memory from the serial port. BitN sets the baud.
+0/1/2/3=4800/9600/19k2/38k4. 
+Refer to serial.txt.
+
+Extension #9 Auto-Run Program/Reset Configuration ----------------------------
+Holding buttons down while turning the device on configure automatically 
+running a program at power-on:
+  Stop and BitN : auto-run built-in program N
+  Read and BitN : auto-run from EEPROM slot N
+  Stop          : turn auto-run off
+In addition, holding
+  Stop and Clear
+will reset configuration to defaults.
 
 Not done ---------------------------------------------------------------------
 It would be really useful to move the Input and Flag bytes (0200-0203)

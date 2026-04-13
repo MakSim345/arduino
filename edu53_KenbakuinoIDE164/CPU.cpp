@@ -19,7 +19,7 @@ P--           -Q-         --R
  
 ----Shifts/Rotates----          R == 1
 P--           -Q-         --R
-0 = Rt Shift  0 = A:4
+0 = Rt Shift  0 = A:4           *** Rt Shift "sign-fills"
 1 = Rt Rot    1 = A:1     1
 2 = Lt Shift  2 = A:2
 3 = Lt Rot    3 = A:3
@@ -85,6 +85,11 @@ P--           -Q-         --R
 #define OP_TEST_GE   6
 #define OP_TEST_GT   7
 
+// define to revert to 0-fill right shift and incorrect rolls of more than 1 bit
+//#define CPU_LEGACY_SHIFT_ROLL
+
+// define to revert to PC updating during opcode evaluation (vs at the end)
+//#define CPU_LEGACY_PROGRAM_COUNTER
 
 CPU* CPU::cpu = NULL;
 
@@ -135,7 +140,7 @@ void CPU::ClearAllMemory()
   memset(m_Memory, 0, 256);
 }
 
-bool CPU::OnNOOPExtension(byte Op)
+bool CPU::OnNOOPExtension(byte )
 {
   // by default a NOOP does nothing (but says "keep running")
   // this can be over-written.  return false to HALT
@@ -152,13 +157,20 @@ byte* CPU::Memory()
 byte* CPU::GetNextByte()
 {
   // note: doesn't do anything special if we wrap around.  We could HALT, but don't
+#ifdef CPU_LEGACY_PROGRAM_COUNTER  
   return m_Memory + m_Memory[REG_P_IDX]++;
+#else  
+  return m_Memory + m_Memory[REG_P_IDX] + m_InstructionBytes++;
+#endif
 }
 
 bool CPU::Step()
 {
   // one instruction, false means HALT
-  return Execute(*GetNextByte());
+  m_InstructionBytes = 0;
+  bool go = Execute(*GetNextByte());
+  m_Memory[REG_P_IDX] += m_InstructionBytes;  // if enabled, advance the PC at the *end* of the instruction
+  return go;
 }
 
 bool CPU::Execute(byte Instruction)
@@ -185,6 +197,34 @@ bool CPU::Execute(byte Instruction)
     if (Places == 0) 
       Places = 4;
 
+#ifndef CPU_LEGACY_SHIFT_ROLL
+    if (Left) // left
+    {
+      for (int n = 0; n < Places; n++)
+      {
+        byte Rot = *pValue & 0x80;  // grab that bit
+        *pValue <<= 1;              // shift
+        if (Rotate && Rot)          // or-in the bit that rolled off
+          *pValue |= 0x01;
+      }
+    }
+    else  // right
+    {
+      for (int n = 0; n < Places; n++)
+      {
+        byte Rot = *pValue & 0x01;  // grab that bit
+        byte Sgn = *pValue & 0x80;  // grab the "sign"
+        *pValue >>= 1;              // shift
+        if (Rotate && Rot)          // or-in the bit that rolled off
+          *pValue |= 0x80;
+        if (!Rotate && Sgn)
+          *pValue |= 0x80;          // or-in the sign
+      }
+    }
+#else
+    // "Legacy"
+    // rolls of more than 1 bit are incorrect.
+    // right shift is 0-filled (KENBAK-1 wasn't)
     if (Left) // left
     {
       byte Rot = *pValue & 0x80;  // grab that bit
@@ -199,6 +239,7 @@ bool CPU::Execute(byte Instruction)
       if (Rotate && Rot)          // or-in the bit that rolled off
         *pValue |= 0x80;
     }
+#endif
   }
   else if (__R == 2)  // ==================== Bit Test and Manipulation
   {
@@ -213,7 +254,11 @@ bool CPU::Execute(byte Instruction)
       else
         Skip = !(*Addr & Mask);
       if (Skip) // skip the next instruction (2 bytes)
+#ifdef CPU_LEGACY_PROGRAM_COUNTER
         m_Memory[REG_P_IDX] += 2;
+#else
+        m_InstructionBytes += 2;
+#endif
     }
     else  // SET
     {
@@ -248,10 +293,11 @@ bool CPU::Execute(byte Instruction)
     {
       if (JumpAndMark)
       {
-        m_Memory[TargetAddr] = m_Memory[REG_P_IDX];
+        m_Memory[TargetAddr] = m_Memory[REG_P_IDX] + m_InstructionBytes;
         TargetAddr++;
       }
       m_Memory[REG_P_IDX] = TargetAddr;
+      m_InstructionBytes = 0;
     }
   }
   else if (P__ == 3)  // ==================== Or, And, Lneg, Noop
@@ -310,5 +356,3 @@ bool CPU::Execute(byte Instruction)
   }
   return true;
 }
-
-

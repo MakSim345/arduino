@@ -7,6 +7,9 @@
 #include "Memory.h"
 #include "MCP.h"
 
+// define to revert to RUN LED not turned off when HALT encountered or STOP pressed
+//#define MCP_LEGACY_RUN_LED 
+
 void ExtendedCPU::Init()
 {
   CPU::Init();
@@ -26,7 +29,7 @@ bool ExtendedCPU::OnNOOPExtension(byte Op)
     {
       Write(REG_A_IDX, A);
       Write(REG_B_IDX, B);
-      config.SetCPUSpeed(0);
+      config.m_iCycleDelayMilliseconds = 0;
       return true;
     }
     else
@@ -40,6 +43,7 @@ bool ExtendedCPU::OnNOOPExtension(byte Op)
 ////////////////////////////////////////////////////
 // "master control program" (heh)
 
+// Chords; Btn1+Btn2 means, press hold Btn1 then press Btn2
 // Extension: Stop+Clear: blank display
 // Extension: Stop+BitN: load pre-defined program N
 // Extension: Clear+Store clear memory
@@ -48,6 +52,17 @@ bool ExtendedCPU::OnNOOPExtension(byte Op)
 // Extension: Stop+Read sys read
 // Extension: Stop+Store sys write
 // Extension: BitN+Stop set CPU speed to N
+// Extension: BitN+Disp write memory out to Serial
+// Extension: BitN+Set set memory from Serial
+//
+// Press at power on to configure program to auto-run
+// * Stop & BitN  = load built-in program N
+// * Read & BitN  = load from EEPROM slot N
+// * Stop         = turn auto-run off
+// and
+// * Stop & Clear = reset config to defaults
+
+
 
 
 void MCP::Init()
@@ -59,6 +74,8 @@ void MCP::Init()
   m_Address = 0x00;
   SetMode(eInput);
   leds.Display(m_Data, m_Control);
+
+  AutoRun(config.m_iAutoRunProgram);
 }
 
 void MCP::Splash()
@@ -95,6 +112,10 @@ void MCP::Loop()
     {
       m_bRunning = CPU::cpu->Step();
       m_Data = CPU::cpu->Read(REG_OUTPUT_IDX);
+#ifndef MCP_LEGACY_RUN_LED 
+      if (!m_bRunning)
+        SetMode(eNone); // Turn off Run when HALTed
+#endif        
       // slow things down...
       if (config.m_iCycleDelayMilliseconds)
       {
@@ -190,7 +211,7 @@ void MCP::HandleButtonHalted(word State, word Pressed)
   }
 }
 
-void MCP::HandleButtonRunning(word State, word Pressed)
+void MCP::HandleButtonRunning(word , word Pressed)
 {
   // button-press while we ARE running
   int Btn;
@@ -273,19 +294,35 @@ void MCP::OnInputClear(byte Chord)
 
 void MCP::OnAddressDisplay(byte Chord)
 {
-  m_Data = m_Address;
-  SetMode(eAddress);
+  if (Chord <= Buttons::eBit7)
+  {
+    // Extension: BitN+Disp = write program memory to serial
+    SerializeMemory(false, Chord);
+  }
+  else
+  {
+    m_Data = m_Address;
+    SetMode(eAddress);
+  }
 }
 
 void MCP::OnAddressSet(byte Chord)
 {
-  m_Address = CPU::cpu->Read(REG_INPUT_IDX);
-  Blink(eAddress);
+  if (Chord <= Buttons::eBit7)
+  {
+    // Extension: BitN+Stor = store program memory from serial
+    SerializeMemory(true, Chord);
+  }
+  else
+  {
+    m_Address = CPU::cpu->Read(REG_INPUT_IDX);
+    Blink(eAddress);
+  }
 }
 
 void MCP::OnMemoryRead(byte Chord)
 {
-  if (Buttons::eBit0 <= Chord && Chord <= Buttons::eBit7)
+  if (Chord <= Buttons::eBit7)
   {
     // Extension: BitN+Read read from EEPROM page N
     m_Data = memory.ReadMemoryFromEEPROMSlot(Chord)?bit(Chord):0;
@@ -313,7 +350,7 @@ void MCP::OnMemoryRead(byte Chord)
 
 void MCP::OnMemoryStore(byte Chord)
 {
-  if (Buttons::eBit0 <= Chord && Chord <= Buttons::eBit7)
+  if (Chord <= Buttons::eBit7)
   {
     // Extension: BitN+Store write to EEPROM page N
     m_Data = memory.WriteMemoryToEEPROMSlot(Chord)?bit(Chord):0;
@@ -366,14 +403,18 @@ void MCP::OnRunStart(byte Chord)
 
 void MCP::OnRunStop(byte Chord)
 {
-  if (Buttons::eBit0 <= Chord && Chord <= Buttons::eBit7)
+  if (Chord <= Buttons::eBit7)
   {
     // Extension: BitN+Stop set CPU speed to N
     config.SetCPUSpeed(Chord);
     Blink(eRun);
   }
   m_bRunning = false;
+#ifdef MCP_LEGACY_RUN_LED 
   SetMode(eRun);
+#else  
+  SetMode(eNone);
+#endif  
 }
 
 bool MCP::NOOPExtensionCallback(void* pThis, byte Op)
@@ -412,9 +453,147 @@ bool MCP::SystemCall(byte& A, byte& B)
   }
   else
   {
-    B = config.Read(Index);
+    B = config.Read(Index, B);
   }
   return true;
+}
+
+
+void MCP::SerializeMemory(bool Input, byte Chord)
+{
+  unsigned long baud = 4800UL * (0x01 << ((Chord - Buttons::eBit0) % 4));  // 4800, 9600, 19k2, 38k4
+  SetMode(eNone);
+  Serial.flush();
+  Serial.end();
+  Serial.begin(baud); // potentially drop the baud rate
+  byte Control = m_Control;
+  word State;
+  word Pressed;
+  if (Input)  // READ program memory from Serial
+  {
+    int bitsPerDigit = 3; // octal
+    int addr = 0;
+    int value = -1;
+    int ch = -1;
+    byte sum = 0;
+  
+    Serial.print("[0");
+    while (addr < 256)
+    {
+      if (buttons.GetButtons(State, Pressed, false) && buttons.IsPressed(Pressed, Buttons::eRunStop))
+      {
+        Serial.println(" STOP");
+        break;
+      }
+      
+      if (Serial.available() > 0) 
+      {
+        ch = Serial.read();
+        if (ch == 'x')   // hex
+        {
+          bitsPerDigit = 4;
+        }
+        else if (ch == 'e' || 
+                 ch == 's')   // end/stop
+        {
+          break;
+        }
+        else                  // digit?
+        {
+          int digit = (ch > '9')?ch - 'A' + 10:ch - '0';
+          if ((bitsPerDigit == 3 && 0 <= digit && digit <= 7)  || // valid octal
+              (bitsPerDigit == 4 && 0 <= digit && digit <= 15))   // valid hex
+          {
+            if (value == -1)
+            {
+              value = digit;
+              bitsPerDigit = 3; // default is octal
+            }
+            else
+              value = (value << bitsPerDigit) | digit;
+          }
+          else if (value != -1) // hit a non-digit and we've built up a value, save it
+          {
+            CPU::cpu->Write(addr++, value);
+            sum += value;
+            bitWrite(Control, eRun, !bitRead(Control, eRun)); // flash Run
+            leds.Display(m_Data, Control);
+            if ((addr % 16) == 0 && addr < 256)
+              Serial.print(addr / 16, HEX); // progress
+            value = -1;
+          }
+        }
+      }
+    }
+    
+    if (value != -1 && addr < 256)  // ended on a number with no delimeter, save it
+    {
+      CPU::cpu->Write(addr, value);
+      sum += value;
+    }
+  
+    Serial.print("] len=0x");
+    Serial.print(addr, HEX);
+    Serial.print(" chk=0x");
+    Serial.println(sum, HEX);
+    SetMode(eRun);
+  }
+  else  // WRITE program memory to Serial
+  {
+    for (int addr = 0; addr < 256; addr++)
+    {
+      if (buttons.GetButtons(State, Pressed, false) && buttons.IsPressed(Pressed, Buttons::eRunStop))
+      {
+        Serial.println(" STOP");
+        break;
+      }
+      
+      byte b = CPU::cpu->Read(addr);
+      
+      // don't flood the serial buffer
+      int ctr = 0;
+      while (Serial.availableForWrite() < 5 && ctr++ < 5)
+        delay(10);  
+     
+#if 1 // OCTAL
+        Serial.print('0');
+        Serial.print((b >> 6) & 0x07, OCT);
+        Serial.print((b >> 3) & 0x07, OCT);
+        Serial.print((b >> 0) & 0x07, OCT);
+        Serial.print(',');
+#else // HEX
+        Serial.print("0x");
+        Serial.print((b >> 4) & 0x0F, HEX);
+        Serial.print((b >> 0) & 0x0F, HEX);
+        Serial.print(',');
+#endif        
+      if ((addr % 16) == 15)
+        Serial.println();
+      bitWrite(Control, eRun, !bitRead(Control, eRun)); // flash Run
+      leds.Display(m_Data, Control);
+    }
+    SetMode(eInput);
+  }
+    
+  Serial.flush();
+  Serial.end();
+  Serial.begin(38400);  // restore the baud
+}
+
+void MCP::AutoRun(byte Auto)
+{
+  // Run the program, Auto is 0b00XX0NNN where XX: 00 = off, 01 = built-in, 10 = EEPROM 
+  // NNN is built-in program number or EEPROM slot
+  byte Mode = Auto & 0b11111000;
+  byte Prog = Auto & 0b00000111;
+  if (Mode == AUTO_RUN_EEPROM || Mode == AUTO_RUN_BUILTIN)
+  {
+    if (Mode == AUTO_RUN_EEPROM)
+      OnMemoryRead(Prog);                     // read from EEPROM slot NNN (BitN+Read)
+    else
+      OnInputButton(Prog, Buttons::eRunStop); // load pre-defined program NNN (Stop+BitN) 
+    OnRunStart(Buttons::eUnused);
+  }
 }
 
 

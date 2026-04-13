@@ -2,6 +2,7 @@
 #include "PINS.h"
 #include "Buttons.h"
 
+
 byte Buttons::m_pMap[] = // eg logical eBit2 is actually bit6 from the 165
 {
   0, 1, 6, 7, 4, 5, 2, 3,
@@ -16,6 +17,8 @@ void Buttons::Init()
   pinMode(PIN_BTN_Q7, INPUT);
   // set no prev state
   m_wPrevState = 0xFFFF;
+  m_wPrevReading = 0xFFFF;
+  m_iTransitionTimeMS = millis();
 }
 
 word Buttons::ShiftIn(int LatchPin, int DataPin, int ClockPin, int BitOrder)
@@ -31,6 +34,40 @@ word Buttons::ShiftIn(int LatchPin, int DataPin, int ClockPin, int BitOrder)
   return word(Second, First);
 }
 
+#if 0
+// Time-based debouncing, ifdef'd out because I'm not sure of the impact on execution
+bool Buttons::GetButtons(word& State, word& NewPressed, bool deBounce)
+{
+  // get the current raw state and any that have changed to down
+  unsigned long nowMS = millis();
+  word ThisState = ShiftIn(PIN_BTN_PL, PIN_BTN_Q7, PIN_BTN_CP, MSBFIRST);
+  bool deBounced = !deBounce;
+  if (deBounce)
+  {
+      if (ThisState != m_wPrevReading)
+      {
+        // state change, reset the timer
+        m_wPrevReading = ThisState;
+        m_iTransitionTimeMS = nowMS;
+      }
+      else if ((nowMS - m_iTransitionTimeMS) >= 20UL)
+      {
+          // held for long enough
+          deBounced = true;
+      }
+  }
+  
+  if (ThisState != m_wPrevState && deBounced)
+  {
+    NewPressed = ThisState & (~m_wPrevState);  // only those that have *changed* from OFF to ON, i.e. DOWN
+
+    m_wPrevState = ThisState;
+    State = ThisState;
+    return true;
+  }
+  return false;
+}
+#else
 bool Buttons::GetButtons(word& State, word& NewPressed, bool Wait)
 {
   // get the current raw state and any that have changed to down
@@ -55,6 +92,7 @@ bool Buttons::GetButtons(word& State, word& NewPressed, bool Wait)
   }
   return false;
 }
+#endif
 
 bool Buttons::IsPressed(word BtnState, int Btn)
 {
@@ -75,3 +113,4 @@ bool Buttons::GetButtonDown(word BtnState, int& Btn)
 
 
 Buttons buttons = Buttons();
+

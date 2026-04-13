@@ -1,13 +1,17 @@
 #include <Arduino.h>
+// disable warnings in EEPROM.h
+#pragma GCC diagnostic ignored "-Wignored-qualifiers"
 #include <EEPROM.h>
+#pragma GCC diagnostic pop
 #include <avr/pgmspace.h>
-
+ 
 #include "Memory.h"
-#include "Cpu.h"
+#include "CPU.h"
 #include "Programs.h"
 #include "Config.h"
+#include "Clock.h"
 
-// Is there a way to find out at runtime?
+// Is there a way to find out at runtime? (yes! - EEPROM.length())
 #define kEEPROMSize (1024)  
 
 #if ARDUINO >= 10604
@@ -19,13 +23,27 @@
 // BUT it's convenient to have the "source" of the more complicated ones, so they are
 // "assembled" on demand (see Programs.cpp).  The upside is they're easier to develop
 // the downside is they're a little slower to load, and they increase Arduino sketch size.
+// STOP PRESS: to free up some space, the Sieve program is now stored as PROGMEM, the source is #ifdef'd out
 prog_uchar programCounter[]  PROGMEM = {
     0000, 0000, 0000, 0004, 0103, 0001, 0134, 0200, 0344, 0004
 };
 
 prog_uchar programCylon[]  PROGMEM = {
-    0000, 0000, 0000, 0004, 0023, 0001, 0034, 0200, 0211, 0034, 0200, 0372, 0200, 0343, 0010, 0011, 0034, 0200, 0202, 0200, 0343, 0010, 0343, 0017
+    0000,0000,0000,0004,0023,0001,0034,0200,0211,0034,0200,0372,0200,0343,0010,0011,
+    0323,0177,0034,0200,0202,0200,0343,0010,0343,0017 // Note: 0011,0323,0177 is shift-right, AND 0177 to clear shift's sign extension
 };
+
+
+ // index of the last available byte, excluding any used for confg settings when the RTC has none
+int Memory::GetEEPROMTopIdx()
+{
+  int top = kEEPROMSize - 1;
+  if (Clock::RTC_I2C_ADDR == 0x00 || Clock::RTC_USER_SRAM_OFFSET == 0x00)
+  {
+    top -= 8; // reserve 8 bytes at the top off EEPROM;
+  }
+  return top;
+}
 
 void Memory::Init()
 {
@@ -41,7 +59,7 @@ bool Memory::LoadStandardProgram(byte Index)
   }
   else if (Index == 1)
   {
-    memcpy_P(pMem, programCylon, 24);
+    memcpy_P(pMem, programCylon, 26);
   }
   else if (Index == 2)
   {
@@ -115,12 +133,13 @@ void Memory::BuildSlots(byte Map)
 
   int Addr = 0;
   int Size = 256;
+  int EEPROMSize = GetEEPROMTopIdx() + 1;
   for (int Slot = 0; Slot < 8; Slot++)
   {
-    if (Addr < kEEPROMSize && Size != 0)
+    if (Addr < EEPROMSize && Size != 0)
     {
       m_pSlotStartAddr[Slot] = Addr;
-      m_pSlotSize[Slot] = Size;
+      m_pSlotSize[Slot] = min(Size, EEPROMSize - Addr);
     }
     else
     {
@@ -128,7 +147,6 @@ void Memory::BuildSlots(byte Map)
       m_pSlotStartAddr[Slot] = 0;
       m_pSlotSize[Slot] = 0;
     }
-
     Addr += Size;
     if (Map & (0x01 << Slot))
     {
@@ -137,5 +155,14 @@ void Memory::BuildSlots(byte Map)
   }
 }
 
-Memory memory = Memory();
+int Memory::SlotStartAddr(byte Slot)
+{
+  return m_pSlotStartAddr[Slot % 8];
+}
 
+int Memory::SlotSize(byte Slot)
+{
+  return m_pSlotSize[Slot % 8];
+}
+
+Memory memory = Memory();

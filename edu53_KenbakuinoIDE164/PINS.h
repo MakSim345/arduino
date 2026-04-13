@@ -1,6 +1,6 @@
 #ifndef pins_h
 #define pins_h
-
+ 
 // Pin assignments
 // DS1307 - RTC (wire library)
 #define PIN_RTC_SDA	A4
@@ -26,7 +26,7 @@
 This is a *SCHEMATIC*
 Pins not listed are unused/floating.
 Component list: 
-  ATMega328, DS1307, 74HC595, 74HC165 (x2), 
+  ATMega328, RTC module (DS1307), 74HC595, 74HC165 (x2), 
   LED (x12), Push-button normally open (x15), 
   Resistor 220 Ohm (x12), Resistor 10k Ohm (x15),
   16MHz crystal.
@@ -39,19 +39,20 @@ Component list:
   <USB>--[GND]---+Gnd(8)   A1+-------<LED8  "INP">
   <USB>---[TX]---+TX         | 
   <USB>---[RX]---+RX         |        +-----------+
-                 |           |        |    595    |
-      [XTAL1]----+XT1      10+--------+SH(11)   Q0+----<LED0 "Bit0">
-      [XTAL2]----+XT2       9+--------+ST(12)   Q1+----<LED1 "Bit1">
-                 |          8+--------+DS(14)   Q2+----<LED2 "Bit2">
-                 |           |  [+5V]-+Vcc(16)  Q3+----<LED3 "Bit3">
-                 |           |  [GND]-+Gnd(8)   Q4+----<LED4 "Bit4">
-                 |           |  [+5V]-+MR(10)   Q5+----<LED5 "Bit5">
-                 |           |  [GND]-+OE(13)   Q6+----<LED6 "Bit6">
-                 |           |        |         Q7+----<LED7 "Bit7">
+                 |           |        |    595    |    **Note the order!**
+      [XTAL1]----+XT1      10+--------+SH(11)   Q0+----<LED7 "Bit7"> MSB
+      [XTAL2]----+XT2       9+--------+ST(12)   Q1+----<LED6 "Bit6">
+                 |          8+--------+DS(14)   Q2+----<LED5 "Bit5">
+                 |           |  [+5V]-+Vcc(16)  Q3+----<LED4 "Bit4">
+                 |           |  [GND]-+Gnd(8)   Q4+----<LED3 "Bit3">
+                 |           |  [+5V]-+MR(10)   Q5+----<LED2 "Bit2">
+                 |           |  [GND]-+OE(13)   Q6+----<LED1 "Bit1">
+                 |           |        |         Q7+----<LED0 "Bit0"> LSB
                  |           |        +-----------+
 +------+         |           |
-| 1307 |         |           |             +-----------+
-|   SCL+---------+A4       A0+-------------+Q7(9)    D0+----<SW0 "Bit0">
+| RTC  |         |           |             +-----------+
+|   SDA+---------+A4         |             |   165-1   |    **Note the order!**
+|   SCL+---------+A5       A0+-------------+Q7(9)    D0+----<SW0 "Bit0">
 |   Vcc+-[+5V]   |         13+-----+-------+CP(2)    D1+----<SW1 "Bit1">
 |   Gnd+-[GND]   |         12+--+  |       |         D2+----<SW2 "Bit6">
 +------+         +-----------+  +--|-------+PL(1)    D3+----<SW3 "Bit7">
@@ -85,6 +86,14 @@ where:
 --<LEDx> is  --[220R]--[LED]--[GND]
 
 **Note the order!**
+Bitx/LEDx:
+This is the way I wired the '595 pins to the data LEDs.
+The leftmost pin goes to the leftmost LED.
+This is the reverse of the logical order, Q0 != Bit0 although that is what I used to show here.
+You are free to reverse the order so Q0 == Bit0
+BUT you will need to change LSBFIRST in void LEDs::ShiftOut(byte LEDs) to MSBFIRST.
+
+SWx:
 This reflects the order I wired my switches to '165 pins.  
 You are free to change this to match the physical arrangement of the buttons, 
 BUT you will need to also change Buttons::m_pMap[] to match.

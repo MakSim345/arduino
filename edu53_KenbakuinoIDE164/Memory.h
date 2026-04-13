@@ -1,6 +1,6 @@
 #ifndef memory_h
 #define memory_h
-
+ 
 // handle EEPROM and PROGMEM
 class Memory
 {
@@ -10,6 +10,9 @@ public:
   bool LoadStandardProgram(byte Index);
   bool ReadMemoryFromEEPROMSlot(byte Slot);
   bool WriteMemoryToEEPROMSlot(byte Slot);
+  int GetEEPROMTopIdx();
+  int SlotStartAddr(byte Slot);
+  int SlotSize(byte Slot);
   
 private:
   int m_pSlotStartAddr[8];
@@ -18,3 +21,4 @@ private:
 
 extern Memory memory;
 #endif
+

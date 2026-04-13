@@ -1,6 +1,6 @@
 #ifndef mcp_h
 #define mcp_h
-
+ 
 #include "CPU.h"
 
 // derived from the default KENBAK-1 cpu to over-ride NOOP
@@ -48,6 +48,8 @@ private:
   void Blink(byte LED);
   bool SystemCall(byte& A, byte& B);
   bool OnNOOPExtension(byte Op);
+  void SerializeMemory(bool Input, byte Chord);
+  void AutoRun(byte Auto);
   
   bool m_bRunning;
   byte m_Data;
@@ -60,3 +62,4 @@ private:
 
 extern MCP mcp;
 #endif
+
