@@ -1,17 +1,40 @@
-1. KENBAK
+KENBAK
+    1. Programming the Kenbak-1 is Easy (Best simple explanations!)
+        - https://www.kenbak.com/programming
+    2. Kenbak-1: General info
+        - https://bryceautomation.com/index.php/category/vintage-computers/kenbak-1/
+    3. KENBAK Web emulator
+        - http://www.neocomputer.org/kenbak/kenbak1-JS.html
+        - not so good. Better to check apple store
+    4. A quick Kenbak-1 programming tutorial on the NanoKenbak-1 (#video )
+        - https://www.youtube.com/watch?v=9DQ_-mtR_IQ
+    5. Buy ready made nano KENBAK
+        - https://adwaterandstir.com/product/nanokenbak-1/
+        - 25 Euro
+    6. KENBAK Programming Reference Manual, PDF
+        - "https://adwaterandstir.com/wp-content/uploads/2018/10/KENBAK-Programming_Reference.pdf?srsltid=AfmBOopPp98XpA61gx-XI8GrADF3BsUruNFV4G5-JASg3XkL0_z-S6EH"
+    7. KENBAK Laboratory Exercises, PDF
+        - "https://www.kenbak1registry.com/documents/Kenbak_1_Laboratory_Exercises.pdf"
+    8. KENBAK-uino
+        - http://www.funnypolynomial.com/software/arduino/kenbak.html
+        - http://www.funnypolynomial.com/software/arduino/ken_pins.html
+        - https://www.flickr.com/photos/funnypolynomial/sets/72157627738613990/
+        - On github:
+            - https://github.com/funnypolynomial/Kenbakuino
+    9. Instructables:
+        - HackerBox 0101 KENBAK
+        - https://www.instructables.com/HackerBox-0101-Archives/
+    10. KENBAK-1 Personal Computer Reproduction
+        - https://www.instructables.com/25-Scale-KENBAK-1-Personal-Computer-Reproduction/
 
-http://www.funnypolynomial.com/software/arduino/kenbak.html
-http://www.funnypolynomial.com/software/arduino/ken_pins.html
+PDP11
+    1.
 
-https://www.flickr.com/photos/funnypolynomial/sets/72157627738613990/
+KIM-1
+    1. "https://www.instructables.com/The-KIM-Uno-a-5-Microprocessor-Dev-Kit-Emulator/"
 
-2. PDP11
-
-3. KIM-1 (похож на Простотрон)
-http://obsolescence.wix.com/obsolescence#!kim-uno-how-to-use/c1dj1
-
-4. Или по книге.
-
+Altair 8800
+    1.
 
 #simulator emulator
 #симулятор эмулятор
