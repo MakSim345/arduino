@@ -1,3 +1,13 @@
+FEB-2026
+
+Train Simulator app.
+
+Note:
+    - This app using a I2C protocol to connect with Arduino NANO/MEGA to increase number of GPIO.
+    - It is MASTER for I2C. Use Arduino MEGA.
+    - Code for I2C Slave is in:
+        "C:\dev\arduino\edu63_keypress\edu63_keypress.ino"
+
 Hardware Connections
 
 1. Master Arduino (with buttons):
