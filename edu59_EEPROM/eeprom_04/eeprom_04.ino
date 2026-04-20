@@ -21,6 +21,15 @@ const unsigned long crc_table[16] = {
   0x9b64c2b0, 0x86d3d2d4, 0xa00ae278, 0xbdbdf21c
 };
 
+// current EEPROM address:
+int address = 0;
+
+struct myStruct
+{
+    float sum;
+    byte age;
+    char fullname[15];
+};
 
 void writeToEeprom(int addressP, int dataToWriteP)
 {
@@ -47,10 +56,24 @@ void setup()
     Serial.begin(9600);
     long actualEEPROM = eeprom_crc();
 
+    // Reset EEPROM - all to ZERO:
     for (int i = 0; i < EEPROM.length(); ++i)
     {
-        // Reset EEPROM - all to ZERO.
         // EEPROM.update(i, 255);
+    }
+
+    myStruct persons[] = {
+        {110.2, 42, "Ivanov Ivan"},
+        {72.45, 24, "Petrova Elena"},
+        {22.98, 32, "Popov Vasiliy"},
+        {30.2,  50, "Sidorov Piotr"},
+    };
+
+    // Write all personal data to EEPROM:
+    for (int i = 0; i<4; i++)
+    {
+        //EEPROM.put(address, persons[i]); // write one array item to eeprom
+        address +=sizeof(myStruct); // set pointer to next free memory for write.
     }
 }
 
@@ -61,7 +84,8 @@ void printEEPROM(void)
     Serial.println("Address\tValue");
 
     // Read and print EEPROM values from address 0 to 255
-    for (int i = 0; i < 256; i++) {
+    for (int i = 0; i < 256; i++)
+    {
         byte value = EEPROM.read(i); // Read the value from EEPROM
         Serial.print(i);              // Print the address
         Serial.print("\t");           // Print a tab for formatting
@@ -72,12 +96,25 @@ void printEEPROM(void)
 void loop()
 {
     static bool isEepromEmpty = true;
+    myStruct one_person;
+
     int address = 0;
     int dataToWrite = 201;
 
     Serial.println("EEPROM fingerprint (CRC):");
     Serial.println(eeprom_crc(), HEX);
     Serial.println(eeprom_crc(), DEC);
+
+    for (int i = 0; i<4; i++)
+    {
+       EEPROM.get(address, one_person); //read memory to a variable
+       Serial.println("Reading address:" + String(address));
+       Serial.println(String(address));
+       Serial.println(String(one_person.sum) + " " +
+                      String(one_person.age) + " " +
+                      String(one_person.fullname));
+       address +=sizeof(myStruct); // set pointer to next free memory for write.
+    }
 
     /*if (isEepromEmpty)
     {
@@ -86,7 +123,7 @@ void loop()
     }*/
     // readFromEeprom(address);
     // printEEPROM();
-    delay(10000);
+    delay(30000);
 }
 
 unsigned long eeprom_crc(void)
@@ -102,3 +139,4 @@ unsigned long eeprom_crc(void)
   }
   return crc;
 }
+
