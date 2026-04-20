@@ -57,16 +57,21 @@ enum RUN_STATUS
     AFTER_BREAK
 };
 
+RUN_STATUS flag = CLOCK_IN_RUN;
+// RUN_STATUS flag = TOMATO_IN_RUN;
+
 long nextChange;
 unsigned long _sec_to_print = 0;
 unsigned long _cur_sec = 0;
+
+unsigned long lastTickMs = 0;
 
 int delayTime = 200; // Delay between Frames
 
 char v_str[8] = "       ";  //reserve the string space first
 unsigned long bufferLong [14] = {0};
 
-RUN_STATUS flag = CLOCK_IN_RUN;
+
 int timer_min = TOMATO_TIME;
 int timer_sec = 0;
 int invider_show_ctr = MONSTERS_TIME;
@@ -84,6 +89,8 @@ long last_adjust_date_key = -1; // YYYYMMDD of last correction
 // a variable can change inside an ISR, thus must be volatile:
 volatile byte btn_pressed_state = false;
 
+bool valueReached = false;
+
 DateTime ADTnow;
 
 void(* resetFunc) (void) = 0; //declare reset function @ address 0
@@ -100,7 +107,6 @@ void setup_matrix()
     lc.clearDisplay(x);         // and clear the display
   }
 }
-
 
 void ISR_Button_Press()
 {
@@ -157,8 +163,17 @@ void setup()
         Serial.println(__DATE__);
         Serial.println(__TIME__);
         // RTC.adjust(DateTime(__DATE__, __TIME__));
+
+        // --- RTC SIMULATION ---
+        // Simulate: 2026-01-01 11:30:00
+        //ADTnow = DateTime(2026, 4, 20, 12, 31, 0);
+
+        ADTnow = DateTime(__DATE__, __TIME__);
     }
-    ADTnow = RTC.now();
+    else
+    {
+        ADTnow = RTC.now();
+    }
     digitalWrite(LED_TOMATO_PIN, LOW); // initial: LED OFF, the led connect to this port and GND.
     digitalWrite(LED_BREAK_PIN, LOW); // initial: LED OFF, the led connect to this port and GND.
     digitalWrite(LED_MONSTER_PIN, LOW);
@@ -180,6 +195,7 @@ void setup()
 
 void loop()
 {
+
     if (btn_pressed_state)
     {
         Serial.println("btn_pressed_state: set to TRUE.");
@@ -193,13 +209,37 @@ void loop()
     }
 
     long curentMillis = millis();
+
+    if (curentMillis - lastTickMs >= 1000)
+    {
+        lastTickMs += 1000;
+
+        // increment simulated time by 1 second
+        //ADTnow = ADTnow + TimeSpan(1);
+
+        // Increment by one second safely
+        ADTnow = DateTime(ADTnow.unixtime() + 1);
+
+        // Simulate random button press:
+        if (!valueReached)
+        {
+            int r = random(0, 14);
+            if (r == 13)
+            {
+                Serial.println("checkRandomUntilFive: Got 13!");
+                valueReached = true;
+                btn_pressed_state = true;
+            }
+        }
+    }
+
     if (curentMillis >= nextChange)
     {
         nextChange = curentMillis + DIGIT_DELAY;
         _cur_sec = now(); // function from "Time.h"
         if (_sec_to_print < _cur_sec)
         {
-            ADTnow = RTC.now();
+            // ADTnow = RTC.now();
 
             /*
             Serial.print("_cur_sec: ");
@@ -213,18 +253,50 @@ void loop()
             _sec_to_print = now();
 
             // DEBUG: check the current time:
+
+            /*
             Serial.print(ADTnow.hour());
             Serial.print(':');
             Serial.print(ADTnow.minute());
             Serial.print(':');
             Serial.println(ADTnow.second());
+            */
 
+            /*
             Serial.print(ADTnow.day());
             Serial.print('-');
             Serial.print(ADTnow.month());
             Serial.print('-');
             Serial.println(ADTnow.year());
+            */
+            switch (flag)
+            {
+                case TOMATO_IN_RUN:
+                    Serial.print("Status: TOMATO_IN_RUN:\n");
+                    break;
+                case MONSTERS_IN_RUN:
+                    Serial.print("Status: MONSTERS_IN_RUN:\n");
+                    break;
+                case BREAK_IN_RUN:
+                    Serial.print("Status: BREAK_IN_RUN:\n");
+                    break;
+                case CLOCK_IN_RUN:
+                    Serial.print("Status: CLOCK_IN_RUN:\n");
+                    break;
+                default:
+                    Serial.println("case - DEFAULT");
+                    break;
+            }
 
+            Serial.print(timer_min);
+            Serial.print(':');
+            Serial.println(timer_sec);
+
+            //Serial.print(ADTnow.hour());
+            //Serial.print(':');
+            //Serial.print(ADTnow.minute());
+            //Serial.print(':');
+            //Serial.println(ADTnow.second());
 
             // once per day, at 12:32 time it is adjusted because RTC is not perfect:
             long date_key = (long)ADTnow.year() * 10000L + (long)ADTnow.month() * 100L + ADTnow.day();
@@ -249,6 +321,13 @@ void loop()
         case TOMATO_IN_RUN:
             show_min (timer_min);
             show_sec (timer_sec);
+
+            /*
+            Serial.print("Status: TOMATO_IN_RUN:\n");
+            Serial.print(timer_min);
+            Serial.print(':');
+            Serial.println(timer_sec);
+            */
             break;
         case MONSTERS_IN_RUN:
             showMonsters();
@@ -260,6 +339,15 @@ void loop()
         case CLOCK_IN_RUN:
             timer_min = ADTnow.hour();
             timer_sec = ADTnow.minute();
+            /*
+            Serial.print("Status: CLOCK_IN_RUN:\n");
+            Serial.print(ADTnow.hour());
+            Serial.print(':');
+            Serial.print(ADTnow.minute());
+            Serial.print(':');
+            Serial.println(ADTnow.second());
+            */
+
             //Serial.print(timer_min);
             //Serial.print(':');
             //Serial.print(timer_sec);
