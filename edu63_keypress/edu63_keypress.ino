@@ -730,7 +730,7 @@ void loop()
             CabLightsOFF = false;
             Keyboard.press('l');
             delay(keyPressDelay);
-            Keyboard.release('l');
+            //Keyboard.release('l');
         }
     }
     // Cabin LIGHTS: RIGHT
@@ -740,7 +740,7 @@ void loop()
         {
             CabLightsON = false;
             CabLightsOFF = true;
-            Keyboard.press('l');
+            //Keyboard.press('l');
             delay(keyPressDelay);
             Keyboard.release('l');
         }
@@ -759,6 +759,7 @@ void loop()
             // Simulate pressing "Shift+h"
             Keyboard.press(KEY_LEFT_SHIFT);
             Keyboard.press('h');
+            delay(keyPressDelay*2);
         }
     }
     if (digitalRead(buttonPin16) == HIGH)
@@ -769,6 +770,7 @@ void loop()
             // Release keys
             Keyboard.release(KEY_LEFT_SHIFT);
             Keyboard.release('h');
+            delay(keyPressDelay);
         }
     }
     // Head Lights: RIGHT
@@ -779,6 +781,7 @@ void loop()
             headLightKeyBKPressed = true;
             // Simulate pressing "h"
             Keyboard.press('h');
+            delay(keyPressDelay*2);
         }
     }
     if (digitalRead(buttonPin10) == HIGH)
@@ -788,6 +791,7 @@ void loop()
             headLightKeyBKPressed = false;
             // Release the key
             Keyboard.release('h');
+            delay(keyPressDelay);
         }
     }
 
@@ -802,7 +806,7 @@ void loop()
             engageWsKeyPressed = true;
             Keyboard.press(KEY_KP_PLUS);
             // Note: key counts as pressed until the button released!
-            //delay(keyPressDelay);
+            delay(keyPressDelay*2);
         }
     }
     // Engage Warning System: RELEASE
@@ -812,6 +816,7 @@ void loop()
         {
             engageWsKeyPressed = false;
             Keyboard.release(KEY_KP_PLUS);
+            delay(keyPressDelay*2);
         }
     }
 
