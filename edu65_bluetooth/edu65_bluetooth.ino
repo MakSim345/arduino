@@ -34,6 +34,8 @@ void setup()
     digitalWrite(ledPin, HIGH); // set LED to ON for testing that it is working.
 
     Serial.println("Bluetooth test running...");
+
+    bluetooth.println("Clock ready. Send: SET:YYYY-MM-DD HH:MM:SS");
 }
 
 void loop()
@@ -50,18 +52,17 @@ void loop()
         {
             digitalWrite(ledPin, LOW); // Turn LED OFF
             bluetooth.write("LED: OFF\n"); // Send back, to the phone, the String "LED: ON"
-            // received_msg = 0;
         }
         else if (received_msg == "1")
         {
             digitalWrite(ledPin, HIGH);
             bluetooth.write("LED: ON\n");
-            // received_msg = 0;
         }
         else
         {
-            bluetooth.write("Message unknown:\n");
-            bluetooth.println(received_msg);
+            // bluetooth.write("Message unknown:\n");
+            // bluetooth.println(received_msg);
+            handleCommand(received_msg);
         }
     }
 
@@ -73,6 +74,37 @@ void loop()
     }
 }
 
+void handleCommand(const String &cmdP)
+{
+    if (!cmdP.startsWith("SET:"))
+    {
+        bluetooth.println("ERR: Unknown command");
+        return;
+    }
+
+    if (cmdP.length() != 23)
+    {
+        bluetooth.println("ERR: Incorrect command lenght");
+        bluetooth.println(cmdP.length());
+        return;
+    }
+
+    int year   = cmdP.substring(4, 8).toInt();
+    int month  = cmdP.substring(9, 11).toInt();
+    int day    = cmdP.substring(12, 14).toInt();
+    int hour   = cmdP.substring(15, 17).toInt();
+    int minute = cmdP.substring(18, 20).toInt();
+    int second = cmdP.substring(21, 23).toInt();
+
+    if (year < 2020 || month < 1 || month > 12 || day < 1 || day > 31 ||
+      hour > 23 || minute > 59 || second > 59)
+    {
+        bluetooth.println("ERR: invalid date/time");
+        return;
+    }
+
+     bluetooth.println("OK: new date/time set.");
+}
 
 String readStringFromBluetooth()
 {
@@ -86,17 +118,18 @@ String readStringFromBluetooth()
         retMessage = bluetooth.readStringUntil('\n');
     }
 
-  //DEBUG:
-  
-  for (int i = 0; i < retMessage.length(); i++) 
-  {
-    Serial.print("Char: ");
-    Serial.print(retMessage[i]);
-    Serial.print("  ASCII: ");
-    Serial.println((int)retMessage[i]);
-  }
+    //DEBUG:
 
-  return retMessage;
+    for (int i = 0; i < retMessage.length(); i++)
+    {
+        Serial.print(i);
+        Serial.print("-Char: ");
+        Serial.print(retMessage[i]);
+        Serial.print("  ASCII: ");
+        Serial.println((int)retMessage[i]);
+    }
+
+    return retMessage;
 }
 
 // #define SIMPLE_SERIAL_BT
