@@ -42,6 +42,8 @@ void loop()
     if (bluetooth.available())
     {
         String received_msg = readStringFromBluetooth();
+        received_msg.trim();   // remove \r \n spaces
+
         Serial.print(received_msg);
 
         if (received_msg == "0")
@@ -55,6 +57,11 @@ void loop()
             digitalWrite(ledPin, HIGH);
             bluetooth.write("LED: ON\n");
             // received_msg = 0;
+        }
+        else
+        {
+            bluetooth.write("Message unknown:\n");
+            bluetooth.println(received_msg);
         }
     }
 
@@ -74,10 +81,22 @@ String readStringFromBluetooth()
     while(bluetooth.available())
     {
         // read one char from bluetooth connection and add to the message
-        char inChar = bluetooth.read();
-        retMessage = retMessage + inChar;
+        // char inChar = bluetooth.read();
+        // retMessage = retMessage + inChar;
+        retMessage = bluetooth.readStringUntil('\n');
     }
-    return retMessage;
+
+  //DEBUG:
+  
+  for (int i = 0; i < retMessage.length(); i++) 
+  {
+    Serial.print("Char: ");
+    Serial.print(retMessage[i]);
+    Serial.print("  ASCII: ");
+    Serial.println((int)retMessage[i]);
+  }
+
+  return retMessage;
 }
 
 // #define SIMPLE_SERIAL_BT
