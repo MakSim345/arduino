@@ -1,9 +1,9 @@
-/* 
- * origin: 
+/*
+ * origin:
  * http://musicdiver.com/wordpress/2013/01/keypad-code-lock-with-arduino/
 
-  * The program has a bug. 
-  * Can you find it? 
+  * The program has a bug.
+  * Can you find it?
   * What happens if you input 23571 23571 ? Why?
 */
 
@@ -14,7 +14,7 @@ int position = 0;
 
 const byte rows = 4;
 const byte cols = 3;
-char keys[rows][cols] = 
+char keys[rows][cols] =
 {
   {'1','2','3'},
   {'4','5','6'},
@@ -25,7 +25,7 @@ char keys[rows][cols] =
 byte rowPins[rows] = {4, 5, 6, 7};
 byte colPins[cols] = {1, 2, 3};
 
-Keypad keypad = Keypad(makeKeymap(keys), 
+Keypad keypad = Keypad(makeKeymap(keys),
                        rowPins, colPins,
                        rows, cols);
 
@@ -42,19 +42,19 @@ void setup()
 void loop()
 {
   // char key = keypad.getKey();
-  
-  if (key == '*' || key == '#') 
+
+  if (key == '*' || key == '#')
   {
     position = 0;
     setLocked(true);
   }
-  
-  if (key == secretCode[position]) 
+
+  if (key == secretCode[position])
   {
     position++;
   }
-  
-  if (position == 6) 
+
+  if (position == 6)
   {
     setLocked(false);
   }
@@ -63,12 +63,12 @@ void loop()
 
 void setLocked(int locked)
 {
-  if (locked) 
+  if (locked)
   {
     digitalWrite(redPin, HIGH);
     digitalWrite(greenPin, LOW);
   }
-  else 
+  else
   {
     digitalWrite(redPin, LOW);
     digitalWrite(greenPin, HIGH);
