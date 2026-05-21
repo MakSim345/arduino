@@ -31,6 +31,22 @@ struct myStruct
     char fullname[15];
 };
 
+void printEEPROM(void)
+{
+    // Print the EEPROM values in a table format
+    Serial.println("EEPROM Values:");
+    Serial.println("Address\tValue");
+
+    // Read and print EEPROM values from address 0 to 255
+    for (int i = 0; i < 256; i++)
+    {
+        byte value = EEPROM.read(i); // Read the value from EEPROM
+        Serial.print(i);              // Print the address
+        Serial.print("\t");           // Print a tab for formatting
+        Serial.println(value);        // Print the value
+    }
+}
+
 void writeToEeprom(int addressP, int dataToWriteP)
 {
     // write data to EEPROM
@@ -40,7 +56,6 @@ void writeToEeprom(int addressP, int dataToWriteP)
     Serial.print(dataToWriteP);
     Serial.println(" to EEPROM.");
 }
-
 
 void readFromEeprom(int addressP)
 {
@@ -74,22 +89,6 @@ void setup()
     {
         //EEPROM.put(address, persons[i]); // write one array item to eeprom
         address +=sizeof(myStruct); // set pointer to next free memory for write.
-    }
-}
-
-void printEEPROM(void)
-{
-    // Print the EEPROM values in a table format
-    Serial.println("EEPROM Values:");
-    Serial.println("Address\tValue");
-
-    // Read and print EEPROM values from address 0 to 255
-    for (int i = 0; i < 256; i++)
-    {
-        byte value = EEPROM.read(i); // Read the value from EEPROM
-        Serial.print(i);              // Print the address
-        Serial.print("\t");           // Print a tab for formatting
-        Serial.println(value);        // Print the value
     }
 }
 

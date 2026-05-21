@@ -26,7 +26,7 @@ void writeToEeprom(int addressP, int dataToWriteP)
 {
     // write data to EEPROM
     // Note: address can be from 0 to 1023, i. e. 1kB
-    EEPROM.write(addressP, dataToWriteP);
+    EEPROM.update(addressP, dataToWriteP);
     Serial.print("Wrote ");
     Serial.print(dataToWriteP);
     Serial.println(" to EEPROM.");
@@ -37,7 +37,9 @@ void readFromEeprom(int addressP)
 {
     // Read data from EEPROM by given address:
     int readData = EEPROM.read(addressP);
-    Serial.print("Read from EEPROM:");
+    Serial.print("Read from EEPROM[");
+    Serial.print(addressP);
+    Serial.print("] = ");
     Serial.println(readData);
     // Serial.println("");
 }
@@ -79,13 +81,16 @@ void loop()
     Serial.println(eeprom_crc(), HEX);
     Serial.println(eeprom_crc(), DEC);
 
-    /*if (isEepromEmpty)
+    if (isEepromEmpty)
     {
-        writeToEeprom(0, dataToWrite);
+        // writeToEeprom(0, dataToWrite);
         isEepromEmpty = false;
-    }*/
-    // readFromEeprom(address);
+    }
+
+    readFromEeprom(address);
+
     // printEEPROM();
+
     delay(10000);
 }
 
