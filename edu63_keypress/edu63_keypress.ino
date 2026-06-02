@@ -33,6 +33,9 @@ bool reverserOFF = true;
 bool CabLightsON = false;
 bool CabLightsOFF = true;
 
+bool CabLightsLeftON = false;
+bool CabLightsLeftOFF = true;
+
 bool engageWsKeyPressed = false;
 
 bool circuitBreakerLeftPressed = false;
@@ -66,6 +69,9 @@ bool sandRigthKeyPressed = false;
 
 bool wipersLeftKeyPressed = false;
 bool wipersRigthKeyPressed = false;
+
+bool AfbUpKeyPressed = false;
+bool AfbDownKeyPressed = false;
 
 const unsigned long longKeyPressDelay = 500;
 const unsigned long keyPressDelay = 200;
@@ -554,6 +560,42 @@ void loop()
         }
     }
 
+    // AFB: UP pressed
+    if (38 == btnFromI2cMaster)
+    {
+        if (false == AfbUpKeyPressed)
+        {
+            AfbUpKeyPressed = true;
+            Keyboard.press('R');
+        }
+    }
+    else if (38 != btnFromI2cMaster)
+    {
+        if (true == AfbUpKeyPressed)
+        {
+            AfbUpKeyPressed = false;
+            Keyboard.release('R');
+        }
+    }
+
+    // AFB: DOWN pressed
+    if (40 == btnFromI2cMaster)
+    {
+        if (false == AfbDownKeyPressed)
+        {
+            AfbDownKeyPressed = true;
+            Keyboard.press('F');
+        }
+    }
+    else if (40 != btnFromI2cMaster)
+    {
+        if (true == AfbDownKeyPressed)
+        {
+            AfbDownKeyPressed = false;
+            Keyboard.release('RF');
+        }
+    }
+
 /* Digital Pins Read */
 /*************************************************************************/
     // Set the Reverser knob delay: long or short.
@@ -721,7 +763,7 @@ void loop()
     }
 //------------------------------------------------------
 
-    // Cabin LIGHTS: LEFT
+    // Cabin LIGHTS: RIGHT
     if (digitalRead(buttonPin08) == LOW)
     {
         if (!CabLightsON)
@@ -733,7 +775,7 @@ void loop()
             //Keyboard.release('l');
         }
     }
-    // Cabin LIGHTS: RIGHT
+    // Cabin LIGHTS: CENTER
     if (digitalRead(buttonPin08) == HIGH)
     {
         if (!CabLightsOFF)
@@ -743,6 +785,32 @@ void loop()
             //Keyboard.press('l');
             delay(keyPressDelay);
             Keyboard.release('l');
+        }
+    }
+
+    // Cabin LIGHTS: LEFT
+    if (digitalRead(analogPinA2) == LOW)
+    {
+        if (!CabLightsLeftON)
+        {
+            CabLightsLeftON = true;
+            CabLightsLeftOFF = false;
+            Keyboard.press(KEY_LEFT_SHIFT);
+            Keyboard.press('l');
+            delay(keyPressDelay*2);
+        }
+    }
+    // Cabin LIGHTS: CENTER
+    if (digitalRead(analogPinA2) == HIGH)
+    {
+        if (!CabLightsLeftOFF)
+        {
+            CabLightsLeftON = false;
+            CabLightsLeftOFF = true;
+            // Release keys
+            Keyboard.release(KEY_LEFT_SHIFT);
+            Keyboard.release('l');
+            delay(keyPressDelay*2);
         }
     }
 
