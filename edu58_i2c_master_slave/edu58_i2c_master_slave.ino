@@ -53,6 +53,8 @@ const int buttonPin28 = 28;
 
 const int buttonPin32 = 32;
 const int buttonPin34 = 34;
+const int buttonPin38 = 38;
+const int buttonPin40 = 40;
 
 bool buttonPin01ON = false;
 bool buttonPin01OFF = true;
@@ -132,6 +134,12 @@ bool buttonPin32OFF = true;
 bool buttonPin34ON = false;
 bool buttonPin34OFF = true;
 
+bool buttonPin38ON = false;
+bool buttonPin38OFF = true;
+
+bool buttonPin40ON = false;
+bool buttonPin40OFF = true;
+
 unsigned long button1PressTime = 0;
 const unsigned long holdDuration = 2000; // 2 seconds
 const unsigned long keyPressDelay = 200; //ms
@@ -177,6 +185,8 @@ void setup()
 
   pinMode(buttonPin32, INPUT_PULLUP); // Pin 32
   pinMode(buttonPin34, INPUT_PULLUP); // Pin 34
+  pinMode(buttonPin38, INPUT_PULLUP); // Pin 38
+  pinMode(buttonPin40, INPUT_PULLUP); // Pin 40
 
   Wire.begin(); // Join the I2C bus as master
 #ifdef DEBUG_PRINT
@@ -865,6 +875,60 @@ void loop()
             buttonPin34ON = false;
             buttonPin34OFF = true;
             Serial.println("Master sending Cirquit Breaker L Release...");
+            Wire.beginTransmission(SLAVE_ADDRESS); // Start I2C transmission
+            Wire.write(BTN_RELEASE); // Send a command to the slave
+            Wire.endTransmission(); // End the transmission
+            delay(keyPressDelay); // Debounce delay
+        }
+    }
+
+    if (digitalRead(buttonPin38) == LOW)
+    {
+        if (!buttonPin38ON)
+        {
+            buttonPin38ON = true;
+            buttonPin38OFF = false;
+            Serial.println("Master sending 'R' Press...");
+            Wire.beginTransmission(SLAVE_ADDRESS); // Start I2C transmission
+            Wire.write(38); // Send a command to the slave
+            Wire.endTransmission(); // End the transmission
+            delay(keyPressDelay); // Debounce delay
+        }
+    }
+    if (digitalRead(buttonPin38) == HIGH)
+    {
+        if (!buttonPin38OFF)
+        {
+            buttonPin38ON = false;
+            buttonPin38OFF = true;
+            Serial.println("Master sending 'R' Release...");
+            Wire.beginTransmission(SLAVE_ADDRESS); // Start I2C transmission
+            Wire.write(BTN_RELEASE); // Send a command to the slave
+            Wire.endTransmission(); // End the transmission
+            delay(keyPressDelay); // Debounce delay
+        }
+    }
+
+    if (digitalRead(buttonPin40) == LOW)
+    {
+        if (!buttonPin40ON)
+        {
+            buttonPin40ON = true;
+            buttonPin40OFF = false;
+            Serial.println("Master sending 'F' Press...");
+            Wire.beginTransmission(SLAVE_ADDRESS); // Start I2C transmission
+            Wire.write(40); // Send a command to the slave
+            Wire.endTransmission(); // End the transmission
+            delay(keyPressDelay); // Debounce delay
+        }
+    }
+    if (digitalRead(buttonPin40) == HIGH)
+    {
+        if (!buttonPin40OFF)
+        {
+            buttonPin40ON = false;
+            buttonPin40OFF = true;
+            Serial.println("Master sending 'F' Release...");
             Wire.beginTransmission(SLAVE_ADDRESS); // Start I2C transmission
             Wire.write(BTN_RELEASE); // Send a command to the slave
             Wire.endTransmission(); // End the transmission
