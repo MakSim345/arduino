@@ -78,7 +78,7 @@ int invider_show_ctr = MONSTERS_TIME;
 bool is_timer_run = false;
 
 // Daily RTC drift correction settings
-const int DRIFT_CORRECTION_SEC = 7;   // +7 sec/day (use negative if RTC runs fast)
+const int DRIFT_CORRECTION_SEC = 2;   // +X sec/day (use negative if RTC runs fast)
 const uint8_t ADJUST_HOUR = 12;
 const uint8_t ADJUST_MINUTE = 32;
 const uint8_t ADJUST_SECOND = 0;
@@ -185,7 +185,7 @@ void setup()
     /* Settime by user and date of compilation: */
     /* Note: Select "USBasp" programmer in IDE! */
     /* To set new time - uncomment follow line: */
-    // RTC.adjust(DateTime(__DATE__, "11:16:30"));
+    // RTC.adjust(DateTime(__DATE__, "13:58:15"));
     // ******************************************/
 
     Serial.print(ADTnow.day());
