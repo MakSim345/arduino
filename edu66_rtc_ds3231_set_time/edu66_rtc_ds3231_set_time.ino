@@ -26,7 +26,7 @@ void setup ()
     }
     */
     // RTC.adjust(DateTime(F(__DATE__),F( __TIME__)));
-    // RTC.adjust(DateTime(2026, 5, 21, 13, 14, 0));
+    // RTC.adjust(DateTime(2026, 6, 3, 9, 2, 45));
 }
 
 
