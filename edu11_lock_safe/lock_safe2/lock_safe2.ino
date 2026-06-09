@@ -27,14 +27,14 @@ byte colPins[COLS] = { 9, 8, 7, 6 };
 
 
 // Create a keypad object:
-Keypad safeLockKeypad = Keypad(makeKeymap(aKeysOnKeyPad), rowPins, colPins, ROWS, COLS); 
+Keypad safeLockKeypad = Keypad(makeKeymap(aKeysOnKeyPad), rowPins, colPins, ROWS, COLS);
 
 void setup()
 {
-    pinMode(RED_LED, OUTPUT); 
+    pinMode(RED_LED, OUTPUT);
     pinMode(GREEN_LED, OUTPUT);
     pinMode(RELAY, OUTPUT);
-    digitalWrite(RELAY, HIGH); // note: relay has inverted input, set it ON    
+    digitalWrite(RELAY, HIGH); // note: relay has inverted input, set it ON
 }
 
 void loop()
@@ -64,7 +64,7 @@ void loop()
                 digitalWrite(RELAY, HIGH); // release relay, lock closed
                 digitalWrite(GREEN_LED, LOW); // green led - OFF
 
-                // reset all counters    
+                // reset all counters
                 keyPressCounter = 0;
                 keyCounterMatch = 0;
             }
@@ -74,7 +74,7 @@ void loop()
                 digitalWrite(RED_LED, HIGH); // red led - ON
                 delay(5000); // wait for 5 seconds
                 digitalWrite(RED_LED, LOW); // red led - OFF
-                // reset all counters    
+                // reset all counters
                 keyPressCounter = 0;
                 keyCounterMatch = 0;
             }
