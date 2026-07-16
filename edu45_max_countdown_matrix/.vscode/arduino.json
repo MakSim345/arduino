@@ -1,0 +1,7 @@
+{
+    "board": "arduino:avr:uno",
+    "programmer": "arduino:avrisp",
+    "port": "COM7",
+    "sketch": "edu45_max_countdown_matrix.ino",
+    "output": ".vscode/build"
+}

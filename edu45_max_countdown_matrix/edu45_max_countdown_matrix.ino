@@ -5,7 +5,8 @@
 #include "Time.h"
 #include "char_matrix.h"
 
-RTC_DS1307 RTC;
+// RTC_DS1307 RTC;
+RTC_DS3231 RTC;
 
 
 //#define NANO_IN_USE
@@ -149,14 +150,17 @@ void setup()
     pinMode(LED_MONSTER_PIN, OUTPUT);
 
     pinMode(INTERRUPT_PIN, INPUT); // use external resistor to pull-down (GND)
-    attachInterrupt(0, ISR_Button_Press, FALLING); //raise ISR every time button pressed
-    //attachInterrupt(0, ISR_Button_Press, RISING); //raise ISR every time button pressed
+    attachInterrupt(0, ISR_Button_Press, RISING); //raise ISR every time button pressed
+
+    // pinMode(INTERRUPT_PIN, INPUT); // use external resistor to pull-up (+5V)
+    // attachInterrupt(0, ISR_Button_Press, FALLING); //raise ISR every time button pressed
 
     _sec_to_print = now();
 
     Wire.begin(); // need for RTC work!
     RTC.begin();
 
+    /*
     if (!RTC.isrunning())
     {
         Serial.println("RTC is NOT running! Time will be ");
@@ -174,6 +178,10 @@ void setup()
     {
         ADTnow = RTC.now();
     }
+    */
+
+    ADTnow = RTC.now();
+
     digitalWrite(LED_TOMATO_PIN, LOW); // initial: LED OFF, the led connect to this port and GND.
     digitalWrite(LED_BREAK_PIN, LOW); // initial: LED OFF, the led connect to this port and GND.
     digitalWrite(LED_MONSTER_PIN, LOW);
@@ -185,7 +193,8 @@ void setup()
     /* Settime by user and date of compilation: */
     /* Note: Select "USBasp" programmer in IDE! */
     /* To set new time - uncomment follow line: */
-    // RTC.adjust(DateTime(__DATE__, "13:58:15"));
+    // [old] RTC.adjust(DateTime(__DATE__, "13:58:15"));
+    // RTC.adjust(DateTime(2026, 7, 14, 10, 52, 0));
     // ******************************************/
 
     Serial.print(ADTnow.day());
@@ -220,7 +229,8 @@ void loop()
         // Increment by one second safely
         ADTnow = DateTime(ADTnow.unixtime() + 1);
 
-        // Simulate random button press:
+        // DEBUG: Simulate random button press:
+        /*
         if (!valueReached)
         {
             int r = random(0, 14);
@@ -231,6 +241,7 @@ void loop()
                 btn_pressed_state = true;
             }
         }
+        */
     }
 
     if (curentMillis >= nextChange)
@@ -298,6 +309,7 @@ void loop()
             //Serial.print(':');
             //Serial.println(ADTnow.second());
 
+            /*
             // once per day, at 12:32 time it is adjusted because RTC is not perfect:
             long date_key = (long)ADTnow.year() * 10000L + (long)ADTnow.month() * 100L + ADTnow.day();
 
@@ -314,6 +326,7 @@ void loop()
                     Serial.print(DRIFT_CORRECTION_SEC);
                     Serial.println(" sec");
                 }
+            */
         }
 
     switch (flag)
