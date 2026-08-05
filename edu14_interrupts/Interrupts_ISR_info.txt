@@ -1,0 +1,507 @@
+================================================================================
+  PART 1: ARDUINO INTERRUPT VECTORS & attachInterrupt()
+================================================================================
+
+WHAT IS AN INTERRUPT VECTOR?
+
+A "vector" is essentially a pointer or reference to a specific interrupt service
+routine (ISR) in the microcontroller memory.
+
+["WARNING"]
+You do not directly deal with vectors when using "attachInterrupt()"
+    - Arduino framework abstracts this concept for simplicity.
+
+================================================================================
+THE "attachInterrupt()" FUNCTION
+================================================================================
+
+  such as a pin changing state (e.g., LOW -> HIGH or HIGH -> LOW).
+
+Syntax:
+  attachInterrupt(digitalPinToInterrupt(pin), ISR_function, mode);
+
+Parameters:
+  - "pin"          The pin number where the interrupt is triggered
+  - "ISR_function" The function you write; it executes when the interrupt fires
+  - "mode"         The trigger condition: RISING, FALLING, or CHANGE
+
+
+================================================================================
+HOW THE VECTOR WORKS (BEHIND THE SCENES)
+================================================================================
+
+In AVR microcontrollers (like "ATmega328P" on "Arduino Uno"), an interrupt vector
+is a predefined memory address pointing to code that executes when an interrupt
+fires. Each interrupt type (external pin, timer overflow, etc.) has its own
+vector in the interrupt vector table.
+
+When you call "attachInterrupt()", the Arduino library:
+
+  1. Maps your pin to a hardware interrupt (e.g., "INT0" or "INT1" on ATmega328P)
+  2. Associates your ISR function with that interrupts vector in the background
+  3. Configures the interrupt system to jump to your function on trigger
+
+Result: The vector is the hidden link between hardware events and your code.
+
+================================================================================
+EXTERNAL INTERRUPT EDGE DETECTION
+================================================================================
+WHEN DOES THE VECTOR CONCEPT MATTER?
+═══════════════════════════════════════════════════════════════════════════════
+
+[YES] HIGH-LEVEL (Arduino standard):
+    You do not need to think about vectors -- Arduino handles everything.
+    Use attachInterrupt() and it "just works."
+
+[YES] LOW-LEVEL (AVR-GCC, bare-metal):
+    You manually set up interrupt vectors and define ISRs tied to specific
+    vectors, like ISR(INT0_vect) for external interrupt 0.
+    This gives you finer control but requires deep hardware knowledge.
+
+
+═══════════════════════════════════════════════════════════════════════════════
+PRACTICAL EXAMPLE: USING attachInterrupt()
+================================================================================
+
+volatile int count = 0;
+
+void setup()
+{
+  pinMode(2, INPUT);  // Pin 2 supports interrupts on most Arduino boards
+  attachInterrupt(digitalPinToInterrupt(2), increment, RISING);
+  Serial.begin(9600);
+}
+
+void loop()
+{
+  Serial.println(count);
+  delay(1000);
+}
+
+void increment()
+{
+  count++;  // ISR increments counter when interrupt fires
+}
+
+Explanation:
+  - The interrupt vector for pin 2 (INT0_vect on Uno) is managed by
+    attachInterrupt() automatically.
+  - When pin 2 sees a rising edge (LOW -> HIGH), increment() is called.
+
+═══════════════════════════════════════════════════════════════════════════════
+SUMMARY
+================================================================================
+
+In Arduino attachInterrupt():
+
+  - The "vector" is the behind-the-scenes link between hardware and your ISR
+  - You DO NOT define it explicitly -- Arduino handles the abstraction
+  - It is rooted in the microcontrollers interrupt vector system
+  - Think of it as "the magic that makes your ISR work"
+
+
+################################################################################
+################################################################################
+  PART 2: LOW-LEVEL INTERRUPTS WITH INT0_vect
+################################################################################
+################################################################################
+
+WHEN TO USE INT0_vect
+
+INT0_vect is a lower-level approach that bypasses Arduino's attachInterrupt()
+abstraction and works directly with the AVR microcontroller's raw interrupt
+vector system.
+
+Use Cases:
+  [YES] You need maximum performance and want to avoid Arduino overhead
+  [YES] You are programming in AVR-GCC rather than standard Arduino framework
+  [YES] You want direct control over interrupt behavior
+  [NO ] For most Arduino projects: use attachInterrupt() instead (simpler, safer)
+
+================================================================================
+PIN MAPPING (Arduino Uno)
+================================================================================
+
+External Interrupt Vector    Hardware Pin    Arduino Pin
+  INT0_vect                    INT0            Pin 2 (PD2)
+  INT1_vect                    INT1            Pin 3 (PD3)
+
+[WARNING]
+    Check the datasheet of the board for other models ("Mega", "Leonardo", etc.)
+
+═══════════════════════════════════════════════════════════════════════════════
+EXAMPLE: BUTTON COUNTER USING INT0_vect
+================================================================================
+
+#include <avr/io.h>        // AVR I/O register definitions
+#include <avr/interrupt.h>  // Interrupt macros
+
+volatile int count = 0;  // ISR can modify this; volatile is required
+
+// Interrupt Service Routine for INT0
+ISR(INT0_vect)
+{
+  count++;  // Increment when interrupt fires
+}
+
+void setup()
+{
+  // Configure Pin 2 (PD2) as INPUT
+  DDRD &= ~(1 << DDD2);      // Clear bit 2 -> Input mode
+  PORTD |= (1 << PORTD2);    // Enable pull-up resistor on pin 2
+
+  // Configure INT0 interrupt for FALLING edge (HIGH -> LOW)
+  EICRA |= (1 << ISC01);     // ISC01 = 1
+  EICRA &= ~(1 << ISC00);    // ISC00 = 0
+  // Result: Falling edge detection (ISC01=1, ISC00=0)
+
+  // Enable INT0 interrupt
+  EIMSK |= (1 << INT0);
+
+  // Enable global interrupts
+  sei();
+
+  Serial.begin(9600);
+}
+
+void loop()
+{
+  Serial.println(count);
+  delay(1000);  // Print counter every second
+}
+
+═══════════════════════════════════════════════════════════════════════════════
+REGISTER EXPLANATIONS
+================================================================================
+
+REGISTER: TCCR1A / TCCR1B (Timer/Counter Control Registers)
+  - TCCR1A: Controls PWM, output mode, and waveform generation
+  - TCCR1B: Configures CTC mode, prescaler, and edge detection
+
+REGISTER: OCR1A (Output Compare Register A)
+  - Stores the comparison value for timer countdown
+  - Timer resets and interrupts when it reaches this value
+
+REGISTER: TIMSK1 (Timer Interrupt Mask Register)
+  - OCIE1A: Output Compare Interrupt Enable for A (bit 1)
+  - Controls which timer events generate interrupts
+
+REGISTER: EICRA (External Interrupt Control Register A)
+  - ISC01, ISC00: Control INT0 trigger condition
+
+REGISTER: EIMSK (External Interrupt Mask Register)
+  - INT0: Enable/disable INT0 interrupt
+
+REGISTER: PORTD
+  - Bit 2 (PD2): Controls pin 2 pull-up resistor
+  - PORTD |= (1 << PORTD2) = Enable pull-up
+
+REGISTER: DDRD (Data Direction Register D)
+  - Bit 2 (DDD2): Configures pin 2 direction
+  - DDRD &= ~(1 << DDD2) = Set to INPUT
+
+═══════════════════════════════════════════════════════════════════════════════
+EXTERNAL INTERRUPT EDGE DETECTION MODES
+================================================================================
+
+ISC01   ISC00   Trigger Mode          Description
+──────────────────────────────────────────────────────
+  0       0     Low Level             Interrupt fires while pin is LOW
+  0       1     ANY CHANGE            Interrupt fires on every edge
+  1       0     FALLING EDGE          Interrupt fires on HIGH → LOW
+  1       1     RISING EDGE           Interrupt fires on LOW → HIGH
+
+    - For button presses with internal pull-up (pin normally HIGH):
+    - Use FALLING (ISC01=1, ISC00=0) -> Triggers when button is pressed
+
+═══════════════════════════════════════════════════════════════════════════════
+PRACTICAL SETUP: WIRING & DETECTION
+================================================================================
+
+Configuration 1: INTERNAL PULL-UP + BUTTON TO GND
+  ┌────────────────────────────────────────────────┐
+  │ DDRD &= ~(1 << DDD2)    → Set as input         │
+  │ PORTD |= (1 << PORTD2)  → Enable pull-up       │
+  │ EICRA: ISC01=1, ISC00=0 → FALLING edge detect  │
+  │                                                │
+  │ Idle: Pin 2 = HIGH                             │
+  │ Press: Pin 2 = LOW  (falling edge triggers)    │
+  └────────────────────────────────────────────────┘
+
+Configuration 2: EXTERNAL PULL-DOWN + BUTTON TO VCC
+  ┌────────────────────────────────────────────────┐
+  │ DDRD &= ~(1 << DDD2)    → Set as input         │
+  │ PORTD &= ~(1 << PORTD2) → Disable pull-up      │
+  │ EICRA: ISC01=1, ISC00=1 → RISING edge detect   │
+  │                                                │
+  │ Idle: Pin 2 = LOW                              │
+  │ Press: Pin 2 = HIGH (rising edge triggers)     │
+  └────────────────────────────────────────────────┘
+
+
+═══════════════════════════════════════════════════════════════════════════════
+COMPARISON: attachInterrupt() vs INT0_vect
+================================================================================
+
+Feature                attachInterrupt()           INT0_vect
+────────────────────────────────────────────────────────────────────────────
+Ease of Use           ✓ Simple, intuitive          ✗ Complex register setup
+Flexibility           ✓ Easy to reassign pins      ✗ Fixed to specific pins
+Performance           ~ Good                       ✓ Minimal overhead
+Code Size             ~ Smaller                    ~ Larger (register code)
+Hardware Control      ~ Limited                    ✓ Complete control
+Readability           ✓ Clear intent               ✗ Cryptic register names
+Portability           ✓ Works across boards        ✗ Board-specific
+
+
+═══════════════════════════════════════════════════════════════════════════════
+TESTING YOUR INT0_vect CODE
+================================================================================
+
+1. Upload the code to your Arduino Uno
+2. Wire a pushbutton:
+   • One side: Pin 2
+   • Other side: GND
+3. Open Serial Monitor (9600 baud)
+4. Press the button — you will see count increment
+5. Each button press = count + 1
+
+
+═══════════════════════════════════════════════════════════════════════════════
+KEY TAKEAWAYS
+═══════════════════════════════════════════════════════════════════════════════
+
+- INT0_vect is "bare metal" AVR programming
+- Use it only when you need precise hardware control
+- Register names are cryptic but follow patterns:
+  - ISC = Interrupt Sense Control
+  - EICRA = External Interrupt Control Register A
+  - EIMSK = External Interrupt Mask Register
+- The "volatile" keyword is CRITICAL for ISR variables
+- Keep ISR code SHORT (minimize execution time)
+
+################################################################################
+################################################################################
+  PART 3: PRECISE TIMING WITH TIMERS (1 µs INTERVAL)
+################################################################################
+################################################################################
+
+BACKGROUND: WHY NOT USE "millis()" or "delay()"?
+
+Arduino "millis()" and "delay()" functions are too coarse for microsecond-level
+precision over repeated intervals. Instead, use hardware timers with register-
+level control.
+
+Available Timers on ATmega328P (Arduino Uno):
+  - Timer0 (8-bit):  Used by "millis()" and "delay()" -- do not modify.
+  - Timer1 (16-bit): Precise, ideal for sub-millisecond timing [+]
+  - Timer2 (8-bit):  Often used for PWM
+
+═══════════════════════════════════════════════════════════════════════════════
+TIMER BASICS & MATH
+================================================================================
+
+Arduino Uno Specs:
+  • Clock: 16 MHz (16.000.000 cycles per second)
+  • 1 µs = 1/1.000.000 seconds
+  • At 16 MHz: 1 µs = 16 clock cycles
+
+Goal: Interrupt every 1 µs
+
+CTC Mode (Clear Timer on Compare Match):
+  • Timer counts: 0 -> 1 -> 2 -> ... -> OCR1A
+  • When timer reaches OCR1A, it resets to 0 and triggers interrupt
+  • Count cycles = OCR1A + 1
+
+Calculation:
+  • Want 16 cycles per interrupt
+  • Therefore: OCR1A = 15  (0 to 15 = 16 cycles)
+  • At 16 MHz (no prescaler): 16 cycles = 1 µs
+
+═══════════════════════════════════════════════════════════════════════════════
+PRESCALER OPTIONS
+================================================================================
+
+Prescaler values divide the 16 MHz clock:
+
+Prescaler   CS10 CS11 CS12   Result              Use Case
+──────────────────────────────────────────────────────────────
+None (1)     1    0    0      1 tick = 62.5 ns   Sub-microsecond
+÷8           0    1    0      1 tick = 500 ns    Fine timing
+÷64          0    1    1      1 tick = 4 µs      Medium precision
+÷256         1    0    1      1 tick = 16 µs     Coarse timing
+÷1024        1    1    1      1 tick = 64 µs     Very coarse
+
+For 1 µs intervals, use Prescaler = 1 (no division).
+
+
+═══════════════════════════════════════════════════════════════════════════════
+EXAMPLE: 1 MICROSECOND INTERRUPT COUNTER
+================================================================================
+
+#include <avr/io.h>
+#include <avr/interrupt.h>
+
+volatile uint32_t microseconds = 0;  // Counter (32-bit for longer durations)
+
+// ISR called every 1 µs
+ISR(TIMER1_COMPA_vect)
+{
+  microseconds++;
+}
+
+void setup()
+{
+  // Disable interrupts during setup
+  cli();
+
+  // Reset Timer1 control registers
+  TCCR1A = 0;  // Normal operation, no PWM
+  TCCR1B = 0;  // Stop timer initially
+
+  // Set CTC mode (Clear Timer on Compare Match)
+  TCCR1B |= (1 << WGM12);  // WGM12 = 1 enables CTC
+
+  // Set prescaler to 1 (no division)
+  TCCR1B |= (1 << CS10);   // CS10 = 1, CS11 = 0, CS12 = 0
+
+  // Set compare value: 16 cycles @ 16 MHz = 1 µs
+  OCR1A = 15;              // Timer: 0→1→...→15 = 16 total
+
+  // Enable Timer1 Compare Match A interrupt
+  TIMSK1 |= (1 << OCIE1A);
+
+  // Enable global interrupts
+  sei();
+
+  Serial.begin(9600);
+}
+
+void loop()
+{
+  // Print every second (1,000,000 µs)
+  static uint32_t lastPrint = 0;
+
+  if (microseconds - lastPrint >= 1000000)
+  {
+    Serial.print("Microseconds: ");
+    Serial.println(microseconds);
+    lastPrint = microseconds;
+  }
+}
+
+═══════════════════════════════════════════════════════════════════════════════
+REGISTER BREAKDOWN: TIMER1 SETUP
+================================================================================
+
+TCCR1A (Timer/Counter 1 Control Register A)
+  • Set to 0 for normal operation (no PWM, no pin toggling)
+
+TCCR1B (Timer/Counter 1 Control Register B)
+  • WGM12 = 1:    Enable CTC mode (Waveform Generation Mode = 4)
+  • CS10 = 1:     Set prescaler to 1 (16 MHz clock, no division)
+  • Result: Timer counts at 16 MHz, resets at compare match
+
+OCR1A (Output Compare Register 1A)
+  • Set to 15: Timer counts 0 to 15 (16 cycles) then interrupts
+  • 16 cycles ÷ 16 MHz = 1 µs
+
+TIMSK1 (Timer 1 Interrupt Mask Register)
+  • OCIE1A = 1:   Enable Compare Match A interrupt
+  • When timer reaches OCR1A, ISR(TIMER1_COMPA_vect) is called
+
+
+═══════════════════════════════════════════════════════════════════════════════
+ALTERNATIVE: PIN TOGGLE EVERY 1 MICROSECOND
+================================================================================
+
+Instead of counting interrupts, you can toggle a pin at 1 µs intervals,
+producing a 500 kHz square wave (observable on oscilloscope).
+
+#include <avr/io.h>
+#include <avr/interrupt.h>
+
+void setup()
+{
+  // Set Pin 9 (OC1A / PB1) as output
+  DDRB |= (1 << DDB1);
+
+  cli();
+  TCCR1A = 0;
+  TCCR1B = 0;
+
+  // COM1A0 = 1: Toggle OC1A on compare match
+  TCCR1A |= (1 << COM1A0);
+
+  // CTC mode
+  TCCR1B |= (1 << WGM12);
+
+  // Prescaler = 1
+  TCCR1B |= (1 << CS10);
+
+  // 1 µs interval
+  OCR1A = 15;
+
+  sei();
+}
+
+void loop()
+{
+  // Pin 9 toggles automatically — do nothing here
+}
+
+Result:
+  • Pin 9 outputs: LOW → HIGH → LOW → HIGH → ...
+  • Frequency: 500 kHz
+  • Period: 2 µs (1 µs per toggle)
+
+
+═══════════════════════════════════════════════════════════════════════════════
+CONSIDERATIONS & LIMITATIONS
+================================================================================
+
+[WARNING] INTERRUPT OVERHEAD
+    The ISR itself takes a few cycles to execute (register save/restore, jump).
+    At 1 µs intervals, this overhead might slightly impact timing.
+     - Keep ISR code extremely short!
+
+[WARNING] COUNTER OVERFLOW
+    Timer1 is 16-bit (max 65,535).
+    microseconds is 32-bit, overflows after ~4,294 seconds (≈71 minutes).
+     - For longer durations, use a larger data type or reset periodically.
+
+[YES] Timer0 (millis) NOT affected
+    Timer0 used by millis()/delay() continues working normally.
+
+[YES] PWM pins still available
+    Pin 6, 5 (Timer0 PWM) and Pin 10, 11 (Timer1 PWM) can still be used
+    for other purposes (PWM duty cycle will not be exact at these intervals).
+
+
+═══════════════════════════════════════════════════════════════════════════════
+VERIFICATION ON HARDWARE
+================================================================================
+
+1. Upload the microseconds counter code
+2. Open Serial Monitor (9600 baud)
+3. Expected output:
+     Microseconds: 1000000  (1 second)
+     Microseconds: 2000000  (2 seconds)
+     Microseconds: 3000000  (3 seconds)
+     ...
+
+4. If using pin toggle mode:
+   • Connect oscilloscope to Pin 9
+   • Observe 500 kHz square wave (or use frequency counter)
+
+═══════════════════════════════════════════════════════════════════════════════
+KEY TAKEAWAYS
+================================================================================
+
+- Timer1 provides sub-microsecond precision
+- CTC mode enables predictable interrupt intervals
+- No prescaler (CS10=1) gives fastest possible timing
+- The "volatile" keyword is CRITICAL for ISR variables
+- Keep ISR bodies SHORT to minimize jitter
+- OCR1A = 15 for 1 µs @ 16 MHz
+- Pin toggle mode useful for testing with oscilloscope
