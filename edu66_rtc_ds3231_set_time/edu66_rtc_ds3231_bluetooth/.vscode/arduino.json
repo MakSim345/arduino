@@ -1,0 +1,6 @@
+{
+    "board": "arduino:avr:uno",
+    "port": "COM7",
+    "sketch": "edu66_rtc_ds3231_bluetooth.ino",
+    "output": "../build"
+}
