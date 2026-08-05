@@ -4,6 +4,14 @@
 #include <RTClib.h>
 #include "Time.h"
 #include "char_matrix.h"
+#include <SoftwareSerial.h>
+
+// HC-06 Bluetooth: connect HC-06 TX -> pin 10, HC-06 RX -> pin 11
+// Send from BT terminal: SET:YYYY-MM-DD HH:MM:SS
+// Example:              SET:2026-07-30 14:30:00
+#define BT_RX_PIN 10
+#define BT_TX_PIN 11
+SoftwareSerial bluetooth(BT_RX_PIN, BT_TX_PIN);
 
 // RTC_DS1307 RTC;
 RTC_DS3231 RTC;
@@ -96,6 +104,9 @@ DateTime ADTnow;
 
 void(* resetFunc) (void) = 0; //declare reset function @ address 0
 
+void handleBtCommand(const String &cmd);
+void checkBluetooth();
+
 LedControl lc = LedControl(DATA_IN_PIN, CLK_PIN, LOAD_PIN, numDevices);
 byte*  nums[] = {number0, number1, number2, number3, number4, number5, number6, number7, number8, number9};
 
@@ -139,7 +150,9 @@ void setup()
 {
     setup_matrix();
     Serial.begin(9600);
+    bluetooth.begin(9600);
     Serial.println("APP START!");
+    bluetooth.println("Tomato clock ready. Set time: SET:YYYY-MM-DD HH:MM:SS");
     // Serial.println(__DATE__);// May 20 2021
 
     // set the digital pin as output:
@@ -149,11 +162,13 @@ void setup()
     pinMode(LED_TOMATO_PIN, OUTPUT);
     pinMode(LED_MONSTER_PIN, OUTPUT);
 
-    pinMode(INTERRUPT_PIN, INPUT); // use external resistor to pull-down (GND)
-    attachInterrupt(0, ISR_Button_Press, RISING); //raise ISR every time button pressed
+    pinMode(INTERRUPT_PIN, INPUT); // use external resistor connected to pull-down (GND)
+    // Trigger ISR on button press edge (may bounce):
+    attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN), ISR_Button_Press, RISING);
 
-    // pinMode(INTERRUPT_PIN, INPUT); // use external resistor to pull-up (+5V)
-    // attachInterrupt(0, ISR_Button_Press, FALLING); //raise ISR every time button pressed
+    // pinMode(INTERRUPT_PIN, INPUT); // use external resistor connected to pull-up (+5V)
+    // Trigger ISR on button press edge (may bounce):
+    // attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN), ISR_Button_Press, FALLING);
 
     _sec_to_print = now();
 
@@ -204,6 +219,7 @@ void setup()
 
 void loop()
 {
+    checkBluetooth();
 
     if (btn_pressed_state)
     {
@@ -373,6 +389,59 @@ void loop()
             break;
         }
     }
+}
+
+void checkBluetooth()
+{
+    if (bluetooth.available())
+    {
+        String cmd = bluetooth.readStringUntil('\n');
+        cmd.trim();
+        Serial.print("BT: ");
+        Serial.println(cmd);
+        handleBtCommand(cmd);
+    }
+}
+
+void handleBtCommand(const String &cmd)
+{
+    // Expected: SET:YYYY-MM-DD HH:MM:SS  (length=23)
+    if (!cmd.startsWith("SET:"))
+    {
+        bluetooth.println("ERR: Use SET:YYYY-MM-DD HH:MM:SS");
+        return;
+    }
+    if (cmd.length() != 23)
+    {
+        bluetooth.print("ERR: Wrong length (");
+        bluetooth.print(cmd.length());
+        bluetooth.println("), expected 23");
+        return;
+    }
+    int year   = cmd.substring(4,  8).toInt();
+    int month  = cmd.substring(9,  11).toInt();
+    int day    = cmd.substring(12, 14).toInt();
+    int hour   = cmd.substring(15, 17).toInt();
+    int minute = cmd.substring(18, 20).toInt();
+    int second = cmd.substring(21, 23).toInt();
+
+    if (year < 2020 || year > 2099 ||
+        month  < 1  || month  > 12 ||
+        day    < 1  || day    > 31 ||
+        hour   > 23 || minute > 59 || second > 59)
+    {
+        bluetooth.println("ERR: Invalid values");
+        return;
+    }
+
+    DateTime newTime(year, month, day, hour, minute, second);
+    RTC.adjust(newTime);
+    ADTnow = newTime; // update running time immediately
+
+    bluetooth.print("OK: Time set to ");
+    bluetooth.println(cmd.substring(4));
+    Serial.print("RTC adjusted to: ");
+    Serial.println(cmd.substring(4));
 }
 
 void showMonsters()
