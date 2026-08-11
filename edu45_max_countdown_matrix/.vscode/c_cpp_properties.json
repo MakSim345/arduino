@@ -21,6 +21,7 @@
                 "C:\\Program Files\\Arduino\\hardware\\arduino\\avr\\libraries\\Wire\\src",
                 "C:\\dev\\arduino\\libraries\\RTClib\\src",
                 "C:\\dev\\arduino\\libraries\\arduino_680031",
+                "C:\\Program Files\\Arduino\\hardware\\arduino\\avr\\libraries\\SoftwareSerial\\src",
                 "C:\\Program Files\\Arduino\\hardware\\arduino\\avr\\libraries\\SPI\\src",
                 "c:\\program files\\arduino\\hardware\\tools\\avr\\lib\\gcc\\avr\\7.3.0\\include",
                 "c:\\program files\\arduino\\hardware\\tools\\avr\\lib\\gcc\\avr\\7.3.0\\include-fixed",
