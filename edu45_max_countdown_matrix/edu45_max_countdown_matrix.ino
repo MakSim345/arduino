@@ -134,7 +134,8 @@ void ISR_Button_Press()
 #else
     // Use debounce with timer:
     static unsigned long millis_prev;
-    const int debounce_delay = 10;
+    const int debounce_delay = 50; // - ATTN: type mismatch!
+    // const unsigned long debounce_delay = 50;
 
     if (millis() - debounce_delay > millis_prev)
     {
