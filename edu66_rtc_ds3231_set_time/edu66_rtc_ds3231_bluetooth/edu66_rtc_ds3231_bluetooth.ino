@@ -23,7 +23,7 @@
 // #define ledPin 7
 #define ledPin 13 // embedded LED
 
-// Connect pin 10 to BT->TX and 11 to BT->TX
+// Connect pin 10 to BT->TX and 11 to BT->RX
 SoftwareSerial bluetooth(10, 11);
 
 RTC_DS3231 RTC;
@@ -35,7 +35,6 @@ void setup ()
 {
     Serial.begin(9600);
     // Wire.begin();
-    RTC.begin();
     bluetooth.begin(9600);
     delay(1000);
 
@@ -101,27 +100,29 @@ void handleCommand(const String &cmdP)
 String readStringFromBluetooth()
 {
     String retMessage = "";
+    retMessage = bluetooth.readStringUntil('\n');
+    return retMessage;
 
-    while(bluetooth.available())
-    {
+    //if (bluetooth.available())
+    //{
         // read one char from bluetooth connection and add to the message
         // char inChar = bluetooth.read();
         // retMessage = retMessage + inChar;
-        retMessage = bluetooth.readStringUntil('\n');
-    }
-
-    //DEBUG:
-    /*
-    for (int i = 0; i < retMessage.length(); i++)
-    {
-        Serial.print(i);
-        Serial.print("-Char: ");
-        Serial.print(retMessage[i]);
-        Serial.print("  ASCII: ");
-        Serial.println((int)retMessage[i]);
-    }
-    */
-    return retMessage;
+        // retMessage = bluetooth.readStringUntil('\n');
+        //DEBUG:
+        /*
+        for (int i = 0; i < retMessage.length(); i++)
+        {
+            Serial.print(i);
+            Serial.print("-Char: ");
+            Serial.print(retMessage[i]);
+            Serial.print("  ASCII: ");
+            Serial.println((int)retMessage[i]);
+        }
+        */
+        //return retMessage;
+    //}
+    //return "";
 }
 
 
@@ -131,9 +132,10 @@ void loop ()
 
     Serial.print(now.year(), DEC);
     Serial.print('-');
+
     if (now.month() < 10)
         Serial.print('0');
-    Serial.print(now.month()), DEC;
+    Serial.print(now.month(), DEC);
     Serial.print('-');
 
     if (now.day() < 10)
