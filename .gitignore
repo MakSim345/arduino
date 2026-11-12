@@ -55,3 +55,6 @@ _ReSharper*/
 
 # Office Temp Files
 ~$*
+
+# WiFi credentials (copy secrets.example.h -> secrets.h)
+secrets.h
